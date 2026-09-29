@@ -1,0 +1,35 @@
+  // 文章渲染后回语境：优先定位例句所在段，再在段内找词（含屈折形态）并闪烁（jumpToText 触发）
+  useEffect(() => {
+    if (!jumpCtx || tab !== "read" || !ann) return;
+    const h = window.setTimeout(() => {
+      const reader = readerRef.current;
+      if (!reader) { setJumpCtx(null); return; }
+      const want = jumpCtx.word.toLowerCase();
+      const prefix = want.slice(0, Math.max(4, want.length - 3));
+      const wordMatch = (el: HTMLElement) => {
+        const t = (el.textContent || "").toLowerCase();
+        if (t === want) return true;
+        // 屈折形态回退：investigated/investigating/studies 等，长度差 ≤4
+        return t.length >= 4 && Math.abs(t.length - want.length) <= 4 && t.startsWith(prefix);
+      };
+      const norm = (s: string) => s.replace(/\s+/g, " ").trim();
+      let para: HTMLElement | null = null;
+      if (jumpCtx.sentence) {
+        const needle = norm(jumpCtx.sentence).slice(0, 40);
+        for (const p of Array.from(reader.querySelectorAll<HTMLElement>("p[data-pi]"))) {
+          if (needle && norm(p.textContent || "").includes(needle)) { para = p; break; }
+        }
+      }
+      const scope: HTMLElement = para ?? reader;
+      const hits = Array.from(scope.querySelectorAll<HTMLElement>(".tk")).filter(wordMatch);
+      resumeSkipRef.current = true;
+      const target: HTMLElement | null = hits[0] ?? para;
+      if (target) scrollToPara(target);
+      for (const el of hits) {
+        el.classList.add("jump-flash");
+        window.setTimeout(() => el.classList.remove("jump-flash"), 2400);
+      }
+      setJumpCtx(null);
+    }, 180);
+    return () => window.clearTimeout(h);
+  }, [jumpCtx, tab, ann, scrollToPara]);

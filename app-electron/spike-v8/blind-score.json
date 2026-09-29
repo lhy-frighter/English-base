@@ -1,0 +1,30 @@
+{
+  "revealedAt": "2026-09-17T08:44:28.655Z",
+  "tally": {
+    "Bergamot": 15,
+    "Opus-MT": 3,
+    "tie": 2
+  },
+  "rows": [
+    "item 1 (sciencedaily-01): voted B = Bergamot",
+    "item 2 (sciencedaily-04): voted A = Bergamot",
+    "item 3 (sciencedaily-07): voted B = Bergamot",
+    "item 4 (sciencedaily-10): voted A = Bergamot",
+    "item 5 (sciencedaily-13): voted tie = tie",
+    "item 6 (sciencedaily-16): voted A = Bergamot",
+    "item 7 (sciencedaily-19): voted A = Opus-MT",
+    "item 8 (aeon-02): voted B = Bergamot",
+    "item 9 (aeon-05): voted B = Bergamot",
+    "item 10 (aeon-08): voted A = Bergamot",
+    "item 11 (aeon-11): voted B = Bergamot",
+    "item 12 (aeon-14): voted A = Bergamot",
+    "item 13 (aeon-17): voted B = Bergamot",
+    "item 14 (aeon-20): voted B = Bergamot",
+    "item 15 (newsinlevels-03): voted tie = tie",
+    "item 16 (newsinlevels-06): voted A = Bergamot",
+    "item 17 (newsinlevels-09): voted A = Opus-MT",
+    "item 18 (newsinlevels-12): voted B = Bergamot",
+    "item 19 (newsinlevels-15): voted A = Opus-MT",
+    "item 20 (newsinlevels-18): voted A = Bergamot"
+  ]
+}

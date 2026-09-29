@@ -1,0 +1,13 @@
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
+const mp = "D:/vibe coding/英语学习/app-electron/model-store.cjs";
+const name = "Qwen2.5-3B-Instruct-q4f16_1_cs1k-webgpu.wasm";
+const hash = crypto.createHash("sha256").update(fs.readFileSync(path.join(__dirname, "..", "data", "webllm-lib-cache", name))).digest("hex");
+console.log("hash length:", hash.length);
+let s = fs.readFileSync(mp, "utf8");
+const re = /(path: "Qwen2\.5-3B-Instruct-q4f16_1_cs1k-webgpu\.wasm", bytes: 5438957,\r?\n\s*sha256: ")[0-9a-f]+(")/;
+if (!re.test(s)) throw new Error("wasm hash site not found");
+s = s.replace(re, "$1" + hash + "$2");
+fs.writeFileSync(mp, s);
+console.log("model-store f16 wasm hash corrected:", hash);

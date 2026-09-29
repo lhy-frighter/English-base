@@ -1,0 +1,64 @@
+{
+  "steps": [],
+  "asr1": {
+    "ms": 1198,
+    "text": "you",
+    "nwords": 1
+  },
+  "asrDisposedBeforeTts": true,
+  "tts1a": {
+    "synthMs": 5325,
+    "audioMs": 5.25,
+    "n": 504000
+  },
+  "tts1b": {
+    "synthMs": 8165,
+    "audioMs": 8.69,
+    "n": 834240
+  },
+  "mt": {
+    "ms": 355,
+    "n": 6,
+    "empty": 0,
+    "sample": "该大学的研究人员宣布了一种完全在用户自己的计算机上翻译语言的新方法。"
+  },
+  "mtDisposedBeforeTts2": true,
+  "tts2a": {
+    "synthMs": 5450,
+    "audioMs": 5.45,
+    "n": 523200
+  },
+  "allReleased": true,
+  "rssStageMb": {
+    "rss-baseline": 86,
+    "rss-asr": 1025,
+    "rss-tts1": 499,
+    "rss-tts1-disposed": 139,
+    "rss-mt": 643,
+    "rss-tts2": 589,
+    "rss-final": 142
+  },
+  "rssDeltaMb": {
+    "baseline": 86,
+    "asr": 1025,
+    "tts1": 499,
+    "tts1Disposed": 139,
+    "mt": 643,
+    "tts2": 589,
+    "final": 142
+  },
+  "checks": {
+    "asrReturned": true,
+    "tts1Returned": true,
+    "mt6ParasNoEmpty": true,
+    "tts2Returned": true,
+    "asrDisposedBeforeTts": true,
+    "mtDisposedBeforeTts2": true,
+    "allReleased": true,
+    "rssAsrGoneBeforeTts": true,
+    "rssTtsGoneBeforeMt": true,
+    "rssTts2Band": true,
+    "rssFinalNearBaseline": true
+  },
+  "pass": true
+}

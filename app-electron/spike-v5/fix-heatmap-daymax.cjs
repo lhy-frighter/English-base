@@ -1,0 +1,12 @@
+const fs = require("fs");
+const fp = "src/DashPage.tsx";
+let s = fs.readFileSync(fp, "utf8");
+const a = `  const days = ins?.days ?? [];
+  const dayMax = Math.max(20, ...days.map((d) => d.minutes.read + d.minutes.shadow + d.minutes.review + d.minutes.exam));
+  const t = ins?.totals;`;
+const b = `  const days = ins?.days ?? [];
+  const t = ins?.totals;`;
+if (!s.includes(a)) throw new Error("anchor missing");
+s = s.replace(a, b);
+fs.writeFileSync(fp, s, "utf8");
+console.log("dayMax removed");

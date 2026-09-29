@@ -1,0 +1,33 @@
+{
+  "reviewer": "assistant manual review, 2026-09-17",
+  "method": "60 frozen paragraphs, source vs Bergamot output read one by one; counted per paragraph, not per word. Reconciled 2026-09-17 after adjudication: per-kind counts are authoritative and sum to 60.",
+  "scale": "good = faithful & readable; minor = awkward/wording error without changing gist; moderate = at least one clause-level meaning error but paragraph gist preserved; major = central term/entity wrong or clause meaning inverted; dropped = non-empty sentence/clause omitted",
+  "summary": {
+    "empty": 0,
+    "paragraphs_with_full_dropped_sentence": 0,
+    "counts": {"good": 30, "minor": 18, "moderate": 10, "major": 2},
+    "major_examples": [
+      "sciencedaily-18/19 Cretaceous -> 白癜风 (should 白垩纪)",
+      "sciencedaily-19 angiosperm -> 血管精子 (should 被子植物)"
+    ],
+    "moderate_examples": [
+      "aeon-06 jalopies -> 军犬 (should 破旧汽车)",
+      "aeon-07 convictions -> 定罪 (should 信念)",
+      "sciencedaily holotype -> 全息型, caudal fin -> 高烧鳍, karstic -> 卡斯蒂克 (term failures counted in SD moderate bucket)"
+    ]
+  },
+  "by_kind": {
+    "newsinlevels": {"good": 18, "minor": 2, "moderate": 0, "major": 0, "note": "B1-B2 simple prose: essentially production-grade. Only brand name 'News in Levels' and 'Difficult words' -> 难言之词 rendered awkwardly."},
+    "sciencedaily": {"good": 10, "minor": 4, "moderate": 4, "major": 2, "note": "Science journalism gist fully preserved; failures cluster on technical terms (Cretaceous, angiosperm, holotype, caudal fin, karstic) and proper-noun/HTML-entity garble. One digit error: grant PLEC2021-007903 -> ...793."},
+    "aeon": {"good": 2, "minor": 12, "moderate": 6, "major": 0, "note": "Long literary/historical C1 prose: every paragraph's gist survives, numbers/dates/named facts mostly preserved, but frequent awkward phrasing and scattered lexical errors (convictions, jalopies, car-less, topless). No dropped sentences."}
+  },
+  "cross_cutting_findings": [
+    "HTML entities in source (&agrave; &Agrave; &eacute;) are passed through and corrupt names -> production MUST decode entities at the import/translation boundary (and html mode is deferred until genuinely marked-up input exists).",
+    "Opening quotation marks are sometimes dropped, producing asymmetric quotes (sciencedaily-10).",
+    "Numbers are usually preserved or legitimately localised (125 million -> 1.25亿); 46/53 digit runs kept verbatim, one genuine digit typo found.",
+    "Embedded newlines are preserved.",
+    "Domain vocabulary is the systematic weak spot: general-news model mistranslates CS/geology/biology terms (also smoke test: transformer -> 变压器, self-attention -> 自理机制). This is the evidence for keeping the layered local dictionary / domain packs as a term layer, and for never presenting MT as authoritative.",
+    "No hallucinated extra sentences (增译) observed; length ratio median 1.9 zh-char/en-word, no extreme collapses.",
+    "Alignment caveat (2026-09-17 adjudication): eval requests passed alignment:false; only the yaml config line 'alignment: soft' was loaded. Sentence-pair/alignment output was NOT verified and is a S7b gate; fallback is deterministic English sentence split -> per-sentence translation -> paragraph assembly."
+  ]
+}

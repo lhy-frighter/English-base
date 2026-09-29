@@ -1,0 +1,33 @@
+/* S12 平行文本能力测评 */
+.assess-page .page-head { display: flex; align-items: center; gap: 12px; }
+.assess-select { max-width: 820px; }
+.assess-bp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+.assess-bp { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.assess-bp-name { font-weight: 600; font-size: 15px; }
+.assess-read { max-width: 860px; }
+.assess-bar { position: sticky; top: 0; z-index: 5; background: var(--bg, #fafaf7); padding: 10px 0; border-bottom: 1px solid #e5e2da; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.assess-title { font-weight: 600; }
+.assess-text { margin-top: 14px; position: relative; }
+.assess-para { line-height: 1.9; font-size: 16px; margin: 0 0 14px; }
+.assess-para .aw { cursor: pointer; border-radius: 3px; padding: 0 1px; }
+.assess-para .aw:hover { background: #e3e9f6; }
+.assess-para .btn.tiny { margin: 0 8px; vertical-align: middle; }
+.assess-zh { display: block; color: #555; background: #f3f1ea; padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 14px; line-height: 1.7; }
+.assess-pop { position: fixed; right: 24px; bottom: 24px; z-index: 50; background: #fff; border: 1px solid #ddd8cc; border-radius: 8px; padding: 10px 14px; box-shadow: 0 6px 24px rgba(0,0,0,.12); max-width: 320px; }
+.assess-quiz { max-width: 760px; display: flex; flex-direction: column; gap: 14px; }
+.assess-q { display: flex; flex-direction: column; gap: 8px; }
+.assess-q-text { font-weight: 600; margin-bottom: 4px; }
+.assess-opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 400; }
+.assess-opt.picked { background: #e3e9f6; }
+.assess-opt input { margin-top: 3px; }
+.assess-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.assess-result { max-width: 760px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.assess-score-big { font-size: 64px; font-weight: 700; line-height: 1; color: #2f4d8a; }
+.assess-score-unit { font-size: 20px; color: #777; }
+.assess-break { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; width: 100%; }
+.assess-break-item { text-align: center; padding: 14px 10px; }
+.assess-break-item .num { font-size: 26px; font-weight: 700; }
+.assess-dash-card { margin-bottom: 14px; }
+.assess-dash-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.assess-dash-list { display: flex; flex-direction: column; gap: 6px; }
+.assess-dash-row { display: flex; align-items: center; gap: 10px; }

@@ -1,0 +1,34 @@
+{
+  "reviewer": "assistant manual review, 2026-09-17",
+  "method": "same 60 frozen paragraphs as Bergamot; plus 20-item shuffled blind A/B (blind-AB.txt, blind-key.json)",
+  "blind_result": {
+    "Bergamot_wins": 15,
+    "Opus_MT_wins": 3,
+    "ties": 2,
+    "note": "v2 可审计盲评：A/B 身份逐项抛硬币分配（blind-key.json，A=Bergamot 7/20），投票先写入 blind-votes.json（A10/B8/平2）后揭盲，tally-blind.cjs 计票 15:3:2。早期 v1 包曾恒 A=Bergamot（17:1:2），已作废重跑"
+  },
+  "blocking_defects": {
+    "repetition_degeneration": [
+      "sciencedaily-08: ~600-char tail of '长/短' repetition, output unusable",
+      "aeon-08: '路路路路…途过' repetition at sentence start",
+      "aeon-02: '高速高速高速…' repetition; also 1928 -> 998 (digit dropped)",
+      "aeon-17: duplicated clause '尼加拉瓜人到圣何塞' twice",
+      "sciencedaily-18: hallucinated trailing sentence restating the 8,000-specimen figure"
+    ],
+    "dropped_content": [
+      "sciencedaily-07: first sentence ('The scales varied considerably...') missing",
+      "sciencedaily-10: quoted clause 'despite being a primitive animal' collapsed",
+      "sciencedaily-17: first definitional sentence about Konservat-Lagerstaette missing",
+      "newsinlevels-07: heading object dropped ('How to improve your English with News in Levels' -> '如何改善英语,')"
+    ],
+    "tokenizer": "MarianTokenizer fast-path warning is real: 'Průša' split as 'Pr, ša'; diacritics break names. source.spm exists but transformers.js used tokenizer.json."
+  },
+  "shared_weaknesses_with_bergamot": [
+    "Both fail angiosperm (血管精子/血管动物 vs should 被子植物), interpretation centers (解说->口译), convictions (定罪 vs 信念), HTML entities passed through un-decoded -> proper nouns garbled. These are general-model/domain limits, not engine-specific, and are the case for domain packs + entity preprocessing."
+  ],
+  "where_opus_was_better": [
+    "aeon-15 car-less -> 无汽车者 (Bergamot said 无家可归者)",
+    "a few short NIL sentences slightly more natural (item 17)"
+  ],
+  "verdict": "Opus-MT en->zh (2020 Marian base, Xenova q8) is unusable as a default unsupervised reading aid: 4-5/60 paragraphs contain repetition degeneration or dropped sentences, and failures are silent (no error signal). It is also 2.5x larger on disk (120MB vs 47.6MB) and ~8-10x slower (35-60 wps CPU vs 365-530 wps). Apache-2.0 is its only advantage over Bergamot's MPL-2.0; MPL-2.0 is file-level copyleft and compatible with shipping in a closed/AGPL desktop app as long as engine modifications are published, so this does not outweigh the quality gap."
+}

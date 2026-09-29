@@ -1,0 +1,177 @@
+# CS/AI 术语包短语（mwe）
+# 格式：phrase|pos|translation   连字符/空格两种写法在标注时自动归一，无需重复列
+# === 学习/学科总类 ===
+artificial intelligence|n.|人工智能
+machine learning|n.|机器学习
+deep learning|n.|深度学习
+neural network|n.|神经网络
+neural networks|n.|神经网络（复数）
+reinforcement learning|n.|强化学习
+supervised learning|n.|监督学习
+unsupervised learning|n.|无监督学习
+self-supervised learning|n.|自监督学习
+transfer learning|n.|迁移学习
+representation learning|n.|表示学习
+federated learning|n.|联邦学习
+meta learning|n.|元学习
+multimodal learning|n.|多模态学习
+computer vision|n.|计算机视觉
+natural language processing|n.|自然语言处理
+# === 优化 / 训练 ===
+gradient descent|n.|梯度下降
+stochastic gradient descent|n.|随机梯度下降
+gradient clipping|n.|梯度裁剪
+vanishing gradient|n.|梯度消失
+exploding gradient|n.|梯度爆炸
+learning rate|n.|学习率
+learning rate schedule|n.|学习率调度策略
+weight decay|n.|权重衰减
+label smoothing|n.|标签平滑
+loss function|n.|损失函数
+objective function|n.|目标函数
+cost function|n.|成本函数
+cross entropy|n.|交叉熵
+log likelihood|n.|对数似然
+maximum likelihood|n.|最大似然
+activation function|n.|激活函数
+forward pass|n.|前向传播（一次前向计算）
+backward pass|n.|反向传播（一次反向计算）
+early stopping|n.|早停，验证指标不再改善就结束训练
+mixed precision|n.|混合精度训练
+teacher forcing|n.|教师强制，训练时用真实上一步输出作为下一步输入
+# === 网络结构 ===
+feedforward network|n.|前馈网络
+recurrent neural network|n.|循环神经网络
+convolutional neural network|n.|卷积神经网络
+multilayer perceptron|n.|多层感知机
+long short-term memory|n.|长短期记忆网络
+gated recurrent unit|n.|门控循环单元
+self attention|n.|自注意力
+multi-head attention|n.|多头注意力
+multi head attention|n.|多头注意力（无连字符写法）
+scaled dot-product attention|n.|缩放点积注意力
+cross attention|n.|交叉注意力
+attention mechanism|n.|注意力机制
+attention head|n.|注意力头
+attention heads|n.|注意力头（复数）
+attention weight|n.|注意力权重
+positional encoding|n.|位置编码
+positional embedding|n.|位置嵌入
+layer normalization|n.|层归一化
+layer norm|n.|层归一化（简称）
+batch normalization|n.|批归一化
+residual connection|n.|残差连接
+skip connection|n.|跳跃连接
+feed forward|n.|前馈
+# === 语言模型 / NLP ===
+language model|n.|语言模型
+language models|n.|语言模型（复数）
+large language model|n.|大语言模型
+large language models|n.|大语言模型（复数）
+masked language model|n.|掩码语言模型
+causal language model|n.|因果语言模型
+instruction tuning|n.|指令微调
+in-context learning|n.|上下文学习，靠提示中的示例学会任务
+chain of thought|n.|思维链（提示方法）
+retrieval augmented generation|n.|检索增强生成
+context window|n.|上下文窗口，模型一次能处理的 token 长度
+generative AI|n.|生成式人工智能
+prompt engineering|n.|提示词工程
+zero-shot learning|n.|零样本学习
+few-shot learning|n.|少样本学习
+question answering|n.|问答（任务）
+text classification|n.|文本分类
+sentiment analysis|n.|情感分析
+machine translation|n.|机器翻译
+neural machine translation|n.|神经机器翻译
+speech recognition|n.|语音识别
+automatic speech recognition|n.|自动语音识别
+speech synthesis|n.|语音合成
+text to speech|n.|文本转语音
+beam search|n.|束搜索，每步保留若干候选的解码算法
+greedy decoding|n.|贪心解码，每步只取概率最高的候选
+nucleus sampling|n.|核采样（top-p 采样）
+word error rate|n.|词错率，识别/转写质量指标
+named entity recognition|n.|命名实体识别
+part of speech|n.|词性
+part-of-speech tagging|n.|词性标注
+dependency parsing|n.|依存句法分析
+word embedding|n.|词嵌入
+word embeddings|n.|词嵌入（复数）
+sentence embedding|n.|句子嵌入
+embedding space|n.|嵌入空间
+latent space|n.|潜空间；隐空间
+bag of words|n.|词袋模型
+one hot encoding|n.|独热编码
+cosine similarity|n.|余弦相似度
+# === 数据 / 评估 ===
+training set|n.|训练集
+validation set|n.|验证集
+test set|n.|测试集
+dev set|n.|开发集（验证集的另一种叫法）
+data augmentation|n.|数据增强
+feature engineering|n.|特征工程
+feature map|n.|特征图
+receptive field|n.|感受野
+max pooling|n.|最大池化
+average pooling|n.|平均池化
+kernel size|n.|卷积核尺寸
+object detection|n.|目标检测
+image segmentation|n.|图像分割
+generative adversarial network|n.|生成对抗网络
+diffusion model|n.|扩散模型
+vision transformer|n.|视觉 Transformer
+knowledge distillation|n.|知识蒸馏
+hyperparameter tuning|n.|超参数调优
+grid search|n.|网格搜索
+random search|n.|随机搜索
+cross validation|n.|交叉验证
+confusion matrix|n.|混淆矩阵
+false positive|n.|假阳性；误报
+false negative|n.|假阴性；漏报
+decision tree|n.|决策树
+random forest|n.|随机森林
+support vector machine|n.|支持向量机
+logistic regression|n.|逻辑回归
+linear regression|n.|线性回归
+gradient boosting|n.|梯度提升
+k means|n.|k 均值聚类
+principal component analysis|n.|主成分分析
+dimensionality reduction|n.|降维
+ablation study|n.|消融研究/消融实验
+significance test|n.|显著性检验
+baseline model|n.|基线模型
+# === 论文/学术 ===
+et al|phr.|以及其他人；等（文献引用作者省略，et al.）
+peer review|n.|同行评审
+camera ready|a.|终稿（会议接收后的可付印版本）
+penn treebank|n.|宾州树库，经典句法标注语料
+wall street journal|n.|华尔街日报（语料）
+# === 通用 CS ===
+open source|n.|开源
+command line|n.|命令行
+version control|n.|版本控制
+continuous integration|n.|持续集成
+continuous deployment|n.|持续部署
+pull request|n.|合并请求；拉取请求（PR）
+code review|n.|代码评审
+technical debt|n.|技术债
+race condition|n.|竞态条件
+null pointer|n.|空指针
+memory leak|n.|内存泄漏
+buffer overflow|n.|缓冲区溢出
+regular expression|n.|正则表达式
+binary search|n.|二分查找
+hash table|n.|哈希表
+linked list|n.|链表
+time complexity|n.|时间复杂度
+space complexity|n.|空间复杂度
+dynamic programming|n.|动态规划
+breadth first search|n.|广度优先搜索
+depth first search|n.|深度优先搜索
+smoke test|n.|冒烟测试
+rate limiting|n.|限流
+application programming interface|n.|应用程序编程接口（API）
+machine learning model|n.|机器学习模型
+scikit learn|n.|[AI] scikit-learn 传统机器学习库
+position wise|a.|[AI] 逐位置的（position-wise）

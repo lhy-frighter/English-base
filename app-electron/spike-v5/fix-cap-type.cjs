@@ -1,0 +1,10 @@
+const fs = require("fs");
+const p = "D:/vibe coding/英语学习/app-electron/src/conversation/ConversationPage.tsx";
+let s = fs.readFileSync(p, "utf8");
+const oldStr = `const [cap, setCap] = useState<{ text: string; ref: string; sentence?: string; prefill?: CapturePrefill } | null>(null);`;
+const newStr = `const [cap, setCap] = useState<{ text: string; ref: string; sentence?: string; prefill?: CapturePrefill; gloss?: string } | null>(null);`;
+const i = s.indexOf(oldStr);
+if (i < 0) throw new Error("not found");
+s = s.slice(0, i) + newStr + s.slice(i + oldStr.length);
+fs.writeFileSync(p, s);
+console.log("cap type updated");

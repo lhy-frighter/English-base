@@ -1,0 +1,15 @@
+﻿const { Core } = require("../core.cjs");
+const path=require("path"),fs=require("fs"),os=require("os");
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),"x-")); const core=new Core(dir);
+core.annotateAndSave("The mechanism works.", "T1");
+const r = core.resolve("mechanism","word",false);
+console.log("translation:", JSON.stringify(r.translation.slice(0,60)));
+const sense = (r.translation||"").split("\n")[0].trim();
+console.log("sense:", JSON.stringify(sense));
+const out = core.createStandaloneNote({word:r.lemma,label:"word",phrase:false,sense});
+console.log(out);
+const row = core.user.prepare("SELECT lemma,sense,pos FROM lexemes WHERE id=?").get(out.lexeme_id);
+console.log(row);
+const due = core.getDue(20);
+console.log(due.map(c=>({type:c.card_type, shown:c.shown, cc:c.correctChoice})));
+core.user.close(); fs.rmSync(dir,{recursive:true,force:true});

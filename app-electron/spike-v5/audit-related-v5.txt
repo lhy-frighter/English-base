@@ -1,0 +1,160 @@
+  // 同根/派生词：AWL 权威词族 → ECDICT exchange 屈折（白名单码）→ POS 感知的显式形态规则派生
+  relatedWords(lemma) {
+    const low = String(lemma || "").toLowerCase();
+    const map = new Map();
+    const pushWord = (wIn) => {
+      const w = String(wIn || "").toLowerCase().trim();
+      if (!w || w === low || map.has(w)) return;
+      const r = this.user.prepare("SELECT word,pos,translation FROM dict.words WHERE word=?").get(w);
+      if (!r) return;
+      const gloss = ((r.pos ? r.pos + " " : "") + (r.translation.split("\\n")[0] || ""))
+        .replace(/\[[^\]]*\]/g, "").trim().slice(0, 40);
+      if (gloss) map.set(w, { word: w, gloss });
+    };
+    // 1) AWL 词族（头词+全部成员）
+    const fam = AWL_BY_FORM.get(low);
+    if (fam) for (const f of [fam.h, ...fam.f]) pushWord(f);
+    // 2) ECDICT exchange：仅接受屈折码 p/d/i/3/s/r/t（忽略 0 原形与脏数据码 1）
+    const EXCHANGE_CODES = new Set(["p", "d", "i", "3", "s", "r", "t"]);
+    const self = this.user.prepare("SELECT exchange FROM dict.words WHERE word=?").get(low);
+    if (self && self.exchange) {
+      for (const item of self.exchange.split("/")) {
+        if (!item.includes(":")) continue;
+        const [code, v] = item.split(":", 2);
+        if (!EXCHANGE_CODES.has(code) || !v) continue;
+        v.split(",").forEach(pushWord);
+      }
+    }
+    // 3) 派生词：POS 感知的显式形态规则（直接加缀 / 去 e / y→i / 双写尾辅音）
+    const glossPos = () => {
+      const r = this.user.prepare("SELECT translation FROM dict.words WHERE word=?").get(low);
+      const mm = r && /^\s*([a-z]{1,6})\./i.exec(r.translation.split("\\n")[0] || "");
+      return mm ? mm[1].toLowerCase() : "";
+    };
+    const pos = glossPos();
+    const posGroup = /^(v|vi|vt|aux)$/.test(pos) ? "v"
+      : pos === "n" ? "n"
+      : /^(a|adj)$/.test(pos) ? "a"
+      : pos === "adv" ? "adv" : "";
+    const FUNCTION_POS = /^(art|prep|conj|pron|det|int|interj|num|modal|aux|part|abbr)$/;
+    if (low.length >= 4 && !FUNCTION_POS.test(pos)) {
+      const TAILS_BY_GROUP = {
+        v: ["s", "es", "ed", "d", "ing", "er", "ers", "est", "ly", "ally", "ively", "ment", "ments",
+          "ness", "ity", "ive", "al", "or", "ors", "ion", "ions", "tion", "tions", "able", "ible", "ic", "ical", "istic", "ous"],
+        n: ["s", "es", "ly", "ment", "ments", "ness", "ity", "ties", "al", "ic", "ical", "istic", "ous", "ion", "tions", "ive"],
+        a: ["er", "ers", "est", "ly", "ally", "ively", "ness", "ity", "ties", "ive", "al", "ic", "ical", "istic", "able", "ible", "ous"],
+        adv: ["er", "est", "ly", "ally", "ively"],
+        "": ["s", "es", "ed", "d", "ing", "er", "ers", "est", "ly", "ally", "ment", "ness", "ity",
+          "ive", "al", "or", "ors", "ion", "tion", "able", "ible", "ic", "ical", "istic", "ous"],
+      };
+      const tails = TAILS_BY_GROUP[posGroup] || TAILS_BY_GROUP[""];
+      const accept = new Set();
+      for (const t of tails) accept.add(low + t);
+      if (low.endsWith("e")) {
+        const stem = low.slice(0, -1);
+        for (const t of tails) accept.add(stem + t);
+      }
+      if (low.endsWith("y")) {
+        const stem = low.slice(0, -1) + "i";
+        for (const t of tails) accept.add(stem + t);
+      }
+      for (const t of ["ed", "ing", "er", "est"]) accept.add(low + low.slice(-1) + t);
+      // 三种前缀：原词、去 e 词干（activation）、y→i 词干（happiness）
+      const prefixes = [low];
+      if (low.endsWith("e")) prefixes.push(low.slice(0, -1));
+      if (low.endsWith("y")) prefixes.push(low.slice(0, -1) + "i");
+      const rows = [];
+      const seenW = new Set();
+      for (const pfx of prefixes) {
+        for (const r of this.user
+          .prepare("SELECT word,pos,translation,frq,tag FROM dict.words WHERE word LIKE ? AND word<>? AND length(word)<=length(?)+8 ORDER BY frq DESC LIMIT 120")
+          .all(pfx + "%", low, low)) {
+          if (!seenW.has(r.word)) { seenW.add(r.word); rows.push(r); }
+        }
+      }
+      for (const r of rows) {
+        const w = r.word.toLowerCase();
+        if (w.includes("-") || !accept.has(w) || !(Number(r.frq) > 0 || (r.tag || ""))) continue;
+        const gloss = ((r.pos ? r.pos + " " : "") + (r.translation.split("\\n")[0] || ""))
+          .replace(/\[[^\]]*\]/g, "").trim().slice(0, 40);
+        if (gloss) map.set(w, { word: w, gloss });
+      }
+    }
+    const family = [...map.values()].slice(0, 10);
+    // 近义词：同词性、频率带接近、中文释义匹配、排除否定释义与形态相近词（形态归同根）
+    let synonyms = [];
+    const row = this.user.prepare("SELECT translation, frq FROM dict.words WHERE word=?").get(low);
+    if (row && row.translation) {
+      const first = row.translation.split("\\n")[0];
+      const posMm = first.match(/^\s*([a-z]{1,6})\./i);
+      const posPrefix = posMm ? posMm[1] + "." : "";
+      const runs = (first.match(/[一-鿿]{2,6}/g) || []);
+      let headRun = "";
+      for (const rr of runs) { if (rr.length > headRun.length) headRun = rr; if (headRun.length >= 6) break; }
+      const rank = row.frq > 0 ? Number(row.frq) : 0;
+      if (headRun) {
+        const samePrefix = (w) => low.length >= 5
+          ? w.slice(0, 4) === low.slice(0, 4)
+          : w.slice(0, 3) === low.slice(0, 3);
+        let q = "SELECT word, translation FROM dict.words WHERE translation LIKE ? AND word<>? AND length(word)<=14 AND frq>0";
+        const args = ["%" + headRun + "%", low];
+        if (posPrefix) { q += " AND translation LIKE ?"; args.push(posPrefix + "%"); }
+        if (rank > 0) { q += " AND frq BETWEEN ? AND ?"; args.push(Math.max(1, Math.round(rank / 3)), Math.round(rank * 3)); }
+        q += " ORDER BY frq DESC LIMIT 40";
+        synonyms = this.user.prepare(q).all(...args)
+          .map((r2) => ({
+            word: r2.word,
+            gloss: (r2.translation.split("\\n")[0] || "").replace(/\[[^\]]*\]/g, "").slice(0, 36),
+            firstLine: r2.translation.split("\\n")[0] || "",
+          }))
+          .filter((s) => {
+            if (!s.gloss || s.word.includes("-") || samePrefix(s.word.toLowerCase())) return false;
+            const neg = /[不没无非反]/.test(s.gloss) && !/[不没无非反]/.test(first);
+            if (neg) return false;
+            // 义项段（逗号/顿号/分号切分）中必须有与 head 相等或仅差 1 字的段，拒绝“战争状态”式子串碰撞
+            const segs = s.firstLine.replace(/^\s*[a-z]{1,6}\./i, "").split(/[，,、；;]/).map((x) => x.trim()).filter(Boolean);
+            return segs.some((seg) => seg === headRun || (headRun.length >= 4 && seg.length <= headRun.length + 1 && seg.includes(headRun)));
+          })
+          .map(({ word, gloss }) => ({ word, gloss }))
+          .slice(0, 6);
+      }
+    }
+    return { family, synonyms };
+  }
+
+  // 四选一干扰项：同词性、频率带接近、排除近义泄漏（出现两个正确答案）与重复
+  meaningChoices(correct, lemma) {
+    const posOf = (gloss) => { const mm = /^\s*([a-z]{1,6})\./i.exec(gloss || ""); return mm ? mm[1].toLowerCase() : ""; };
+    const headOf = (gloss) => { const mm = (gloss || "").match(/[一-鿿]{2,6}/); return mm ? mm[0] : ""; };
+    const pos = posOf(correct);
+    const head = headOf(correct);
+    const selfRow = this.user.prepare("SELECT frq FROM dict.words WHERE word=?").get(lemma);
+    const baseFrq = selfRow && selfRow.frq ? Number(selfRow.frq) : 0;
+    const seen = new Set([correct]);
+    const picked = [];
+    const fill = (extraWhere, args) => {
+      const rows = this.user
+        .prepare(`SELECT translation FROM dict.words WHERE translation<>'' AND word<>? AND ${extraWhere} ORDER BY RANDOM() LIMIT 200`)
+        .all(lemma, ...args);
+      for (const x of rows) {
+        const g = x.translation.split("\\n")[0].trim();
+        if (!g || seen.has(g)) continue;
+        const gPos = posOf(g);
+        if (pos && gPos && gPos !== pos) continue;
+        const gh = headOf(g);
+        if (head && gh && (g.includes(head) || correct.includes(gh))) continue; // 近义/同义泄漏
+        seen.add(g); picked.push(g);
+        if (picked.length >= 3) break;
+      }
+    };
+    if (baseFrq > 0) fill("frq>0 AND frq BETWEEN ? AND ?", [Math.max(1, Math.round(baseFrq / 4)), Math.round(baseFrq * 4)]);
+    if (picked.length < 3) fill("frq>0", []);
+    if (picked.length < 3) fill("tag<>''", []);
+    if (picked.length < 3) fill("1=1", []);
+    const choices = [correct, ...picked.slice(0, 3)];
+    for (let i = choices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [choices[i], choices[j]] = [choices[j], choices[i]];
+    }
+    return choices;
+  }

@@ -1,0 +1,12 @@
+const { Core } = require("D:/vibe coding/英语学习/app-electron/core.cjs");
+const path = require("node:path");
+const fs = require("node:fs"), os = require("node:os");
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dbg-"));
+const core = new Core(dir);
+const s1 = core.convCreate({ goal: "a" });
+const s2 = core.convCreate({ goal: "b" });
+const s3 = core.convCreate({ goal: "c", suggestedTurns: 999 });
+const list = core.convList(20);
+console.log(list.map((x) => [x.id, x.title, x.startedAt]));
+console.log("ids", s1.id, s2.id, s3.id);
+fs.rmSync(dir, { recursive: true, force: true });

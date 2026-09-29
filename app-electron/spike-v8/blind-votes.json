@@ -1,0 +1,33 @@
+{
+  "reviewer": "assistant",
+  "votedAt": "2026-09-17",
+  "method": "v2 pack: A/B identity randomized per item; votes recorded before opening blind-key.json",
+  "scale": "A / B / tie, judged on fidelity (no dropped clauses, no degeneration, correct numbers/names) first, fluency second",
+  "votes": {
+    "item 1": "B",
+    "item 2": "A",
+    "item 3": "B",
+    "item 4": "A",
+    "item 5": "tie",
+    "item 6": "A",
+    "item 7": "A",
+    "item 8": "B",
+    "item 9": "B",
+    "item 10": "A",
+    "item 11": "B",
+    "item 12": "A",
+    "item 13": "B",
+    "item 14": "B",
+    "item 15": "tie",
+    "item 16": "A",
+    "item 17": "A",
+    "item 18": "B",
+    "item 19": "A",
+    "item 20": "A"
+  },
+  "notes": {
+    "item 7": "both mistranslate angiosperm; voted A for keeping insect larvae/crustaceans and 解说中心 correct",
+    "item 15": "tie: A more natural but writes 21亿 vs correct 20亿 in B",
+    "item 19": "A closer: does not insert 公司"
+  }
+}

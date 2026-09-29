@@ -1,0 +1,160 @@
+{
+  "version": "1.0.0",
+  "note": "S12 平行文本能力测评蓝图题库。冻结的是蓝图（CEFR/领域/长度/题型），不是具体文章；每份 form 是一篇未读过的同级平行文本，理解题随文附带。form 正文复用 data/builtins.cjs 中 builtin_id 对应条目，不重复存储。",
+  "blueprints": [
+    { "id": "b2-general", "cefr": "B2", "domain": "general", "name": "B2 综合理解（新闻/论述，约 320 词）", "recWpm": 80 },
+    { "id": "c1-academic", "cefr": "C1", "domain": "academic", "name": "C1 学术理解（研究/论文，约 300 词）", "recWpm": 70 }
+  ],
+  "forms": [
+    {
+      "id": "b2-repair", "blueprint": "b2-general", "builtin_id": "cet-repair",
+      "questions": [
+        { "q": "What is the passage mainly about?", "options": [
+          "Why coffee machines frequently break down",
+          "The debate over and development of the right to repair",
+          "How manufacturers produce longer-lasting batteries",
+          "Differences between repair shops across countries"], "answer": 1, "pi": -1 },
+        { "q": "According to supporters, which is a benefit of repairability?", "options": [
+          "It makes devices cheaper to manufacture",
+          "It adds more repair instructions to every manual",
+          "It reduces electronic waste and saves consumers money",
+          "It removes the need for product warranties"], "answer": 2, "pi": 1 },
+        { "q": "Which point is NOT raised by manufacturers as a concern?", "options": [
+          "An untrained repair attempt may cause fires or injuries",
+          "Public manuals could let competitors copy designs cheaply",
+          "Restricting firmware access protects security features",
+          "Repaired devices consume significantly more electricity"], "answer": 3, "pi": 2 },
+        { "q": "France's repairability score is mentioned as an example of what?", "options": [
+          "A law trying to balance consumers' and manufacturers' interests",
+          "A penalty applied to makers of unsafe products",
+          "Why spare parts must be kept for seven years",
+          "How consumers can open and fix machines by themselves"], "answer": 0, "pi": 3 }
+      ]
+    },
+    {
+      "id": "b2-bus", "blueprint": "b2-general", "builtin_id": "web-bus",
+      "questions": [
+        { "q": "According to the passage, why was the number 42 route restored?", "options": [
+          "It was extended to reach the central hospital",
+          "Night-shift workers had no reliable late-night alternative",
+          "Ride-hailing apps had become unsafe at night",
+          "Students demanded cheaper monthly ticketing"], "answer": 1, "pi": 1 },
+        { "q": "What did the simple \"arithmetic\" of cutting night buses hide?", "options": [
+          "That night operating costs were steadily falling",
+          "That metro carriages were overcrowded at midnight",
+          "An inequity between office workers and night-shift workers",
+          "The real number of tourists taking taxis"], "answer": 2, "pi": 1 },
+        { "q": "How do several cities fund their night services?", "options": [
+          "A small levy on late-opening bars and clubs",
+          "Higher prices on monthly travel passes",
+          "Fines collected from drunk drivers",
+          "Direct grants from local hospitals"], "answer": 0, "pi": 2 },
+        { "q": "What point does the cleaner make about the bus?", "options": [
+          "It is faster than the first metro service",
+          "It removes two unpaid hours from her working day",
+          "It lets her eat dinner before her shift",
+          "It will make headlines like a new metro line"], "answer": 1, "pi": 3 }
+      ]
+    },
+    {
+      "id": "b2-oral", "blueprint": "b2-general", "builtin_id": "cet-oral",
+      "questions": [
+        { "q": "Why did written tests largely replace oral examinations?", "options": [
+          "They were cheaper to grade and easier to standardise",
+          "Students did poorly in doctoral defences",
+          "Universities banned follow-up questions",
+          "Language classes asked for more writing"], "answer": 0, "pi": 0 },
+        { "q": "Why has generative artificial intelligence revived oral exams?", "options": [
+          "AI tools cannot write polished essays quickly",
+          "A take-home paper no longer proves its author understands the work",
+          "Students prefer being questioned by software",
+          "AI can grade spoken answers more fairly than humans"], "answer": 1, "pi": 1 },
+        { "q": "Which advantage of oral exams do early reports describe?", "options": [
+          "They are easy to fake with elegant phrasing",
+          "They reward genuine understanding and train speaking under pressure",
+          "One examiner can grade hundreds of students a day",
+          "Nervous speakers consistently earn higher marks"], "answer": 1, "pi": 2 },
+        { "q": "What fairness concern about oral exams is raised?", "options": [
+          "Written scripts take less time to grade",
+          "A nervous speaker or unfamiliar accent may bias results",
+          "Marking criteria cannot be released in advance",
+          "Whiteboard problems favour doctoral students"], "answer": 1, "pi": 3 }
+      ]
+    },
+    {
+      "id": "c1-green", "blueprint": "c1-academic", "builtin_id": "ielts-green",
+      "questions": [
+        { "q": "What does the growing body of research suggest about green space?", "options": [
+          "It is a luxury cities can afford only in good times",
+          "Its absence carries measurable health costs",
+          "It mainly benefits the wealthiest residents",
+          "It has no measurable effect on stress"], "answer": 1, "pi": 0 },
+        { "q": "What is the most consistent mental-health finding?", "options": [
+          "Only unemployed residents reported lower stress",
+          "Depression diagnoses increased near renovated parks",
+          "People near parks report less stress even after controlling for income",
+          "Social contact alone explains every measured benefit"], "answer": 2, "pi": 1 },
+        { "q": "How do critics respond to the heart-disease findings?", "options": [
+          "They are correlational, since wealthier areas have both parks and healthcare",
+          "Tree cover directly causes heart disease",
+          "Heat waves have no connection to mortality",
+          "Vegetation worsens local wind patterns"], "answer": 0, "pi": 2 },
+        { "q": "What does \"green gentrification\" refer to?", "options": [
+          "New parks tending to lower nearby property values",
+          "New parks pushing out the residents who most needed the benefits",
+          "Engineering problems that stop parks being built",
+          "Political questions that have no effect on access"], "answer": 1, "pi": 4 }
+      ]
+    },
+    {
+      "id": "c1-spacing", "blueprint": "c1-academic", "builtin_id": "pap-spacing",
+      "questions": [
+        { "q": "What central question does the study examine?", "options": [
+          "Whether optimal spacing intervals differ by learner proficiency",
+          "Why pseudo-words are easier to learn than real words",
+          "How Chinese-speaking learners teach vocabulary",
+          "Whether massed practice beats all schedules at one week"], "answer": 0, "pi": 0 },
+        { "q": "What did the results show?", "options": [
+          "The 3-day interval worked best for B1 learners, the 7-day for C1 learners",
+          "Massed conditions outperformed spaced conditions at four weeks",
+          "B1 and C1 learners performed identically in every condition",
+          "The 7-day condition was best for both proficiency groups"], "answer": 0, "pi": 1 },
+        { "q": "Why did the researchers use pseudo-words?", "options": [
+          "To make the task easier for B1 learners",
+          "To control for learners' prior exposure to the items",
+          "To reduce the number of participants required",
+          "To avoid pre-registering the analysis plan"], "answer": 1, "pi": 3 },
+        { "q": "What practical implication is suggested for scheduling software?", "options": [
+          "Uniform default intervals may be sub-optimal for advanced learners",
+          "Software should rely only on massed study sessions",
+          "Memory models predict no spacing effect at all",
+          "Advanced learners should be given shorter intervals than beginners"], "answer": 0, "pi": 1 }
+      ]
+    },
+    {
+      "id": "c1-heat", "blueprint": "c1-academic", "builtin_id": "pap-heat",
+      "questions": [
+        { "q": "What is the study's main finding?", "options": [
+          "The brightest streets were 0.6–1.1 °C warmer at 02:00",
+          "Lighting has no association with night temperature",
+          "Daytime maxima drive most heat-related mortality",
+          "Vegetation raises nighttime air temperatures"], "answer": 0, "pi": 0 },
+        { "q": "Which two mechanisms do the authors propose?", "options": [
+          "Luminaires release heat and bright surfaces delay radiative cooling",
+          "Traffic density raises the efficiency of luminaires",
+          "Buildings block satellite signals at night",
+          "Full-cutoff fixtures trap cool air at street level"], "answer": 0, "pi": 1 },
+        { "q": "What do the results suggest for policy?", "options": [
+          "After-midnight dimming achieved cooling with no measured rise in crime",
+          "Curfews caused a sharp increase in accidents",
+          "Cities should raise illumination above 80 lux",
+          "Dimming reliably increased crime records"], "answer": 0, "pi": 2 },
+        { "q": "Which limitation is acknowledged?", "options": [
+          "The cities share one climate zone and residual confounding remains",
+          "Satellite data measured indoor temperatures directly",
+          "Hot-arid cities had already been fully replicated",
+          "Energy records showed lighting consumed no power"], "answer": 0, "pi": 3 }
+      ]
+    }
+  ]
+}

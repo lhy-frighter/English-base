@@ -1,0 +1,13 @@
+const fs = require("fs");
+const cp = "D:/vibe coding/英语学习/app-electron/core.cjs";
+let s = fs.readFileSync(cp, "utf8");
+const badStart = '      const esc = String(word).replace(/[.*+?^${}()|[\\]\\\\]/g, "';
+const i = s.indexOf(badStart);
+if (i === -1) throw new Error("bad start not found");
+const endMarker = '    const seen = new Set();");';
+const j = s.indexOf(endMarker, i);
+if (j === -1) throw new Error("bad end not found");
+const good = '      const esc = String(word).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");';
+s = s.slice(0, i) + good + s.slice(j + endMarker.length);
+fs.writeFileSync(cp, s);
+console.log("repaired");

@@ -1,0 +1,110 @@
+{
+  "noiso": false,
+  "isolated": true,
+  "sab": true,
+  "heapBefore": 1,
+  "initMs": 220,
+  "heapAfterInit": 1,
+  "firstMs": 330,
+  "heapAfterFirst": 1,
+  "samples": [
+    {
+      "en": "A remarkably preserved fossil from northeastern Spain is giving scientists a rar",
+      "zh": "一种来自西班牙东北部的极为保存完好的化石,正让科学家们罕见地观察了生活在约1.25亿年前的古代鳄鱼亲属的皮肤、软组织以及可能的颜色。",
+      "npairs": 1
+    },
+    {
+      "en": "A century ago, the Pan-American road promised a new era of fraternity between th",
+      "zh": "一个世纪前,泛美之路承诺在两大洲之间开启一个兄弟情谊的新时代。 成功了吗?",
+      "npairs": 2
+    },
+    {
+      "en": "England’s tourist tax – level 2",
+      "zh": "英格兰旅游税——二级",
+      "npairs": 1
+    }
+  ],
+  "pairChecks": [
+    {
+      "npairs": 1,
+      "srcCover": true,
+      "tgtCover": true,
+      "srcLen": 210,
+      "origLen": 210,
+      "tgtLen": 66,
+      "zhLen": 66,
+      "tgtAllNonEmpty": true,
+      "samplePairs": [
+        {
+          "src": "A remarkably preserved fossil from northeastern Spain is giving scientists a rare look at the skin, soft tissues, and possible coloration of an ancient crocodile relative that lived about 125 million years ago.",
+          "tgt": "一种来自西班牙东北部的极为保存完好的化石,正让科学家们罕见地观察了生活在约1.25亿年前的古代鳄鱼亲属的皮肤、软组织以及可能的颜色。"
+        }
+      ]
+    },
+    {
+      "npairs": 2,
+      "srcCover": false,
+      "tgtCover": true,
+      "srcLen": 112,
+      "origLen": 113,
+      "tgtLen": 37,
+      "zhLen": 37,
+      "tgtAllNonEmpty": false,
+      "samplePairs": [
+        {
+          "src": "A century ago, the Pan-American road promised a new era of fraternity between the two continents.",
+          "tgt": "一个世纪前,泛美之路承诺在两大洲之间开启一个兄弟情谊的新时代。 成功了吗?"
+        },
+        {
+          "src": "Did it succeed?",
+          "tgt": ""
+        }
+      ]
+    },
+    {
+      "npairs": 1,
+      "srcCover": true,
+      "tgtCover": true,
+      "srcLen": 31,
+      "origLen": 31,
+      "tgtLen": 10,
+      "zhLen": 10,
+      "tgtAllNonEmpty": true,
+      "samplePairs": [
+        {
+          "src": "England’s tourist tax – level 2",
+          "tgt": "英格兰旅游税——二级"
+        }
+      ]
+    }
+  ],
+  "batch2": {
+    "n": 12,
+    "ms": 2274,
+    "words": 793,
+    "empty": 0,
+    "heap": 1
+  },
+  "heapAfter15": 1,
+  "heapAfterTerminate": 1,
+  "rss": {
+    "peakMb": 642,
+    "samples": [
+      632,
+      642,
+      106,
+      106,
+      106,
+      106,
+      106
+    ],
+    "stageMb": {
+      "isolated true": 89,
+      "init posted": 90,
+      "after-init": 201,
+      "after-first": 618,
+      "after-batch2": 643,
+      "after-terminate": 106
+    }
+  }
+}

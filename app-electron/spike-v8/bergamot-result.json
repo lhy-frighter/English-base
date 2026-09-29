@@ -1,0 +1,370 @@
+{
+  "engine": "@browsermt/bergamot-translator@0.4.9 + Firefox production en->zh base-memory (model 4e5accc1…)",
+  "startedAt": "2026-09-17T03:10:18.557Z",
+  "perf": {
+    "coldStartMs": 136,
+    "engineInitMs": 108,
+    "rssAfterLoadMb": 128.6,
+    "firstParagraphMs": 232,
+    "batch59Ms": 6097,
+    "newsinlevels": {
+      "paragraphs": 20,
+      "words": 394,
+      "ms": 933,
+      "wordsPerSec": 422.3
+    },
+    "sciencedaily": {
+      "paragraphs": 20,
+      "words": 749,
+      "ms": 2052,
+      "wordsPerSec": 365
+    },
+    "aeon": {
+      "paragraphs": 20,
+      "words": 2298,
+      "ms": 4623,
+      "wordsPerSec": 497.1
+    },
+    "rssPeakMb": 595.9
+  },
+  "fidelity": [
+    {
+      "check": "digits preserved (may be legitimately converted, e.g. million→亿)",
+      "srcNumbers": 53,
+      "digitRunsKept": 46
+    },
+    {
+      "check": "paragraphs containing quotes/apostrophes",
+      "count": 5
+    },
+    {
+      "check": "longest paragraph chars",
+      "enChars": 1116,
+      "id": "aeon-12"
+    },
+    {
+      "check": "embedded newline handling",
+      "src": "First line of a two-line sentence.\nSecond line continues the same thought.",
+      "zh": "一行两行句子。\n第二行延续了同样的想法。",
+      "zhHasNewline": true
+    },
+    {
+      "check": "empty translations",
+      "count": 0
+    },
+    {
+      "check": "zh-char/en-word ratio min/median/max",
+      "min": 1.36,
+      "median": 1.9,
+      "max": 3.56
+    }
+  ],
+  "outputs": [
+    {
+      "id": "sciencedaily-01",
+      "en": "A remarkably preserved fossil from northeastern Spain is giving scientists a rare look at the skin, soft tissues, and possible coloration of an ancient crocodile relative that lived about 125 million years ago.",
+      "zh": "来自西班牙东北部的一块保存极为完好的化石正让科学家们罕见地观察了生活在约1.25亿年前的古代鳄鱼亲属的皮肤、软组织以及可能的颜色。"
+    },
+    {
+      "id": "sciencedaily-02",
+      "en": "The new study, published in the Zoological Journal of the Linnean Society, provides the first detailed description of soft tissues preserved in Montsecosuchus depereti, a Lower Cretaceous crocodylomorph discovered at the Pedrera de Mei&agrave; site in the province of Lleida (Catalonia, Spain). By examining the fossil under ultraviolet light, researchers uncovered new evidence about its skin, sensory structures, respiratory anatomy, and possible color pattern. The work was led by the Institut Catal&agrave; de Paleontologia Miquel Crusafont.",
+      "zh": "这项新研究发表在《林尼学会动物学杂志》上,首次详细描述了位于西班牙加泰罗尼亚省利达省的下白垩纪鳄鱼科奇洛莫克(Montesecosuchus depereti)遗址。 通过在紫外线下检查化石,研究人员发现了有关其皮肤、感觉结构、呼吸结构以及可能的颜色图案的新证据。 该工作由加泰罗尼亚与农业研究所牵头;德帕隆托洛吉亚米克尔·克鲁萨丰特。"
+    },
+    {
+      "id": "sciencedaily-03",
+      "en": "Approximately 125 million years ago, a small crocodile died in a karstic lake close to the coast of what is now the Catalan Pre-Pyrenees. Its body settled into fine lake sediments, where unusually favorable conditions helped preserve it in exceptional detail. Over time, those sediments became the lithographic limestones of the Pedrera de Mei&agrave;, now part of the UNESCO Or&iacute;gens Global Geopark.",
+      "zh": "大约1.25亿年前,一只小鳄鱼在靠近现今加泰罗尼亚前比利牛斯山脉海岸的一处卡斯蒂克湖中死亡。 其身体沉入细状的湖泊沉积物中,当地异常有利的条件使其保存得极为详细。 随着时间的推移,这些沉积物成为了“梅草”的石版岩石灰岩,该石灰岩现属于联合国教科文组织或全球地质公园的一部分。"
+    },
+    {
+      "id": "sciencedaily-04",
+      "en": "The breakthrough came while paleontologists Oscar Castillo and Jes&uacute;s Serrano were building a database of fossils from the lithographic limestones of Montsec held in Catalan and European museums. When they examined the holotype of Montsecosuchus depereti under ultraviolet light, they noticed structures that appeared to be remnants of soft tissue.",
+      "zh": "这一突破是在古生物学家奥斯卡·卡斯蒂略和杰斯·阿库特·塞拉诺正在建立来自蒙特塞特石版石灰岩化石的数据库时,这些化石保存在加泰罗尼亚和欧洲的博物馆中。 当他们在紫外线下检查蒙特塞科苏赫迪佩雷蒂的全息型时,注意到这些结构似乎是软组织残留物。"
+    },
+    {
+      "id": "sciencedaily-05",
+      "en": "Ultraviolet light can cause fossilized tissues and the surrounding rock to respond differently, making otherwise invisible structures stand out.",
+      "zh": "紫外线会导致化石组织和周围岩石产生不同反应,从而使其他无形结构脱颖而出。"
+    },
+    {
+      "id": "sciencedaily-06",
+      "en": "Using this technique, the team documented several kinds of soft tissue, including epidermal scales. Although Montsecosuchus depereti has been known to science since the early 20th century, the new analysis provides the first detailed picture of what its skin looked like.",
+      "zh": "利用这种技术,研究团队记录了多种软组织,包括表皮鳞片。 尽管蒙特科苏库斯·德佩雷蒂自20世纪初以来一直被科学界所知,但这项新分析首次详细揭示了其皮肤的外貌。"
+    },
+    {
+      "id": "sciencedaily-07",
+      "en": "The scales varied considerably in shape and size across different parts of the body. The researchers also found that the animal lacked the high caudal fin seen in modern crocodiles.",
+      "zh": "鳞片在身体不同部位的形状和大小上差异很大。 研究人员还发现,这种动物缺乏现代鳄鱼身上可见的高烧鳍。"
+    },
+    {
+      "id": "sciencedaily-08",
+      "en": "In living crocodiles, similar sensory organs can detect touch and changes in water pressure, while also responding to temperature and chemical signals. In Montsecosuchus, these possible sensory structures appear only in small scales located around the edges of the body. That distribution could suggest that such organs first evolved in specific localized areas before becoming more widespread across the skin in later crocodylomorph lineages.",
+      "zh": "在活鳄鱼中,类似的感觉器官能够感知触觉和水压变化,同时还能响应温度和化学信号。 在蒙特塞科苏斯,这些可能的感官结构仅出现在位于身体边缘周围的小尺度上。 这种分布可能表明,此类器官最初在特定局部区域进化,之后在后来的鳄鱼皮谱系中在皮肤上变得更加广泛。"
+    },
+    {
+      "id": "sciencedaily-09",
+      "en": "The ultraviolet analysis also exposed cartilaginous structures in the chest. These features indicate that Montsecosuchus already possessed an efficient respiratory system that shared certain similarities with those of modern crocodiles.",
+      "zh": "紫外线分析还暴露了胸部的软骨结构。 这些特征表明,蒙特塞科苏斯已经拥有一种高效的呼吸系统,与现代鳄鱼的呼吸系统存在一定的相似之处。"
+    },
+    {
+      "id": "sciencedaily-10",
+      "en": "\"These traits indicate that, despite being a primitive animal, it was already very well adapted to a semi-aquatic lifestyle,\" concludes Castillo-Visa.",
+      "zh": "这些特征表明,尽管它是一种原始动物,但已经很好地适应了半水族的生活方式,”卡斯蒂略-维萨总结道。"
+    },
+    {
+      "id": "sciencedaily-11",
+      "en": "Perhaps the most striking discovery involves the animal's tail.",
+      "zh": "也许最引人注目的发现是动物的尾巴。"
+    },
+    {
+      "id": "sciencedaily-12",
+      "en": "Under ultraviolet light, some scales in the caudal region show alternating light and dark bands running across the tail. Researchers interpret these bands as possible evidence of the animal's original coloration.",
+      "zh": "在紫外线照射下,尾部区域的一些鳞片呈现出交替的光和暗带。 研究人员将这些带状物解读为动物原始颜色的可能证据。"
+    },
+    {
+      "id": "sciencedaily-13",
+      "en": "Scientists cannot yet determine the exact colors that produced the pattern.",
+      "zh": "科学家们还无法确定产生这种图案的具体颜色。"
+    },
+    {
+      "id": "sciencedaily-14",
+      "en": "\"At the moment we cannot say for sure what color the crocodile's tail was, but it would be expected that it was not so different from current species, which also show different coloration patterns,\" explains Albert G. Sell&eacute;s, co-author of the article.",
+      "zh": "目前我们无法确定鳄鱼尾巴的颜色,但预计它与目前的物种没有太大差异,因为这些物种也呈现出不同的颜色模式。 塞尔和德奎特,该文章的合著者。"
+    },
+    {
+      "id": "sciencedaily-15",
+      "en": "In addition to Oscar Castillo-Visa and Albert G. Sell&eacute;s, &Agrave;ngel Galobart (Institut Catal&agrave; de Paleontologia Miquel Crusafont and director of the Conca-Dell&agrave; Museum) and Phil Bell from the University of New England participated in the research.",
+      "zh": "除了奥斯卡·卡斯蒂略-维萨和阿尔伯特·G之外。 Sell&eacute;&Agrave;Engel Galobart(加泰罗尼亚与农业研究所;德帕隆托洛吉亚米克尔·克鲁萨丰特,以及康卡-戴尔格拉夫博物馆馆长)和菲尔·贝尔(来自新英格兰大学)参与了这项研究。"
+    },
+    {
+      "id": "sciencedaily-16",
+      "en": "The research has been mainly funded by the VEBPI, PLEC2021-007903, and ARQ001SOL-173-2022 projects, with support from the Ministry of Science, Innovation and Universities, the NextGenerationEU/PRTR program, the Department of Culture of the Generalitat de Catalunya, and the CERCA program.",
+      "zh": "该研究主要由VEBPI、PLEC2021-00793和ARQ001SOL-173-2022项目资助,并得到了科学、创新和大学部、NextGenerationEU/PRTR项目、加泰罗尼亚文化部以及CERCA项目的支持。"
+    },
+    {
+      "id": "sciencedaily-17",
+      "en": "The Pedrera de Mei&agrave; is considered a Konservat-Lagerst&auml;tte, a term used for fossil sites with extraordinary preservation. At such locations, fossils may retain not only bones and other hard tissues, but also delicate soft structures that are usually lost during fossilization.",
+      "zh": "佩德雷拉-德梅加雷韦被认为是一个康瑟德-拉格斯特-奥姆勒,一个用于保存量极高的化石遗址的术语。 在这些地方,化石不仅可能保留骨骼和其他硬质组织,还可能保留在化石化过程中通常丢失的细腻软结构。"
+    },
+    {
+      "id": "sciencedaily-18",
+      "en": "That exceptional preservation has made Pedrera de Mei&agrave; an important site for studying Lower Cretaceous fish, amphibians, reptiles, and plants. More than 8,000 fossil specimens have been recovered there so far.",
+      "zh": "这种卓越的保存使得佩德雷拉·德梅和古雷韦成为研究下白癜风鱼类、两栖动物、爬行动物和植物的重要场所。 截至目前,已在那里发现了8000多件化石标本。"
+    },
+    {
+      "id": "sciencedaily-19",
+      "en": "The fossil record includes spiders, flies, wasps or beetles, insect larvae, crustaceans, vertebrates such as fish and amphibians, and a remarkable diversity of plants. Among them is Montsechia, the first known angiosperm in the world. The center is also part of the \"Dinosaurs of the Pyrenees\" project, a network of museums and interpretation centers showcasing the rich paleontological record of the Catalan Pyrenees.",
+      "zh": "化石记录包括蜘蛛、苍蝇、黄蜂或甲虫、昆虫幼虫、甲壳类动物、鱼类和两栖动物等脊椎动物,以及植物的显著多样性。 其中包括蒙特塞西亚,这是世界上首例已知的血管精子。 该中心也是“比利牛斯山脉恐龙”项目的一部分,该项目由博物馆和解说中心组成,展示加泰罗尼亚比利牛斯山脉丰富的古古生物学历史。"
+    },
+    {
+      "id": "sciencedaily-20",
+      "en": "Materials provided by Institute of Industrial Science, The University of Tokyo. Note: Content may be edited for style and length.",
+      "zh": "材料由东京大学工业科学研究所提供。 注意:内容可能会根据样式和长度进行编辑。"
+    },
+    {
+      "id": "aeon-01",
+      "en": "A century ago, the Pan-American road promised a new era of fraternity between the two continents. Did it succeed?",
+      "zh": "一个世纪前,泛美之路承诺在两大洲之间开启一个兄弟情谊的新时代。 成功了吗?"
+    },
+    {
+      "id": "aeon-02",
+      "en": "Leônidas Borges de Oliveira drove the first 300 miles of the world’s longest road trip alone. The date of his departure, in early 1928, meant that the young Brazilian army officer also had the road almost entirely to himself. This gave him time to think about what he had taken on. The vehicle beneath him, a donated Ford Model T with a decade of delivering newspapers on the odometer, chattered with ease over alternating segments of fresh gravel and steaming asphalt that constituted Brazil’s new highway, connecting Rio de Janeiro with São Paulo. On both sides of the road, Oliveira surveyed the deforested Paraíba Valley, which had hosted the world’s first coffee boom – ranks of bean-fruiting bushes whose product had reached global markets in 60-kilo sacks on the backs of mules. Oliveira was among the first to see his nation at highway speed, and velocity could make the eroded landscapes of the past feel irrelevant. He believed he was chasing the future.",
+      "zh": "莱尼达斯·博尔赫斯·德·奥利维拉独自驾驶了世界上最长公路旅行的首公里300英里。 他于1928年初离开,这意味着这位年轻的巴西军官几乎完全只能靠自己。 这让他有时间思考自己所接受的一切。 他身下的车辆是一辆捐赠的福特T型车,其十年间一直在里程表上运送报纸,他轻松地在巴西新高速公路、连接里约热内卢与圣保罗的新路段,交替地翻找着新鲜碎石和蒸汽沥青路段。 在道路两侧,奥利维拉对被砍伐的帕拉伊巴山谷进行了调查,该山谷曾举办过全球首个咖啡热潮——众多含豆类的灌木,其产品以60千匹腿的骡子皮袋进入全球市场。 奥利维拉是最早以高速行驶的国家之一,而速度可能使过去被侵蚀的风景感觉无关紧要。 他相信自己是在追逐未来。"
+    },
+    {
+      "id": "aeon-03",
+      "en": "His compatriots shared his optimism. With shining medals around his neck and a new Swiss chronograph on his wrist, Oliveira departed from Rio to the fanfare of two brass bands and a flourish of civic oratory. He arrived in São Paulo to cheering crowds and a press corps keen to follow his automotive exploits. Oliveira’s rapid progress on this first leg, not to mention his countrymen’s enthusiastic support, fortified his resolve to push on to his final destination: the United States’ capital at Washington, DC.",
+      "zh": "他的同胞们都认同他的乐观态度。 奥利维拉脖子上印有闪亮的勋章,手腕上印着一张崭新的瑞士计时码表,他从里约出发,大张扬了两支铜管乐队,并盛大了民间演讲。 他抵达圣保罗,为人群和一支热衷于关注其汽车事业的记者团欢呼。 奥利维拉在首站的快速进展,更不用说他同胞们的热情支持,这坚定了他迈向最终目的地的决心:美国首都华盛顿特区。"
+    },
+    {
+      "id": "aeon-04",
+      "en": "Oliveira’s inspiration to make the long drive sprang from a novel idea, first proposed in 1923: the construction of an automotive highway that would link up the Western Hemisphere with a long ribbon of asphalt. Nobody knew exactly where the proposal had originated, and some official reactions in Latin America were tepid, but the popular response revealed an accelerating enthusiasm, and auto makers moved to capitalise on it. In 1924, the US Department of Commerce, which was headed by former auto executives, welcomed delegates from 19 Latin American nations to the largest promotional junket the US had organised to date, including a greeting at the White House by President Calvin Coolidge and a month-long highway tour that circled from New York to North Carolina and Minnesota to Michigan. The objective was to promote what Americans were calling a ‘Highway of Friendship’ – a Pan-American road, from the northern reaches of Alaska to the tip of Tierra del Fuego, over which they hoped to see unfettered automotive travel and the emergence of stronger hemispheric cultural bonds.",
+      "zh": "奥利维拉的灵感源自一个新颖的构想,最初提出于1923年:修建一条汽车高速公路,将西半球与一条长长的沥青带连接起来。 没有人知道该提案究竟起源于何处,而拉丁美洲的一些官方反应较为悲观,但这一普遍反应却显示出日益高涨的热情,而汽车制造商则开始利用这一优势。 1924年,由前汽车企业高管领导的美国商务部欢迎了来自19个拉丁美洲国家的代表,他们参加了美国迄今为止举办的规模最大的宣传活动,包括总统卡尔文·柯立芝在白宫举行的一场问候,以及从纽约到北卡罗来纳州、从明尼苏达州到密歇根州为期一个月的公路巡访。 目的是推广美国人所称的“友谊之路”——一条泛美之路,从阿拉斯加北部到火地岛的顶端,他们希望借此实现无拘无束的汽车旅行,并形成更紧密的半球文化纽带。"
+    },
+    {
+      "id": "aeon-05",
+      "en": "What Oliveira ultimately wanted was an authentic Pan-American Union, two continents without passports, without customs, and without official barriers at the hemispheres’ many successive borders. Nearly a century later, the fraternal ideals that underpinned this dream and gave birth to the Pan-American Highway might appear unimaginably distant, subverted by nativist sentiment – but, in fact, remain alive in one of the two continents the road was supposed to link.",
+      "zh": "奥利维拉最终想要的是一个正宗的泛美联盟,两大洲没有护照,没有海关,且在西半球多条连续边界上没有官方壁垒。 近一个世纪后,支撑这一梦想并催生泛美公路的兄弟般理想,可能显得难以想象地遥远,被本土主义情绪所颠覆——但实际上,这条道路本应连接的两大洲之一,依然依然充满活力。"
+    },
+    {
+      "id": "aeon-06",
+      "en": "First, Oliveira had to prove it could be done. A few dozen had tried to reach the US before him. In fact, the first to road-test potential routes for such a highway were not American drivers in new American cars but Argentines and Brazilians piloting either luxury European sedans entirely inappropriate to the terrain or topless American jalopies of dubious reliability. Nobody had succeeded in – or even committed to, as Oliveira had – driving the entire expedition without a detour, that is, on the actual ground without placing one’s vehicle on the afterdeck of a ship or on a railroad flatcar to surpass a series of known, impenetrable topographies. Everyone told him, and kept telling him all along his route, that what he proposed was impossible. Brazilian highway officials doubted he would get out of Brazil.",
+      "zh": "首先,奥利维拉必须证明这是可以做到的。 有几十人曾试图在他面前进入美国。 事实上,首批对此类高速公路可能路线进行路测的不是美国新车司机,而是阿根廷和巴西人,他们驾驶的是完全不适合地形的豪华欧洲轿车,或是可靠性可疑的无上衣美国军犬。 没有人像奥利维拉那样成功——甚至承诺——在实际地面上驾驶整个探险队时,没有将车辆放在船后甲板上,也没有乘坐铁路平板车,以超越一系列已知且无法穿透的地形。 大家都告诉他,并一直告诉他,他提出的是不可能的。 巴西公路官员怀疑他是否会离开巴西。"
+    },
+    {
+      "id": "aeon-07",
+      "en": "Oliveira’s convictions kept him and two later companions at their task, plodding north, year after year. At every opportunity, he spoke with energy about the dreams surrounding the construction of a highway connecting the continents, of an imminent hemispheric fraternity, and his remarks were published approvingly in papers in every nation he passed through. At his arrival in Washington, however, US officials insisted that what he claimed to have done was impossible. Most were considerate enough not to say it to his face, and he had the honour of meeting President Franklin Roosevelt and speaking to a large audience at the Pan-American Union building. But almost nobody believed Oliveira’s claims. Engineers from the US Bureau of Public Roads had struggled to walk segments of the route, let alone motor along it. And they rejected his maps, which they described as not inaccurate but belated. The Americans had already projected the official route through spaces their surveyors had not yet dared to go.",
+      "zh": "奥利维拉的定罪使他和两名后来的同伴得以顺利完成任务,年复一年地向北挣扎。 每一次机会,他都以充沛的精力畅所擒,谈到了连接各大洲的高速公路、即将建立的半球兄弟会的构想,他的言论在他所经历的每个国家的论文中均以赞许的语调发表。 然而,在他抵达华盛顿时,美国官员坚称他声称所做的事是不可能的。 大多数人体谅不当当面说出来,他有幸在泛美联盟大楼会见了富兰克林·罗斯福总统,并向广大听众发表了讲话。 但几乎没人相信奥利维拉的说法。 美国公共道路管理局的工程师们一直难以在路线的各个部分行走,更不用说沿途行驶了。 他们拒绝了他的地图,称这些地图并非不准确,但已落幕。 美国人已经通过他们的测量员尚未敢去的空间投射了官方路线。"
+    },
+    {
+      "id": "aeon-08",
+      "en": "Where the road ran out, his men disassembled their vehicles, packed the components onto mules, and marched them on foot",
+      "zh": "路面冲出时,他的部下拆散了车辆,将零件装在骡子上,然后徒步行进"
+    },
+    {
+      "id": "aeon-09",
+      "en": "Oliveira and his team with Augusto Sandino. From the book O Brasil através das três Américas by José Roberto Faraco Braga",
+      "zh": "奥利维拉和他的团队与奥古斯托·桑迪诺在一起。 摘自何塞·罗伯托·法拉科·布拉加的《巴西奥拉维什·达斯特里卡斯》一书"
+    },
+    {
+      "id": "aeon-10",
+      "en": "In truth, Oliveira didn’t literally drive on four tyres over the entire route, though he cut no geographic corners. Where the road ran out or became too steep or narrow, his men disassembled their vehicles (he now had two Model Ts), packed the components onto mules, like sacks of coffee, and marched them on foot until the terrain again became drivable. As further proof, every step of the way, Oliveira’s maps detailed his progress, and he gifted copies of his charts to any state or national government that would receive them.",
+      "zh": "事实上,奥利维拉并非在整个路线上驾驶四个轮胎,但他并未在地理上划过弯路。 道路因道路过于陡峭或狭窄而无法通行,他的部下便拆解了车辆(现在有两辆T型车),将零件装在骡子上,像一袋咖啡一样,徒步行进,直到地形再次变得可驾驶。 进一步证明,奥利维拉的地图每一步都详细描述了他的进展,并将他的图表副本赠予任何获得这些图表的州或国家政府。"
+    },
+    {
+      "id": "aeon-11",
+      "en": "The Pan-American Highway that Oliveira hoped to pioneer was indeed born in a burst of fraternal rhetoric. Officially, however, the road was never just about driving a car from Patagonia to Alaska, or vice versa, for the mere amusement of tourists. It was to be a modern network connecting every national capital, from Ottawa and Washington to Santiago and Buenos Aires. And this was to be only a beginning. The network was to then expand until it reached every province and shore, facilitating trade and resource extraction, breaking down old stereotypes and softening contested borders in friendly cultural exchanges. The ideals remained potent for half a century, and in 1966 the US declared the entire US interstate system part of the Pan-American Highway network.",
+      "zh": "奥利维拉希望开创的泛美公路确实诞生于一场兄弟般的言辞热潮中。 然而,这条路并非仅仅为了吸引游客而驾车从巴塔哥尼亚前往阿拉斯加,反之亦然。 这是一个现代化的网络,连接着从渥太华和华盛顿到圣地亚哥和布宜诺斯艾利斯的每个国家首都。 这仅仅是个开始。 该网络随后将扩展至各个省份和沿岸地区,促进贸易和资源开采,打破陈旧的刻板印象,并在友好的文化交流中软化有争议的边界。 半个世纪以来,这一理念一直很强烈,1966年,美国宣布整个美国州际体系为泛美公路网络的一部分。"
+    },
+    {
+      "id": "aeon-12",
+      "en": "In a strictly material sense, this greater project has been a remarkable success, millions of miles of functional automobile paths that have revolutionised movement and left few spaces inaccessible to wheels. By 1915, the US paved a road from Canada to Mexico. In 1917, Peru pushed its first highway into the Amazon Basin. Already by 1925, Venezuelans could drive over the Andes in comfort, and from 1931 Cubans could motor the full length of their island. The US built a primitive road across Canada to Alaska in 1942, during the war, and Mexican contractors reached Guatemala in 1950. The overall progress was extraordinary. Ironically, however, the key link in the system through Central America, over which the US took control and about which there was incomparable publicity, was the slowest to advance. Not till 1962 did the US-built highway reach Panama City. And not far beyond the Panama Canal, the road came to a sudden halt at the boundary of an almost mythical space between Panama and Colombia known from 1955 as the Darién Gap. Since about 1980, not a single mile of progress has been made to close it.",
+      "zh": "从本质上讲,这一更大的项目取得了显著成功,数百万英里的实用汽车道路彻底改变了汽车运动,导致车轮无法进入的空间也寥寥无几。 到1915年,美国铺设了一条从加拿大到墨西哥的道路。 1917年,秘鲁将第一条高速公路推入亚马孙盆地。 到1925年,委内瑞拉人可以舒适地驾车穿越安第斯山脉,而从1931年起,古巴人便可以驾驶他们岛屿的全长汽车。 1942年战争期间,美国修建了一条穿越加拿大至阿拉斯加的原始道路,而墨西哥的承包商则于1950年抵达危地马拉。 整体进展非同寻常。 然而具有讽刺意味的是,美国掌控的、宣传不可比的中美洲体系的关键环节,是推进速度最慢的。 直到1962年,美国修建的高速公路才抵达巴拿马城。 在巴拿马运河之外不远处,这条公路突然停在了巴拿马与哥伦比亚之间一个几乎神话般的空间边界,该地被称为达里恩峡谷。 自1980年左右以来,几乎没有一英里的进展来关闭它。"
+    },
+    {
+      "id": "aeon-13",
+      "en": "And just as Oliveira’s trip did not end in increased American brotherhood, the Pan-American Highway would harden national borders almost everywhere it went, rather than open them. If getting from one border to the next became increasingly easy, at the borders themselves, the road’s arrival threw up political, cultural and material barriers – walls, fences and even the Darién Gap itself, which at first was a geographical barrier universally condemned. By the late-1970s, the Gap came to be embraced as a permanent fixture by Panamanian officials, US diplomats and international environmentalists. The best current explanation for the highway’s unfinished status, the reason that Panama and Colombia are the only two bordering nations on Earth without an automotive connection of even the most rudimentary kind, is that Panama refuses to build a road they believe would serve as a superhighway for Colombian immigrants. The Gap is their border wall.",
+      "zh": "正如奥利维拉的行程并未以增强美国兄弟情谊而告终,泛美公路几乎会在其所走的任何地方加强国界,而不是开放国界。 如果从一条边界到另一条边界变得越来越容易,那么在边境本身,这条路的到来就会引发政治、文化和物质障碍——包括围墙、围栏,甚至达里昂峡谷本身,而达里安盖本身起初却遭到普遍谴责。 到20世纪70年代末,巴拿马官员、美国外交官和国际环保人士开始将“差距”视为永久性议题。 目前对这条高速公路未完工状况的最佳解释,即巴拿马和哥伦比亚是地球上仅有的两个没有汽车连接的国家,即便是最原始的国家也未能实现发展,巴拿马拒绝修建一条他们认为能作为哥伦比亚移民高速公路的高速公路。 鸿沟是他们的边境墙。"
+    },
+    {
+      "id": "aeon-14",
+      "en": "Popular attitudes toward immigrants had fluctuated with economic conditions but, for decades, flaring anti-immigrant sentiment had had little effect on general policy. True, the US barred the entry of prostitutes in 1875, convicts and the insane in 1882, and polygamists in 1891, but other than the 1882 blanket ban on Chinese nationals, most legislation had rather narrow targets against individuals defined as undesirables. Otherwise, the doors were mostly open. Policies, however, changed abruptly in the 1920s, and the highway’s promotion had some impact on the reversal. The same year that Coolidge spoke in favour of building the highway, he also declared that ‘America must be kept American,’ and US Congress passed the broadly restrictive Johnson-Reed Act, whose discriminatory quotas reduced immigrant arrivals by a harsh 80 per cent. Latin Americans were not included in the act, but already by 1929 the US began detaining and repatriating individuals of Mexican descent, some of whom had been born in the US.",
+      "zh": "人们对移民的态度因经济状况而波动,但几十年来,反移民情绪的高涨对总体政策几乎没有产生影响。 诚然,美国在1875年禁止了妓女入境、1882年禁止了罪犯和疯子入境,1891年禁止了一夫多妻制,但除了1882年针对中国公民的全面禁令外,大多数立法针对被界定为不受欢迎的人的目标相当狭窄。 否则,门大部分都是开着的。 然而,政策在20世纪20年代突然发生了变化,高速公路的推广也在一定程度上影响了这一逆转。 同年,柯立芝曾表态支持修建高速公路,同时他也宣称“美国必须被保留为美国人”,美国国会也通过了《约翰逊-里德法案》,该法案的歧视性配额使移民入境人数减少了80%。 拉丁美洲人并未被纳入该法案,但到1929年,美国已开始拘留和遣返墨西哥裔人士,其中一些人出生在美国。"
+    },
+    {
+      "id": "aeon-15",
+      "en": "The barriers to migration were national, ethnic and racial, created to turn back the poor and car-less",
+      "zh": "移民的障碍是民族、民族和种族,旨在使穷人和无家可归者陷入困境"
+    },
+    {
+      "id": "aeon-16",
+      "en": "Significantly, restrictions on entry did not apply to tourists. Nor to adventurers. At the time of Oliveira’s drive, one could still cross borders without being aware of them but, increasingly, legal admittance to a nation required both passports and visas, and the red tape could be thick. Still, Oliveira found no insurmountable official barriers to his expedition’s actual progress. Indeed, the best way to identify yourself as a safe holidaymaker, or a legitimate explorer – someone who posed little threat of overstaying one’s welcome – was to arrive at the border by car. The automobile signalled one’s status and, if passage by car was fast on the highway, entry was almost certain – if not quick and painless – once at the border.",
+      "zh": "对游客入境的限制明显不适用。 对冒险者而言也是如此。 在奥利维拉开车时,人们仍可能在不了解边境的情况下越境,但越来越多的合法入境国家需要护照和签证,而繁文缛节可能十分繁琐。 尽管如此,奥利维拉并未发现其探险队实际进展存在无法逾越的官方障碍。 事实上,让自己成为安全的度假者或合法探险家——一个几乎不可能过于享受宾客欢迎的人——最好的方式就是开车抵达边境。 汽车发出信号,表明其状态,如果在高速公路上乘车通行很快,那么一旦进入边境,就几乎可以确定——即使不是快速且无痛的。"
+    },
+    {
+      "id": "aeon-17",
+      "en": "So those who took to the road in their millions didn’t come in cars with sunglasses on their noses. Rather, they sought new homes far from the places of their chance births. The majority moved on foot from rural areas to the largest cities in their own nations, the great urban migration that began in the 1930s, explained in part by new industrial jobs but greatly facilitated by new roads. Others went greater distances to settle in neighbouring nations: Colombians to Panama City; Nicaraguans to San José; Paraguayans and Bolivians to Buenos Aires. The most adventurous made the long trip to the US. While the highway made movement overland for migrants on foot substantially easier, once they arrived at a border, they typically came up against formidable legal obstacles. Even if they had secured the proper papers, they might be rejected because, without cars, they were identified as poor migrants. The administrative barriers to migration were national, ethnic and racial in character but, most specifically, they were created to turn back the poor and car-less.",
+      "zh": "因此,那些数百万次上路的人,并没有带着戴太阳镜的车来。 相反,他们在离出生机会的地方很远的地方,却在附近寻找新家。 大多数人从农村地区徒步前往本国最大的城市,这些城市移民始于20世纪30年代,部分得益于新的工业工作岗位,但新道路却极大地促进了这一发展。 其他人则长途跋涉前往邻国定居:前往巴拿马城,前往尼加拉瓜至圣何塞;巴拉圭人和玻利维亚人前往布宜诺斯艾利斯。 最冒险的是长途旅行去美国。 尽管高速公路让徒步出行的移民更容易上岸,但一旦他们抵达边境,通常会遇到巨大的法律障碍。 即使他们已经获得了适当的证件,也可能被拒绝,因为没有汽车,他们被认定为贫困移民。 移民的行政障碍具有民族、民族和种族性质,但最具体地说,是为了让穷人和无车者重新陷入倒退。"
+    },
+    {
+      "id": "aeon-18",
+      "en": "Hence, migrants circumvented officials by crossing borders where there were no roads. Nicaraguans arrived within view of Costa Rica on chartered buses that left them on a lonely highway that paralleled the border. Under the cover of night, they walked into Costa Rica where another bus picked them up and dropped them in San José the same day. Migrants moving north through Guatemala avoided the Mexican immigration office on the bridge over the Suchiate River, crossing the same on rubber rafts for a small fee, often within sight of authorities. To get across the US border, there were dozens of ways to get around official barriers, most of them now facilitated by Mexican cartels.",
+      "zh": "因此,移民通过越过没有道路的边境,绕过了官员。 尼加拉瓜人乘坐包车抵达哥斯达黎加,乘坐包车抵达边境的一条孤零零的高速公路上。 夜幕之下,他们走进哥斯达黎加,另一辆公交车接上他们,当天就把它们送到圣何塞。 移民在危地马拉向北迁徙时,避开了位于苏基亚特河大桥上的墨西哥移民局,乘坐橡皮筏穿越边境,费用微薄,通常在当局视线范围内。 跨越美国边境,有数十种途径可以避开官方壁垒,其中大多数现在由墨西哥贩毒集团协助实施。"
+    },
+    {
+      "id": "aeon-19",
+      "en": "Important elements of the highway’s original ideals have endured even in the face of the dominant, contrary trends in immigration policy. Strikingly, beginning in 2010, nations in South America that in the past had been at war, often over the very boundaries that separated them, states whose individuals still retain an often palpable dislike for one another, came together to agree that, for the purposes of immigration, their borders would essentially cease to exist. Agreements strove to recharacterise immigration as a solution rather than a problem: the free movement of people was likely to decrease national tensions, enhance labour allocation, and recognise migrants’ basic human dignity by eliminating discrimination in work, healthcare and civil rights. While the EU seemed to be suffering setbacks, such as the loss of the UK, South America quickly gained an almost universal adherence.",
+      "zh": "尽管在移民政策中具有主导性且具有反常趋势,但该高速公路原有理念的重要部分也已经受住了考验。 引人注目的是,从2010年开始,南美洲那些过去曾处于战争状态的国家,常常处于分隔于两地的界限上。这些国家的个人仍然对彼此怀有明显的厌恶,因此他们一致认为,就移民而言,他们的边境基本上将不复存在。 协议旨在将移民重新定性为一种解决方案而非问题:人员自由流动可能会降低国家紧张局势,增强劳动力分配,并通过消除工作、医疗和公民权利方面的歧视来承认移民的基本人格尊严。 尽管欧盟似乎正遭受挫折,例如英国的落败,但南美洲却迅速获得了近乎普遍的遵守。"
+    },
+    {
+      "id": "aeon-20",
+      "en": "In 1932, the Darién Gap was wider than it is today, and it was the only place that Oliveira was forced to backtrack. He attempted to drive it even though the Colombian military had told him it was impossible. Broad swamps and malarial fevers forced the Brazilians to place their disassembled Fords on the deck of a boat for the first and only time. Oliveira, who might be in the running for the most optimistic person to have ever lived, opined that the Pan-American Highway would never be built overland though the Gap. The topography, he believed, was just too difficult. On that point, he was wrong. Humans have built roads through, over, and under terrain far more difficult than the Gap: Mexico’s Durango to Mazatlán Highway conquers the Sierra Madre with 63 tunnels and 115 bridges, one of them 400 metres high; the Faroese have tunnelled 600 feet below the Atlantic Ocean to connect their remote islands, one segment of which includes the world’s first subseafloor roundabout.",
+      "zh": "1932年,达里恩峡谷比今天更宽,也是奥利维拉被迫回溯的唯一地方。 他试图驾驶它,尽管哥伦比亚军方告诉他这是不可能的。 广阔的沼泽和疟疾的发热迫使巴西人首次且唯一一次将拆解的福特汽车放在船甲板上。 奥利维拉可能正在竞选有史以来最乐观的人,他认为泛美公路即使在“盖”之下也永远不会在陆路修建。 他认为,地形太难了。 那一点上,他错了。 人类修建的道路经过、穿越、穿越并在地段下比“盖普”公路难得多:墨西哥的杜朗戈至马萨特兰公路拥有63条隧道和115座桥梁,其中一座高400米;法罗群岛在大西洋以下600英尺处隧道,连接其偏远岛屿,其中一段路段包括世界上首个海底环岛。"
+    },
+    {
+      "id": "newsinlevels-01",
+      "en": "England’s tourist tax – level 2",
+      "zh": "英格兰旅游税——二级"
+    },
+    {
+      "id": "newsinlevels-02",
+      "en": "England will soon allow local mayors to charge a tourist tax on overnight hotel stays.",
+      "zh": "英格兰将很快允许当地市长对过夜酒店住宿征收旅游税。"
+    },
+    {
+      "id": "newsinlevels-03",
+      "en": "Cities like Manchester, which charges 1 pound (1.14 euros) per room, and Edinburgh already use similar fees. The new tax will likely start before 2029. Many businesses in the tourism industry are unhappy about the new tax. They worry that visitors will choose other places to travel to avoid paying extra fees, which could lead to a 1.8 billion pound (2.1 billion euros) loss in tourism spending. Studies show that many tourists might stay fewer nights or spend less money.",
+      "zh": "像曼彻斯特这样的城市,每房收费1英镑(1.14欧元),爱丁堡市也已使用类似的费用。 新税种可能在2029年之前开始。 旅游业中的许多企业对新税负感到不满。 他们担心游客会选择其他旅游地点,以避免支付额外费用,这可能导致旅游支出损失18亿英镑(21亿欧元)。 研究表明,许多游客可能少住一晚或花钱少。"
+    },
+    {
+      "id": "newsinlevels-04",
+      "en": "Difficult words: mayor (an elected leader of a city or town government), likely (expected to happen or very probable), avoid (to stay away from a person, place, or situation).",
+      "zh": "难言之词:市长(一位民选的市政府或市政府领导人),很可能(预计会发生或非常可能),避免(远离个人、地点或情况)。"
+    },
+    {
+      "id": "newsinlevels-05",
+      "en": "Which types of places to stay will the tax cover, and what maximum percentage of the total room bill do most mayors plan to set?",
+      "zh": "税收将涵盖哪些类型的住宿地点?大多数市长计划设定的总房票中最大比例是多少?"
+    },
+    {
+      "id": "newsinlevels-06",
+      "en": "News in Levels is designed to teach you 3000 words in English. Please follow the instructions",
+      "zh": "新闻在水平版旨在教你3000个英语单词。 请按照说明操作"
+    },
+    {
+      "id": "newsinlevels-07",
+      "en": "How to improve your English with News in Levels:",
+      "zh": "如何通过新闻级别提高英语水平:"
+    },
+    {
+      "id": "newsinlevels-08",
+      "en": "Read the news articles from the day before and check if you remember all new words.",
+      "zh": "阅读前一天的新闻文章,并检查你是否还记得所有新单词。"
+    },
+    {
+      "id": "newsinlevels-09",
+      "en": "Listen to the news from today without reading the text.",
+      "zh": "从今天开始收听新闻,无需阅读文本。"
+    },
+    {
+      "id": "newsinlevels-10",
+      "en": "Choose one person from our Conversation section.",
+      "zh": "从我们的对话部分选择一个人。"
+    },
+    {
+      "id": "newsinlevels-11",
+      "en": "A Czech man changes the world of 3D printing – level 2",
+      "zh": "一名捷克男子改变了3D打印领域——二级"
+    },
+    {
+      "id": "newsinlevels-12",
+      "en": "Josef Průša is a Czech entrepreneur and engineer who became one of Europe’s most influential people in 3D printing. As a student, he experimented with music technology and built his first 3D printer to make customized parts.",
+      "zh": "约瑟夫·普什沙是一位捷克企业家和工程师,后来成为欧洲在3D打印领域最具影响力的人物之一。 作为学生,他尝试了音乐技术,并研制出自己的首款3D打印机来制作定制零件。"
+    },
+    {
+      "id": "newsinlevels-13",
+      "en": "Průša’s open-source approach inspires countless small companies to innovate using cheaper printers locally. He believes 3D printing can bring manufacturing back to Europe by helping entrepreneurs design, produce, and compete independently.",
+      "zh": "普尔什卡的开源方法激励了无数小公司,利用本地更便宜的打印机进行创新。 他认为,3D打印技术能够帮助企业家自主设计、生产和竞争,从而将制造业带回欧洲。"
+    },
+    {
+      "id": "newsinlevels-14",
+      "en": "You can watch the original video in the Level 3 section.",
+      "zh": "您可以在3级部分观看原始视频。"
+    },
+    {
+      "id": "newsinlevels-15",
+      "en": "Which large organizations are mentioned as customers of Prusa Research?",
+      "zh": "哪些大型组织被提及为普鲁萨研究公司的客户?"
+    },
+    {
+      "id": "newsinlevels-16",
+      "en": "News in Levels is designed to teach you 3000 words in English. Please follow the instructions",
+      "zh": "新闻在水平版旨在教你3000个英语单词。 请按照说明操作"
+    },
+    {
+      "id": "newsinlevels-17",
+      "en": "Go to your level. Go to Level 1 if you know 1-1000 words. Go to Level 2 if you know 1000-2000 words. Go to Level 3 if you know 2000-3000 words.",
+      "zh": "达到你的水平。 如果知道1-1000个单词,请转到1级。 如果知道1000-2000字,请进入2级。 如果知道2000-3000字,请进入3级。"
+    },
+    {
+      "id": "newsinlevels-18",
+      "en": "Read the news articles from the day before and check if you remember all new words.",
+      "zh": "阅读前一天的新闻文章,并检查你是否还记得所有新单词。"
+    },
+    {
+      "id": "newsinlevels-19",
+      "en": "Listen to the news from today without reading the text.",
+      "zh": "从今天开始收听新闻,无需阅读文本。"
+    },
+    {
+      "id": "newsinlevels-20",
+      "en": "Choose one person from our Conversation section.",
+      "zh": "从我们的对话部分选择一个人。"
+    }
+  ],
+  "reinitDeterministic": true,
+  "cancelTerminateMs": 22,
+  "offlineRestart": {
+    "ok": true,
+    "sample": "离线重启工作:在运行时无需网络翻译。"
+  }
+}

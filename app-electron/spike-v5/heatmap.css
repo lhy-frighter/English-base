@@ -1,0 +1,28 @@
+/* S10 热力图改造（ChatGPT/GitHub 贡献图样式） */
+.hm-wrap { display: flex; flex-direction: column; gap: 10px; }
+.hm-scroll { overflow-x: auto; padding-bottom: 4px; }
+.hm-grid { display: flex; gap: 6px; min-width: max-content; }
+.hm-dow { display: flex; flex-direction: column; gap: 3px; padding-top: 20px; }
+.hm-dow-cell { height: 13px; line-height: 13px; width: 14px; font-size: 10px; color: #8a8578; text-align: right; }
+.hm-body { display: flex; flex-direction: column; gap: 4px; }
+.hm-months { display: flex; gap: 3px; height: 16px; }
+.hm-month-cell { width: 13px; font-size: 10px; color: #8a8578; white-space: nowrap; overflow: visible; }
+.hm-cols { display: flex; gap: 3px; }
+.hm-col { display: flex; flex-direction: column; gap: 3px; }
+.hm-cell {
+  width: 13px; height: 13px; border-radius: 2px; padding: 0; border: none;
+  background: #eceae3; cursor: pointer; display: inline-block;
+}
+button.hm-cell:hover { outline: 1.5px solid #2f4d8a; outline-offset: 1px; }
+.hm-future { visibility: hidden; cursor: default; }
+.hm-l0 { background: #eceae3; }
+.hm-l1 { background: #c7d2e8; }
+.hm-l2 { background: #8fa6cf; }
+.hm-l3 { background: #5a76b0; }
+.hm-l4 { background: #2f4d8a; }
+.hm-sel { outline: 2px solid #b45309 !important; outline-offset: 1px; }
+.hm-valid { box-shadow: inset 0 0 0 1px rgba(180, 83, 9, .35); }
+.hm-legend { display: flex; align-items: center; gap: 4px; font-size: 12px; flex-wrap: wrap; }
+.hm-legend .hm-cell { cursor: default; }
+.hm-legend .hm-cell:hover { outline: none; }
+.hm-legend-note { margin-left: 10px; }

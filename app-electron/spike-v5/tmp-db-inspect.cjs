@@ -1,0 +1,11 @@
+const { DatabaseSync } = require("node:sqlite");
+const path = require("node:path");
+const db = new DatabaseSync(path.join(__dirname, "..", "data", "user.sqlite"), { readOnly: true });
+console.log("user_version:", db.prepare("PRAGMA user_version").get());
+console.log("sessions:", db.prepare("SELECT kind, started_at, ended_at, active_ms, amount, unit FROM learning_sessions").all());
+console.log("review_log days:", db.prepare("SELECT substr(?,1,0) FROM app_settings LIMIT 0").all());
+const rl = db.prepare("SELECT COUNT(*) n, MIN(ts) mn, MAX(TS) mx FROM review_log").get();
+console.log("review_log:", rl);
+const ll = db.prepare("SELECT COUNT(*) n, MIN(ts) mn, MAX(ts) mx FROM lookup_log").all();
+console.log("lookup_log:", ll);
+db.close();

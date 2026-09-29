@@ -1,0 +1,892 @@
+{
+  "initMs": 998,
+  "crossOriginIsolated": true,
+  "cores": 32,
+  "threads": 8,
+  "native": [
+    {
+      "i": 0,
+      "words": 13,
+      "synthMs": 7241,
+      "audioMs": 8.28,
+      "rtf": 0.875,
+      "phonemes": "dˈɑːktɚ smˈɪθ pˈʌblɪʃt θɹˈiː pɔɪnt wˈʌn fˈoːɹ pˈeɪdʒᵻz ɪnðə jˌuːˈɛs ɪn tˈuː θˈaʊzənd twˈɛnti fˈoːɹ ˈɜːnɪŋ wˈʌn θˈaʊzənd saɪtˈeɪʃənz"
+    },
+    {
+      "i": 1,
+      "words": 10,
+      "synthMs": 5553,
+      "audioMs": 6.67,
+      "rtf": 0.832,
+      "phonemes": "ɐtˈɛnʃən mˈɛkənˌɪzəmz ʌnlˈaɪk ɹᵻkˈɜːɹənt nˈɛtwɜːks ɐlˈaʊ pˈæɹəlˌɛl kˌɑːmpjuːtˈeɪʃən əkɹˌɑːs tˈoʊkənz"
+    },
+    {
+      "i": 2,
+      "words": 10,
+      "synthMs": 5239,
+      "audioMs": 6.4,
+      "rtf": 0.819,
+      "phonemes": "ðə tɹænsfˈoːɹmɚɹ ˈɑːɹkɪtˌɛktʃɚ ɹᵻlˈaɪz ˌɔn mˈʌltaɪhˈɛd sˈɛlfɐtˈɛnʃən ænd pəzˈɪʃənəl ɛŋkˈoʊdɪŋz"
+    },
+    {
+      "i": 3,
+      "words": 12,
+      "synthMs": 5845,
+      "audioMs": 7.08,
+      "rtf": 0.826,
+      "phonemes": "ɡɹˈeɪdiənt dᵻsˈɛnt kənvˈɜːdʒᵻz wɛn ðə lˈɜːnɪŋ ɹˈeɪt ˌiːdʒˈiː zˈiəɹoʊ pɔɪnt zˈiəɹoʊ zˈiəɹoʊ wˈʌn ɪz smˈɔːl ɪnˈʌf"
+    },
+    {
+      "i": 4,
+      "words": 9,
+      "synthMs": 4448,
+      "audioMs": 5.53,
+      "rtf": 0.805,
+      "phonemes": "sætˈoʊʃi nˌækɐmˈoʊɾoʊz aɪdˈɛntᵻɾi ɹᵻmˈeɪnz ʌnnˈoʊn haʊˈɛvɚ ðə blˈɑːktʃeɪn pɚsˈɪsts"
+    },
+    {
+      "i": 5,
+      "words": 9,
+      "synthMs": 3449,
+      "audioMs": 4.08,
+      "rtf": 0.846,
+      "phonemes": "ðə kwˈɑːkə ɐ smˈɔːl mɑːɹsˈuːpɪəl lˈaɪvz ˌɔn ɹˈɑːtənɪst ˈaɪlənd"
+    },
+    {
+      "i": 6,
+      "words": 10,
+      "synthMs": 4192,
+      "audioMs": 5.1,
+      "rtf": 0.822,
+      "phonemes": "wiː pɹəpˈoʊz ɐ nˈɑːvəl ˈaɪsəmˌoːɹfɪzəm bᵻtwˌiːn ðə tˈuː ˌældʒɪbɹˈeɪɪk stɹˈʌktʃɚz"
+    },
+    {
+      "i": 7,
+      "words": 9,
+      "synthMs": 4557,
+      "audioMs": 5.63,
+      "rtf": 0.81,
+      "phonemes": "kɑːnvəlˈuːʃənəl nˈʊɹɹəl nˈɛtwɜːks ˈɛkstɹækt lˈoʊkəl fˈiːtʃɚz bᵻfˌoːɹ ɡlˈoʊbəl pˈuːlɪŋ"
+    },
+    {
+      "i": 8,
+      "words": 11,
+      "synthMs": 6239,
+      "audioMs": 7.6,
+      "rtf": 0.821,
+      "phonemes": "mˈɪstɚ oʊbɹˈaɪən ɪnvˈɛstᵻd dˈɑːlɚ tˈuː θˈaʊzənd fˈaɪvhˈʌndɹɪd pɔɪnt fˈaɪv zˈiəɹoʊ ɪn mˈɑːɹtʃ ˌaɪˈiː nˌɪɹli ˈɛvɹɪθˌɪŋ hiː hˈæd"
+    },
+    {
+      "i": 9,
+      "words": 8,
+      "synthMs": 4643,
+      "audioMs": 5.65,
+      "rtf": 0.822,
+      "phonemes": "ˈɛntɹəpi mˈɛʒɚz ʌnsˈɜːtənti kɹˈɔsˈɛntɹəpi baɪ kˈɑːntɹæst kəmpˈɛɹz dˌɪstɹɪbjˈuːʃənz"
+    },
+    {
+      "i": 10,
+      "words": 7,
+      "synthMs": 3028,
+      "audioMs": 3.6,
+      "rtf": 0.841,
+      "phonemes": "ðə zˈoːɹpɐlˌɑːd kwˈɪvɚd ɪnðə flˈɪbɚtˌɪdʒəbbɪts ɡˈɑːɹdən"
+    },
+    {
+      "i": 11,
+      "words": 10,
+      "synthMs": 3144,
+      "audioMs": 3.83,
+      "rtf": 0.822,
+      "phonemes": "wˈeɪt juː mˈiːn ʃiː ˈæktʃuːəli fˈɪnɪʃt ðə dɪsɚtˈeɪʃən ɹˈiəli"
+    },
+    {
+      "i": 12,
+      "words": 10,
+      "synthMs": 3969,
+      "audioMs": 4.92,
+      "rtf": 0.806,
+      "phonemes": "bˌækpɹəpɐɡˈeɪʃən kəmpjˈuːts ɡɹˈeɪdiənts vˈaɪə ðə tʃˈeɪn ɹˈuːl lˈeɪɚ baɪ lˈeɪɚ"
+    },
+    {
+      "i": 13,
+      "words": 12,
+      "synthMs": 6273,
+      "audioMs": 7.67,
+      "rtf": 0.817,
+      "phonemes": "ðɪ ɛkspˈɛɹɪmənt ɹˈæn fɹʌm nˈaɪn fˈɪftiːn ˌeɪˈɛm tə θɹˈiː fˈoːɹɾi fˈaɪv pˌiːˈɛm wɪð wˈʌn θˈaʊzənd tˈuːhˈʌndɹɪd pɑːɹtˈɪsɪpənts"
+    },
+    {
+      "i": 14,
+      "words": 8,
+      "synthMs": 4609,
+      "audioMs": 5.78,
+      "rtf": 0.798,
+      "phonemes": "ðɪs θˈiːsɪs ɪnvˈɛstᵻɡˌeɪts fˌɑːnətˈæktɪk kənstɹˈeɪnts ɪn sˈɛkəndlˈæŋɡwɪdʒ ɐkwɪsˈɪʃən"
+    }
+  ],
+  "paused": [
+    {
+      "i": 0,
+      "synthMs": 6891,
+      "audioMs": 8.69,
+      "chunks": [
+        {
+          "text": "Dr. Smith published 3.14 pages in the U.S. in 2024,",
+          "synthMs": 4880,
+          "audioMs": 6.05
+        },
+        {
+          "text": "earning 1,000 citations.",
+          "synthMs": 2011,
+          "audioMs": 2.45
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "synthMs": 6150,
+      "audioMs": 7.91,
+      "chunks": [
+        {
+          "text": "Attention mechanisms,",
+          "synthMs": 1647,
+          "audioMs": 2.02
+        },
+        {
+          "text": "unlike recurrent networks,",
+          "synthMs": 1729,
+          "audioMs": 2.13
+        },
+        {
+          "text": "allow parallel computation across tokens.",
+          "synthMs": 2774,
+          "audioMs": 3.38
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "synthMs": 5261,
+      "audioMs": 6.4,
+      "chunks": [
+        {
+          "text": "The transformer architecture relies on multi-head self-attention and positional encodings.",
+          "synthMs": 5261,
+          "audioMs": 6.4
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "synthMs": 6258,
+      "audioMs": 8.13,
+      "chunks": [
+        {
+          "text": "Gradient descent converges when the learning rate,",
+          "synthMs": 2717,
+          "audioMs": 3.35
+        },
+        {
+          "text": "e.g. 0.001,",
+          "synthMs": 2278,
+          "audioMs": 2.83
+        },
+        {
+          "text": "is small enough.",
+          "synthMs": 1263,
+          "audioMs": 1.57
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "synthMs": 5673,
+      "audioMs": 7.33,
+      "chunks": [
+        {
+          "text": "Satoshi Nakamoto's identity remains unknown;",
+          "synthMs": 2999,
+          "audioMs": 3.65
+        },
+        {
+          "text": "however,",
+          "synthMs": 1107,
+          "audioMs": 1.38
+        },
+        {
+          "text": "the blockchain persists.",
+          "synthMs": 1567,
+          "audioMs": 1.93
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "synthMs": 4626,
+      "audioMs": 6.03,
+      "chunks": [
+        {
+          "text": "The quokka,",
+          "synthMs": 1320,
+          "audioMs": 1.63
+        },
+        {
+          "text": "a small marsupial,",
+          "synthMs": 1465,
+          "audioMs": 1.8
+        },
+        {
+          "text": "lives on Rottnest Island.",
+          "synthMs": 1840,
+          "audioMs": 2.23
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "synthMs": 4088,
+      "audioMs": 5.1,
+      "chunks": [
+        {
+          "text": "We propose a novel isomorphism between the two algebraic structures.",
+          "synthMs": 4087,
+          "audioMs": 5.1
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "synthMs": 4507,
+      "audioMs": 5.63,
+      "chunks": [
+        {
+          "text": "Convolutional neural networks extract local features before global pooling.",
+          "synthMs": 4507,
+          "audioMs": 5.63
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "synthMs": 6446,
+      "audioMs": 8.14,
+      "chunks": [
+        {
+          "text": "Mr. O'Brien invested $2,500.50 in March,",
+          "synthMs": 4660,
+          "audioMs": 5.72
+        },
+        {
+          "text": "i.e. nearly everything he had.",
+          "synthMs": 1786,
+          "audioMs": 2.23
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "synthMs": 6549,
+      "audioMs": 8.35,
+      "chunks": [
+        {
+          "text": "Entropy measures uncertainty;",
+          "synthMs": 2060,
+          "audioMs": 2.42
+        },
+        {
+          "text": "cross-entropy,",
+          "synthMs": 1391,
+          "audioMs": 1.68
+        },
+        {
+          "text": "by contrast,",
+          "synthMs": 1372,
+          "audioMs": 1.65
+        },
+        {
+          "text": "compares distributions.",
+          "synthMs": 1726,
+          "audioMs": 2.02
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "synthMs": 2946,
+      "audioMs": 3.6,
+      "chunks": [
+        {
+          "text": "The zorpalod quivered in the flibbertigibbet's garden.",
+          "synthMs": 2946,
+          "audioMs": 3.6
+        }
+      ]
+    },
+    {
+      "i": 11,
+      "synthMs": 4625,
+      "audioMs": 6.31,
+      "chunks": [
+        {
+          "text": "Wait —",
+          "synthMs": 1002,
+          "audioMs": 1.25
+        },
+        {
+          "text": "you mean she actually finished the dissertation?",
+          "synthMs": 2479,
+          "audioMs": 2.95
+        },
+        {
+          "text": "Really?",
+          "synthMs": 1144,
+          "audioMs": 1.4
+        }
+      ]
+    },
+    {
+      "i": 12,
+      "synthMs": 4459,
+      "audioMs": 5.69,
+      "chunks": [
+        {
+          "text": "Backpropagation computes gradients via the chain rule,",
+          "synthMs": 3049,
+          "audioMs": 3.75
+        },
+        {
+          "text": "layer by layer.",
+          "synthMs": 1411,
+          "audioMs": 1.75
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "synthMs": 7497,
+      "audioMs": 9.74,
+      "chunks": [
+        {
+          "text": "The experiment ran from 9:",
+          "synthMs": 1862,
+          "audioMs": 2.27
+        },
+        {
+          "text": "15 a.m. to 3:",
+          "synthMs": 1742,
+          "audioMs": 2.13
+        },
+        {
+          "text": "45 p.m.,",
+          "synthMs": 1556,
+          "audioMs": 1.9
+        },
+        {
+          "text": "with 1,200 participants.",
+          "synthMs": 2336,
+          "audioMs": 2.88
+        }
+      ]
+    },
+    {
+      "i": 14,
+      "synthMs": 4689,
+      "audioMs": 5.78,
+      "chunks": [
+        {
+          "text": "This thesis investigates phonotactic constraints in second-language acquisition.",
+          "synthMs": 4689,
+          "audioMs": 5.78
+        }
+      ]
+    }
+  ],
+  "rtfP50": 0.822,
+  "rtfP95": 0.875,
+  "rtfMax": 0.875,
+  "firstAudioP50Ms": 4609,
+  "firstAudioMaxMs": 7241,
+  "soak": {
+    "seconds": 1800,
+    "iters": 557,
+    "points": [
+      {
+        "t": 32,
+        "iters": 10,
+        "synthMs": 31699,
+        "audioMs": 38.6
+      },
+      {
+        "t": 63,
+        "iters": 20,
+        "synthMs": 62527,
+        "audioMs": 76.7
+      },
+      {
+        "t": 90,
+        "iters": 29,
+        "synthMs": 90304,
+        "audioMs": 111.2
+      },
+      {
+        "t": 121,
+        "iters": 39,
+        "synthMs": 121178,
+        "audioMs": 149.5
+      },
+      {
+        "t": 152,
+        "iters": 49,
+        "synthMs": 152277,
+        "audioMs": 188.1
+      },
+      {
+        "t": 180,
+        "iters": 58,
+        "synthMs": 180144,
+        "audioMs": 222.6
+      },
+      {
+        "t": 211,
+        "iters": 68,
+        "synthMs": 210786,
+        "audioMs": 260.7
+      },
+      {
+        "t": 242,
+        "iters": 78,
+        "synthMs": 241510,
+        "audioMs": 299
+      },
+      {
+        "t": 273,
+        "iters": 88,
+        "synthMs": 272529,
+        "audioMs": 337.6
+      },
+      {
+        "t": 300,
+        "iters": 97,
+        "synthMs": 300378,
+        "audioMs": 372.1
+      },
+      {
+        "t": 331,
+        "iters": 107,
+        "synthMs": 331284,
+        "audioMs": 410.2
+      },
+      {
+        "t": 362,
+        "iters": 117,
+        "synthMs": 362274,
+        "audioMs": 448.5
+      },
+      {
+        "t": 390,
+        "iters": 126,
+        "synthMs": 390141,
+        "audioMs": 483
+      },
+      {
+        "t": 422,
+        "iters": 136,
+        "synthMs": 421497,
+        "audioMs": 521.6
+      },
+      {
+        "t": 453,
+        "iters": 146,
+        "synthMs": 452515,
+        "audioMs": 559.7
+      },
+      {
+        "t": 481,
+        "iters": 155,
+        "synthMs": 480562,
+        "audioMs": 594.2
+      },
+      {
+        "t": 512,
+        "iters": 165,
+        "synthMs": 512038,
+        "audioMs": 632.5
+      },
+      {
+        "t": 540,
+        "iters": 174,
+        "synthMs": 540164,
+        "audioMs": 667
+      },
+      {
+        "t": 572,
+        "iters": 184,
+        "synthMs": 571463,
+        "audioMs": 705.6
+      },
+      {
+        "t": 602,
+        "iters": 194,
+        "synthMs": 602186,
+        "audioMs": 743.7
+      },
+      {
+        "t": 630,
+        "iters": 203,
+        "synthMs": 630141,
+        "audioMs": 778.2
+      },
+      {
+        "t": 661,
+        "iters": 213,
+        "synthMs": 661101,
+        "audioMs": 816.5
+      },
+      {
+        "t": 693,
+        "iters": 223,
+        "synthMs": 692477,
+        "audioMs": 855.1
+      },
+      {
+        "t": 720,
+        "iters": 232,
+        "synthMs": 720172,
+        "audioMs": 889.6
+      },
+      {
+        "t": 751,
+        "iters": 242,
+        "synthMs": 750839,
+        "audioMs": 927.7
+      },
+      {
+        "t": 782,
+        "iters": 252,
+        "synthMs": 781745,
+        "audioMs": 966
+      },
+      {
+        "t": 813,
+        "iters": 262,
+        "synthMs": 813030,
+        "audioMs": 1004.6
+      },
+      {
+        "t": 841,
+        "iters": 271,
+        "synthMs": 840900,
+        "audioMs": 1039.1
+      },
+      {
+        "t": 872,
+        "iters": 281,
+        "synthMs": 871687,
+        "audioMs": 1077.2
+      },
+      {
+        "t": 903,
+        "iters": 291,
+        "synthMs": 902658,
+        "audioMs": 1115.5
+      },
+      {
+        "t": 931,
+        "iters": 300,
+        "synthMs": 930445,
+        "audioMs": 1150
+      },
+      {
+        "t": 962,
+        "iters": 310,
+        "synthMs": 961479,
+        "audioMs": 1188.6
+      },
+      {
+        "t": 992,
+        "iters": 320,
+        "synthMs": 992361,
+        "audioMs": 1226.7
+      },
+      {
+        "t": 1020,
+        "iters": 329,
+        "synthMs": 1020176,
+        "audioMs": 1261.2
+      },
+      {
+        "t": 1051,
+        "iters": 339,
+        "synthMs": 1051203,
+        "audioMs": 1299.5
+      },
+      {
+        "t": 1083,
+        "iters": 349,
+        "synthMs": 1082455,
+        "audioMs": 1338.1
+      },
+      {
+        "t": 1110,
+        "iters": 358,
+        "synthMs": 1110127,
+        "audioMs": 1372.6
+      },
+      {
+        "t": 1141,
+        "iters": 368,
+        "synthMs": 1140931,
+        "audioMs": 1410.7
+      },
+      {
+        "t": 1172,
+        "iters": 378,
+        "synthMs": 1172121,
+        "audioMs": 1449
+      },
+      {
+        "t": 1200,
+        "iters": 387,
+        "synthMs": 1200128,
+        "audioMs": 1483.5
+      },
+      {
+        "t": 1231,
+        "iters": 397,
+        "synthMs": 1231278,
+        "audioMs": 1522.1
+      },
+      {
+        "t": 1262,
+        "iters": 407,
+        "synthMs": 1261938,
+        "audioMs": 1560.2
+      },
+      {
+        "t": 1293,
+        "iters": 417,
+        "synthMs": 1292782,
+        "audioMs": 1598.5
+      },
+      {
+        "t": 1321,
+        "iters": 426,
+        "synthMs": 1320735,
+        "audioMs": 1633
+      },
+      {
+        "t": 1352,
+        "iters": 436,
+        "synthMs": 1351806,
+        "audioMs": 1671.6
+      },
+      {
+        "t": 1383,
+        "iters": 446,
+        "synthMs": 1382621,
+        "audioMs": 1709.7
+      },
+      {
+        "t": 1411,
+        "iters": 455,
+        "synthMs": 1410459,
+        "audioMs": 1744.2
+      },
+      {
+        "t": 1441,
+        "iters": 465,
+        "synthMs": 1441269,
+        "audioMs": 1782.5
+      },
+      {
+        "t": 1472,
+        "iters": 475,
+        "synthMs": 1472282,
+        "audioMs": 1821.1
+      },
+      {
+        "t": 1501,
+        "iters": 484,
+        "synthMs": 1501271,
+        "audioMs": 1855.6
+      },
+      {
+        "t": 1534,
+        "iters": 492,
+        "synthMs": 1533871,
+        "audioMs": 1886
+      },
+      {
+        "t": 1564,
+        "iters": 499,
+        "synthMs": 1563771,
+        "audioMs": 1913.1
+      },
+      {
+        "t": 1594,
+        "iters": 506,
+        "synthMs": 1593671,
+        "audioMs": 1939.7
+      },
+      {
+        "t": 1623,
+        "iters": 513,
+        "synthMs": 1622563,
+        "audioMs": 1966.5
+      },
+      {
+        "t": 1652,
+        "iters": 521,
+        "synthMs": 1651510,
+        "audioMs": 1997.2
+      },
+      {
+        "t": 1680,
+        "iters": 528,
+        "synthMs": 1680118,
+        "audioMs": 2024
+      },
+      {
+        "t": 1713,
+        "iters": 536,
+        "synthMs": 1713147,
+        "audioMs": 2054.7
+      },
+      {
+        "t": 1743,
+        "iters": 543,
+        "synthMs": 1742752,
+        "audioMs": 2081.5
+      },
+      {
+        "t": 1772,
+        "iters": 550,
+        "synthMs": 1772288,
+        "audioMs": 2108.6
+      },
+      {
+        "t": 1801,
+        "iters": 557,
+        "synthMs": 1801322,
+        "audioMs": 2135.2
+      }
+    ]
+  },
+  "wav": [
+    "kokoro-native.wav",
+    "kokoro-pauses.wav"
+  ],
+  "nonEmpty": true,
+  "rssStageMb": {
+    "rss-baseline": 75,
+    "rss-loaded": 625,
+    "rss-after-1": 669,
+    "rss-after-15": 576,
+    "soak-32": 630,
+    "soak-63": 637,
+    "soak-90": 643,
+    "soak-121": 648,
+    "soak-152": 654,
+    "soak-180": 616,
+    "soak-211": 620,
+    "soak-242": 625,
+    "soak-273": 618,
+    "soak-300": 619,
+    "soak-331": 619,
+    "soak-362": 623,
+    "soak-390": 625,
+    "soak-422": 630,
+    "soak-453": 635,
+    "soak-481": 637,
+    "soak-512": 641,
+    "soak-540": 646,
+    "soak-572": 648,
+    "soak-602": 655,
+    "soak-630": 662,
+    "soak-661": 669,
+    "soak-693": 672,
+    "soak-720": 670,
+    "soak-751": 673,
+    "soak-782": 675,
+    "soak-813": 681,
+    "soak-841": 631,
+    "soak-872": 626,
+    "soak-903": 626,
+    "soak-931": 626,
+    "soak-962": 626,
+    "soak-992": 627,
+    "soak-1020": 629,
+    "soak-1051": 632,
+    "soak-1083": 638,
+    "soak-1110": 639,
+    "soak-1141": 643,
+    "soak-1172": 648,
+    "soak-1200": 649,
+    "soak-1231": 655,
+    "soak-1262": 659,
+    "soak-1293": 661,
+    "soak-1321": 666,
+    "soak-1352": 670,
+    "soak-1383": 672,
+    "soak-1411": 624,
+    "soak-1441": 626,
+    "soak-1472": 626,
+    "soak-1501": 626,
+    "soak-1534": 626,
+    "soak-1564": 629,
+    "soak-1594": 630,
+    "soak-1623": 633,
+    "soak-1652": 635,
+    "soak-1680": 639,
+    "soak-1713": 641,
+    "soak-1743": 644,
+    "soak-1772": 647,
+    "soak-1801": 649,
+    "rss-pre-dispose": 649,
+    "rss-final": 189
+  },
+  "logs": [
+    "SMOKE_LOG isolated=true cores=32",
+    "SMOKE_LOG initMs=998",
+    "SMOKE_LOG native[0] 7241ms audio=8.28s rtf=0.875",
+    "SMOKE_LOG native[1] 5553ms audio=6.67s rtf=0.832",
+    "SMOKE_LOG native[2] 5239ms audio=6.40s rtf=0.819",
+    "SMOKE_LOG native[3] 5845ms audio=7.08s rtf=0.826",
+    "SMOKE_LOG native[4] 4448ms audio=5.53s rtf=0.805",
+    "SMOKE_LOG native[5] 3449ms audio=4.08s rtf=0.846",
+    "SMOKE_LOG native[6] 4192ms audio=5.10s rtf=0.822",
+    "SMOKE_LOG native[7] 4557ms audio=5.63s rtf=0.810",
+    "SMOKE_LOG native[8] 6239ms audio=7.60s rtf=0.821",
+    "SMOKE_LOG native[9] 4643ms audio=5.65s rtf=0.822",
+    "SMOKE_LOG native[10] 3028ms audio=3.60s rtf=0.841",
+    "SMOKE_LOG native[11] 3144ms audio=3.83s rtf=0.822",
+    "SMOKE_LOG native[12] 3969ms audio=4.92s rtf=0.806",
+    "SMOKE_LOG native[13] 6273ms audio=7.67s rtf=0.817",
+    "SMOKE_LOG native[14] 4609ms audio=5.78s rtf=0.798"
+  ],
+  "soakRss": {
+    "headMb": 618,
+    "tailMb": 676,
+    "growthMb": 59
+  },
+  "rssDeltaMb": {
+    "baseline": 75,
+    "loaded": 625,
+    "after1": 669,
+    "after15": 576,
+    "preDispose": 649,
+    "final": 189
+  },
+  "checks": {
+    "inited": true,
+    "allAudioNonEmpty": true,
+    "firstAudioAllLe1500ms": false,
+    "rtfP95Under08": false,
+    "wavWritten": true,
+    "rssDisposedNearBaseline": true,
+    "soakRan": true,
+    "soakNoGrowthOver100Mb": true
+  },
+  "pass": false
+}

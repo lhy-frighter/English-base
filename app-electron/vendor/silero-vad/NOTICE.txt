@@ -1,0 +1,19 @@
+Silero VAD 运行时组件 — 许可证与来源说明
+==========================================
+
+1. @ricky0123/vad-web（VAD 浏览器封装：AudioWorklet 采集、重采样、帧状态机）
+   - 版本：0.0.31
+   - 许可证：ISC（npm 包 package.json license 字段；仓库 https://github.com/ricky0123/vad）
+   - 本目录文件：vad.worklet.bundle.min.js（见 package.vad-web.json）
+
+2. Silero VAD 模型（silero_vad_v5.onnx）
+   - 来源：随 @ricky0123/vad-web@0.0.31 分发（dist/silero_vad_v5.onnx）
+   - 上游：https://github.com/snakers4/silero-vad
+   - 许可证：MIT（上游仓库 LICENSE）
+
+3. onnxruntime-web（VAD 推理运行时，构建时拷贝到 dist/vad/ort/）
+   - 版本：1.22.0
+   - 许可证：MIT（https://github.com/microsoft/onnxruntime）
+
+完整性：两个 vendor 文件的字节数与 SHA256 预置在 src/conversation/vad-manifest.ts，
+运行时创建 MicVAD 前逐文件校验，不符则拒绝加载。

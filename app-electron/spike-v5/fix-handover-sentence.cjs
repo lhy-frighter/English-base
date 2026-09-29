@@ -1,0 +1,10 @@
+const fs = require("fs");
+const p = "D:/vibe coding/英语学习/交接文档.md";
+let s = fs.readFileSync(p, "utf8");
+const oldStr = "挂在 completed 助手气泡下——整句 en/zh、地道词块 chips、关键词 chips、语法点；";
+const newStr = "挂在 completed 助手气泡下——整句 en/zh（含「整句加入复习」按钮，整句作为 chunk 资产）、地道词块 chips、关键词 chips、语法点；";
+const i = s.indexOf(oldStr);
+if (i < 0) throw new Error("not found");
+s = s.slice(0, i) + newStr + s.slice(i + oldStr.length);
+fs.writeFileSync(p, s);
+console.log("handover updated");

@@ -1,0 +1,422 @@
+[
+  {
+    "id": "sciencedaily-01",
+    "kind": "sciencedaily",
+    "chars": 210,
+    "words": 33,
+    "ms": 257
+  },
+  {
+    "id": "sciencedaily-02",
+    "kind": "sciencedaily",
+    "chars": 545,
+    "words": 76,
+    "ms": 216
+  },
+  {
+    "id": "sciencedaily-03",
+    "kind": "sciencedaily",
+    "chars": 406,
+    "words": 62,
+    "ms": 127
+  },
+  {
+    "id": "sciencedaily-04",
+    "kind": "sciencedaily",
+    "chars": 354,
+    "words": 50,
+    "ms": 99
+  },
+  {
+    "id": "sciencedaily-05",
+    "kind": "sciencedaily",
+    "chars": 144,
+    "words": 19,
+    "ms": 28
+  },
+  {
+    "id": "sciencedaily-06",
+    "kind": "sciencedaily",
+    "chars": 271,
+    "words": 41,
+    "ms": 74
+  },
+  {
+    "id": "sciencedaily-07",
+    "kind": "sciencedaily",
+    "chars": 181,
+    "words": 30,
+    "ms": 43
+  },
+  {
+    "id": "sciencedaily-08",
+    "kind": "sciencedaily",
+    "chars": 443,
+    "words": 64,
+    "ms": 91
+  },
+  {
+    "id": "sciencedaily-09",
+    "kind": "sciencedaily",
+    "chars": 236,
+    "words": 30,
+    "ms": 55
+  },
+  {
+    "id": "sciencedaily-10",
+    "kind": "sciencedaily",
+    "chars": 150,
+    "words": 21,
+    "ms": 43
+  },
+  {
+    "id": "sciencedaily-11",
+    "kind": "sciencedaily",
+    "chars": 63,
+    "words": 9,
+    "ms": 16
+  },
+  {
+    "id": "sciencedaily-12",
+    "kind": "sciencedaily",
+    "chars": 212,
+    "words": 31,
+    "ms": 51
+  },
+  {
+    "id": "sciencedaily-13",
+    "kind": "sciencedaily",
+    "chars": 75,
+    "words": 11,
+    "ms": 16
+  },
+  {
+    "id": "sciencedaily-14",
+    "kind": "sciencedaily",
+    "chars": 258,
+    "words": 42,
+    "ms": 76
+  },
+  {
+    "id": "sciencedaily-15",
+    "kind": "sciencedaily",
+    "chars": 269,
+    "words": 36,
+    "ms": 133
+  },
+  {
+    "id": "sciencedaily-16",
+    "kind": "sciencedaily",
+    "chars": 288,
+    "words": 39,
+    "ms": 95
+  },
+  {
+    "id": "sciencedaily-17",
+    "kind": "sciencedaily",
+    "chars": 287,
+    "words": 41,
+    "ms": 96
+  },
+  {
+    "id": "sciencedaily-18",
+    "kind": "sciencedaily",
+    "chars": 216,
+    "words": 31,
+    "ms": 75
+  },
+  {
+    "id": "sciencedaily-19",
+    "kind": "sciencedaily",
+    "chars": 418,
+    "words": 63,
+    "ms": 140
+  },
+  {
+    "id": "sciencedaily-20",
+    "kind": "sciencedaily",
+    "chars": 129,
+    "words": 20,
+    "ms": 29
+  },
+  {
+    "id": "aeon-01",
+    "kind": "aeon",
+    "chars": 113,
+    "words": 19,
+    "ms": 41
+  },
+  {
+    "id": "aeon-02",
+    "kind": "aeon",
+    "chars": 964,
+    "words": 163,
+    "ms": 407
+  },
+  {
+    "id": "aeon-03",
+    "kind": "aeon",
+    "chars": 513,
+    "words": 85,
+    "ms": 180
+  },
+  {
+    "id": "aeon-04",
+    "kind": "aeon",
+    "chars": 1086,
+    "words": 175,
+    "ms": 277
+  },
+  {
+    "id": "aeon-05",
+    "kind": "aeon",
+    "chars": 466,
+    "words": 69,
+    "ms": 123
+  },
+  {
+    "id": "aeon-06",
+    "kind": "aeon",
+    "chars": 817,
+    "words": 137,
+    "ms": 367
+  },
+  {
+    "id": "aeon-07",
+    "kind": "aeon",
+    "chars": 1011,
+    "words": 162,
+    "ms": 426
+  },
+  {
+    "id": "aeon-08",
+    "kind": "aeon",
+    "chars": 119,
+    "words": 20,
+    "ms": 49
+  },
+  {
+    "id": "aeon-09",
+    "kind": "aeon",
+    "chars": 121,
+    "words": 21,
+    "ms": 83
+  },
+  {
+    "id": "aeon-10",
+    "kind": "aeon",
+    "chars": 530,
+    "words": 91,
+    "ms": 223
+  },
+  {
+    "id": "aeon-11",
+    "kind": "aeon",
+    "chars": 767,
+    "words": 124,
+    "ms": 222
+  },
+  {
+    "id": "aeon-12",
+    "kind": "aeon",
+    "chars": 1116,
+    "words": 190,
+    "ms": 423
+  },
+  {
+    "id": "aeon-13",
+    "kind": "aeon",
+    "chars": 951,
+    "words": 148,
+    "ms": 310
+  },
+  {
+    "id": "aeon-14",
+    "kind": "aeon",
+    "chars": 1019,
+    "words": 159,
+    "ms": 315
+  },
+  {
+    "id": "aeon-15",
+    "kind": "aeon",
+    "chars": 102,
+    "words": 17,
+    "ms": 31
+  },
+  {
+    "id": "aeon-16",
+    "kind": "aeon",
+    "chars": 738,
+    "words": 123,
+    "ms": 267
+  },
+  {
+    "id": "aeon-17",
+    "kind": "aeon",
+    "chars": 1070,
+    "words": 175,
+    "ms": 339
+  },
+  {
+    "id": "aeon-18",
+    "kind": "aeon",
+    "chars": 684,
+    "words": 114,
+    "ms": 221
+  },
+  {
+    "id": "aeon-19",
+    "kind": "aeon",
+    "chars": 898,
+    "words": 138,
+    "ms": 252
+  },
+  {
+    "id": "aeon-20",
+    "kind": "aeon",
+    "chars": 983,
+    "words": 168,
+    "ms": 599
+  },
+  {
+    "id": "newsinlevels-01",
+    "kind": "newsinlevels",
+    "chars": 31,
+    "words": 6,
+    "ms": 15
+  },
+  {
+    "id": "newsinlevels-02",
+    "kind": "newsinlevels",
+    "chars": 86,
+    "words": 15,
+    "ms": 25
+  },
+  {
+    "id": "newsinlevels-03",
+    "kind": "newsinlevels",
+    "chars": 473,
+    "words": 80,
+    "ms": 167
+  },
+  {
+    "id": "newsinlevels-04",
+    "kind": "newsinlevels",
+    "chars": 175,
+    "words": 29,
+    "ms": 52
+  },
+  {
+    "id": "newsinlevels-05",
+    "kind": "newsinlevels",
+    "chars": 128,
+    "words": 25,
+    "ms": 36
+  },
+  {
+    "id": "newsinlevels-06",
+    "kind": "newsinlevels",
+    "chars": 93,
+    "words": 16,
+    "ms": 27
+  },
+  {
+    "id": "newsinlevels-07",
+    "kind": "newsinlevels",
+    "chars": 48,
+    "words": 9,
+    "ms": 14
+  },
+  {
+    "id": "newsinlevels-08",
+    "kind": "newsinlevels",
+    "chars": 83,
+    "words": 16,
+    "ms": 21
+  },
+  {
+    "id": "newsinlevels-09",
+    "kind": "newsinlevels",
+    "chars": 55,
+    "words": 10,
+    "ms": 15
+  },
+  {
+    "id": "newsinlevels-10",
+    "kind": "newsinlevels",
+    "chars": 48,
+    "words": 7,
+    "ms": 12
+  },
+  {
+    "id": "newsinlevels-11",
+    "kind": "newsinlevels",
+    "chars": 54,
+    "words": 12,
+    "ms": 22
+  },
+  {
+    "id": "newsinlevels-12",
+    "kind": "newsinlevels",
+    "chars": 224,
+    "words": 37,
+    "ms": 63
+  },
+  {
+    "id": "newsinlevels-13",
+    "kind": "newsinlevels",
+    "chars": 239,
+    "words": 31,
+    "ms": 66
+  },
+  {
+    "id": "newsinlevels-14",
+    "kind": "newsinlevels",
+    "chars": 56,
+    "words": 11,
+    "ms": 19
+  },
+  {
+    "id": "newsinlevels-15",
+    "kind": "newsinlevels",
+    "chars": 71,
+    "words": 10,
+    "ms": 26
+  },
+  {
+    "id": "newsinlevels-16",
+    "kind": "newsinlevels",
+    "chars": 93,
+    "words": 16,
+    "ms": 38
+  },
+  {
+    "id": "newsinlevels-17",
+    "kind": "newsinlevels",
+    "chars": 143,
+    "words": 31,
+    "ms": 57
+  },
+  {
+    "id": "newsinlevels-18",
+    "kind": "newsinlevels",
+    "chars": 83,
+    "words": 16,
+    "ms": 30
+  },
+  {
+    "id": "newsinlevels-19",
+    "kind": "newsinlevels",
+    "chars": 55,
+    "words": 10,
+    "ms": 20
+  },
+  {
+    "id": "newsinlevels-20",
+    "kind": "newsinlevels",
+    "chars": 48,
+    "words": 7,
+    "ms": 15
+  }
+]

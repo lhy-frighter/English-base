@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>gate3</title></head>
+<body>
+<script>
+// 闸门③-b：在生产模块求值前注入最小 electronAPI（只实现 modelRuntime，路径与生产 main.cjs 一致）
+window.electronAPI = {
+  modelRuntime: async (id) => {
+    if (id === "bergamot-enzh") {
+      return { base: "app://app/__model__", repo: "bergamot/enzh", revision: "llmaat-finetune10m-qe8-2024",
+        files: ["model.enzh.intgemm.alphas.bin", "lex.50.50.enzh.s2t.bin", "srcvocab.enzh.spm", "trgvocab.enzh.spm"],
+        dtype: "intgemm8", multilingual: false, state: "installed" };
+    }
+    if (id === "whisper-base") {
+      return { base: "app://app/__model__", repo: "Xenova/whisper-base", revision: "64da57285918e20ea79ea5c88eed7197933abaa8",
+        files: [], dtype: "q8", multilingual: true, state: "installed" };
+    }
+    throw new Error("unknown model " + id);
+  },
+};
+</script>
+<script type="module" src="./gate3-entry.ts"></script>
+</body></html>

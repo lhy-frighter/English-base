@@ -1,0 +1,78 @@
+        {/* ============ S11-b 漏网词回收 ============ */}
+        {tab === "recycle" && (
+          <div className="page recycle-page">
+            <div className="page-head">
+              <button className="btn-mini recycle-back" onClick={() => setTab(recycleFrom)}>← 返回{recycleFrom === "lex" ? "词库" : "今日"}</button>
+              <h2>漏网词回收</h2>
+              <div className="seg">
+                <button className={recycleMultiOnly ? "seg-on" : ""}
+                  onClick={() => { setRecycleMultiOnly(true); setRecycleItems([]); setRecycleSel(new Set()); void loadRecycle(true); }}>
+                  多篇相遇{today?.recycle_multi ? `（${today.recycle_multi}）` : ""}
+                </button>
+                <button className={!recycleMultiOnly ? "seg-on" : ""}
+                  onClick={() => { setRecycleMultiOnly(false); setRecycleItems([]); setRecycleSel(new Set()); void loadRecycle(false); }}>
+                  全部{today?.recycle_total ? `（${today.recycle_total}）` : ""}
+                </button>
+              </div>
+              <button className="btn-mini" disabled={recycleBusy || recycleItems.length === 0}
+                onClick={() => { setRecycleSel(new Set(recycleItems.map((x) => x.lemma))); }}>
+                全选本页
+              </button>
+              <button className="btn-primary" disabled={recycleBusy || recycleSel.size === 0}
+                onClick={() => void recycleAdd([...recycleSel])}>
+                {recycleBusy ? "加入中…" : `加入词卡${recycleSel.size ? `（${recycleSel.size}）` : ""}`}
+              </button>
+            </div>
+            <p className="muted recycle-hint">
+              阅读中遇到、但还没进词卡的词；按考纲等级、学术词表（AWL）与常用度排序，多篇相遇的优先。
+              勾选后批量加入复习（释义回忆 + 听音辨义 + 听写三卡）；之后在文章里再遇到，会自动补上带例句的语境卡。
+            </p>
+            {recycleMsg && <div className="recycle-msg">{recycleMsg}</div>}
+            {recycleItems.length === 0 ? (
+              <div className="empty">
+                <div className="empty-icon">✓</div>
+                <h3>暂无漏网词</h3>
+                <p>多读几篇文章，反复遇到却没建卡的词会汇集到这里。</p>
+              </div>
+            ) : (
+              <>
+                <div className="recycle-list">
+                  {recycleItems.map((it) => {
+                    const checked = recycleSel.has(it.lemma);
+                    return (
+                      <label key={it.lemma} className={"recycle-row" + (checked ? " sel" : "")}>
+                        <input type="checkbox" checked={checked}
+                          onChange={(e) => {
+                            const n = new Set(recycleSel);
+                            if (e.target.checked) n.add(it.lemma); else n.delete(it.lemma);
+                            setRecycleSel(n);
+                          }} />
+                        <div className="rr-main">
+                          <div className="rr-word">
+                            <b>{it.lemma}</b>
+                            {it.phonetic && <span className="rr-phon">/{it.phonetic.replace(/^\/+|\/+$/g, "")}/</span>}
+                            <button type="button" className="speaker-xs" title={`听 ${it.lemma} 发音`}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); void speakWord(it.lemma); }}>🔈</button>
+                            {it.level && <span className={"lvl-badge lv-" + it.level}>{LEVEL_LABEL[it.level]}</span>}
+                            {it.awl === 1 && <span className="lvl-badge lv-awl">学术</span>}
+                          </div>
+                          <div className="rr-gloss">{it.gloss || "（词典暂无中文释义，可在阅读面板查看英英释义）"}</div>
+                          <div className="rr-src">
+                            相遇 {it.texts} 篇 · 共 {it.total} 次 · {it.sources.map((x) => x.title).join("、")}
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+                {recycleItems.length < recycleTotal && (
+                  <button className="btn-mini rr-more" onClick={() => void loadRecycle(recycleMultiOnly, true)}>
+                    加载更多（剩余 {recycleTotal - recycleItems.length}）
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ============ 阅读：书库 ============ */}

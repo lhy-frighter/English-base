@@ -1,0 +1,14 @@
+TITLE: Why Universities Are Bringing Back Oral Exams
+LEVEL: B2
+GENRE: 六级风格
+WORDS: 314
+
+For most of the twentieth century, the oral examination was a fixture of university education. Students defended arguments aloud, answered follow-up questions, and were expected to think on their feet. Then written tests took over. They were cheaper to grade, easier to standardise, and far less frightening for everyone involved. By the 1990s, oral exams had largely disappeared from undergraduate programmes, surviving mainly in language classes and doctoral defences.
+
+Generative artificial intelligence has brought them back. Since text-generating tools can produce polished essays in seconds, a take-home paper no longer proves that its author understands the material. Several departments have therefore revived the viva: a fifteen-minute conversation in which students explain their work, defend a claim, or solve a problem on a whiteboard while the examiner probes their reasoning.
+
+Early results are mixed but instructive. Examiners report that oral exams are remarkably hard to fake; a student who cannot explain their own essay reveals this within minutes. Students, once past the initial fear, often say the format is fairer, because it rewards genuine understanding rather than elegant phrasing. It also trains a skill employers keep asking for: speaking precisely under mild pressure.
+
+The costs are real, however. Oral assessment takes time — one examiner can grade perhaps twenty students a day, against hundreds of written scripts. Concerns about fairness also grow, since a nervous speaker may perform worse than a knowledgeable one, and accent or speech differences can bias examiners. Some universities now train assessors, publish the marking criteria in advance, and allow students to request a written follow-up if they feel the conversation missed their knowledge.
+
+Nobody expects oral exams to replace written work. The likely future is a blend: take-home tasks that ask AI-assisted research to be documented and critiqued, followed by short oral defences that test the one thing software cannot supply — whether the student actually understands what was submitted.

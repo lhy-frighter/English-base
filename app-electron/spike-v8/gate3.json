@@ -1,0 +1,69 @@
+{
+  "steps": [],
+  "asr1": {
+    "ms": 938,
+    "text": "you",
+    "nwords": 1
+  },
+  "asrDisposedAfterAcquireMt": true,
+  "mt": {
+    "ms": 582,
+    "n": 12,
+    "empty": 0,
+    "pairsPerPara": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "sample": "该大学的研究人员宣布了一种完全在用户自有计算机上翻译语言的新方法。"
+  },
+  "mtDisposedAfterAcquireAsr": true,
+  "asr2": {
+    "ms": 979,
+    "text": "you",
+    "nwords": 1
+  },
+  "allReleased": true,
+  "order": [
+    "mt1",
+    "asr2",
+    "mt3"
+  ],
+  "serialized": true,
+  "rssStageMb": {
+    "rss-baseline": 89,
+    "rss-asr": 986,
+    "rss-mt": 689,
+    "rss-asr2": 1058,
+    "rss-final": 177
+  },
+  "rssDeltaMb": {
+    "baseline": 89,
+    "asr": 986,
+    "mt": 689,
+    "asr2": 1058,
+    "final": 177
+  },
+  "checks": {
+    "asr1Returned": true,
+    "asr2Returned": true,
+    "mt12ParasNoEmpty": true,
+    "asrDisposedWhenMt": true,
+    "mtDisposedWhenAsr": true,
+    "allReleased": true,
+    "concurrentSerialized": true,
+    "rssAsrReleasedForMt": true,
+    "rssMtReleasedForAsr": true,
+    "rssFinalNearBaseline": true
+  },
+  "pass": true
+}

@@ -1,0 +1,75 @@
+{
+ "overall": {
+  "label": "overall",
+  "n": 50,
+  "acc": 94,
+  "precision": 92.31,
+  "recall": 96,
+  "f1": 94.12,
+  "FPR": 8,
+  "FNR": 4,
+  "tp": 24,
+  "fp": 2,
+  "tn": 23,
+  "fn": 1
+ },
+ "byLanguage": [
+  {
+   "label": "eng",
+   "n": 35,
+   "acc": 97.14,
+   "precision": 94.74,
+   "recall": 100,
+   "f1": 97.3,
+   "FPR": 5.88,
+   "FNR": 0,
+   "tp": 18,
+   "fp": 1,
+   "tn": 16,
+   "fn": 0
+  },
+  {
+   "label": "zho",
+   "n": 15,
+   "acc": 86.67,
+   "precision": 85.71,
+   "recall": 85.71,
+   "f1": 85.71,
+   "FPR": 12.5,
+   "FNR": 14.29,
+   "tp": 6,
+   "fp": 1,
+   "tn": 7,
+   "fn": 1
+  }
+ ],
+ "latency_ms": {
+  "avg": 12,
+  "p50": 12,
+  "p95": 14,
+  "max": 16
+ },
+ "errors": [
+  {
+   "file": "clip-22-eng-0.f32",
+   "lang": "eng",
+   "endpoint": false,
+   "prob": 0.786,
+   "text": "null"
+  },
+  {
+   "file": "clip-36-zho-0.f32",
+   "lang": "zho",
+   "endpoint": false,
+   "prob": 0.931,
+   "text": "null"
+  },
+  {
+   "file": "clip-37-zho-1.f32",
+   "lang": "zho",
+   "endpoint": true,
+   "prob": 0.249,
+   "text": "null"
+  }
+ ]
+}

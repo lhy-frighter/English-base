@@ -1,0 +1,61 @@
+
+  // 同根/派生词：AWL 权威词族 → ECDICT exchange 屈折 → 后缀门控派生（≥5 字母词，杜绝 the% 前缀噪声）
+  relatedWords(lemma) {
+    const low = String(lemma || "").toLowerCase();
+    const map = new Map();
+    const pushWord = (wIn) => {
+      const w = String(wIn || "").toLowerCase().trim();
+      if (!w || w === low || map.has(w)) return;
+      const r = this.user.prepare("SELECT word,pos,translation FROM dict.words WHERE word=?").get(w);
+      if (!r) return;
+      const gloss = ((r.pos ? r.pos + " " : "") + (r.translation.split("\\n")[0] || ""))
+        .replace(/\[[^\]]*\]/g, "").trim().slice(0, 40);
+      if (gloss) map.set(w, { word: w, gloss });
+    };
+    // 1) AWL 词族（头词+全部成员）
+    const fam = AWL_BY_FORM.get(low);
+    if (fam) for (const f of [fam.h, ...fam.f]) pushWord(f);
+    // 2) ECDICT exchange：p/d/i/3/s/r/t 屈折形式
+    const self = this.user.prepare("SELECT exchange FROM dict.words WHERE word=?").get(low);
+    if (self && self.exchange) {
+      for (const item of self.exchange.split("/")) {
+        const v = item.includes(":") ? item.split(":")[1] : "";
+        if (v) v.split(",").forEach(pushWord);
+      }
+    }
+    // 3) 派生词：词干 ≥5 字母，候选共享词干且带真实派生/屈折后缀
+    if (low.length >= 5) {
+      const stemLen = Math.min(low.length, Math.max(6, low.length - 2));
+      const stem = low.slice(0, stemLen);
+      const DERIV = /(tion|sion|ment|ness|ity|ical|istic|able|ible|ively|ally|ive|ly|er|or|al|ing|ed|est)$/;
+      const rows = this.user
+        .prepare("SELECT word,pos,translation FROM dict.words WHERE word LIKE ? AND word<>? AND length(word)<=length(?)+6 ORDER BY frq DESC LIMIT 60")
+        .all(low + "%", low, low);
+      for (const r of rows) {
+        const w = r.word.toLowerCase();
+        if (w.length < 5 || !w.startsWith(stem) || !DERIV.test(w)) continue;
+        const gloss = ((r.pos ? r.pos + " " : "") + (r.translation.split("\\n")[0] || ""))
+          .replace(/\[[^\]]*\]/g, "").trim().slice(0, 40);
+        if (gloss) map.set(w, { word: w, gloss });
+      }
+    }
+    const family = [...map.values()].slice(0, 10);
+    let synonyms = [];
+    const row = this.user.prepare("SELECT translation FROM dict.words WHERE word=?").get(low);
+    if (row && row.translation) {
+      const first = row.translation.split("\\n")[0];
+      const m = first.match(/[一-鿿]{2,6}/);
+      if (m) {
+        synonyms = this.user
+          .prepare("SELECT word, translation FROM dict.words WHERE translation LIKE ? AND word<>? AND length(word)<=14 ORDER BY frq DESC LIMIT 10")
+          .all("%" + m[0] + "%", low)
+          .map((r2) => ({
+            word: r2.word,
+            gloss: (r2.translation.split("\\n")[0] || "").replace(/\[[^\]]*\]/g, "").slice(0, 36),
+          }))
+          .filter((s) => s.gloss)
+          .slice(0, 6);
+      }
+    }
+    return { family, synonyms };
+  }

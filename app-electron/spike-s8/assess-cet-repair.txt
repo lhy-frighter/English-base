@@ -1,0 +1,14 @@
+TITLE: The Right to Repair
+LEVEL: B2
+GENRE: 六级风格
+WORDS: 325
+
+When Maria's coffee machine stopped working, she faced a choice that millions of consumers know well: pay for an expensive repair, buy a new device, or attempt a fix that the manufacturer never intended her to make. The screws holding the case shut were unusual. The manual contained no repair instructions. A warning label suggested that opening the machine would void the warranty.
+
+Her frustration explains why the "right to repair" has moved from a niche concern to mainstream legislation. The idea is simple. If you bought a device, you should be able to repair it yourself or choose an independent shop, using available parts and documentation. Supporters argue that repairability reduces electronic waste, saves consumers money, and weakens the planned-obsolescence business model, in which products are designed to fail or feel outdated within a few years.
+
+Manufacturers respond with fair questions. Modern devices contain lithium batteries and tightly packed components; an untrained repair attempt can cause fires or injuries. Restricting access to firmware also protects security features and intellectual property. If repair manuals were public, competitors might copy designs at little cost.
+
+Recent laws in several countries have tried to balance these interests. France now displays a repairability score next to many products, so buyers can compare how easy each device is to fix before paying. Some regions require manufacturers to stock spare parts for seven years after a model is discontinued. Others forbid software tricks that disable a device after third-party repair.
+
+The economic effects are still being studied, but early evidence suggests modest benefits for consumers and small repair businesses, with little measurable harm to manufacturers. For companies, the deeper shift may be cultural. A generation of buyers now asks not only what a product does, but what it will become when it breaks. Firms that design for repair are discovering an unexpected advantage: customers who open a machine and see tidy, labelled parts tend to trust the brand more, not less.

@@ -1,0 +1,75 @@
+﻿frq but 23
+frq its 78
+frq what 34
+frq we 24
+frq application 1519
+frq should 121
+frq be 2
+frq law 287
+frq will 48
+frq never 138
+frq just 66
+frq this 20
+frq is 0
+frq new 88
+frq laws 0
+frq sequence 3143
+frq aligned 42201
+frq position 512
+frq wise 3234
+frq attention 591
+frq based 0
+frq data 559
+frq points 0
+frq point 211
+frq sampling 6151
+frq log 3423
+frq likelihood 4596
+frq auto 3134
+frq encoding 30997
+frq mini 11257
+frq batches 0
+frq wise 3234
+frq forum 4705
+frq alignment 7898
+Warning: UnknownErrorException: Ensure that the `standardFontDataUrl` API parameter is provided.
+
+=== 原始 item 命中（全文）===
+ukasz p1 "Łukasz Kaiser" x= 394.1 y= 499.3 h= 9.96
+ukasz p1 "lukaszkaiser@google.com" x= 364.8 y= 477.5 h= 9.96
+ukasz p1 "efficient inference and visualizations. Lukasz and Aidan spent countless long days designing various parts of and" x= 108.0 y= 126.4 h= 8.97
+ukasz p11 "Łukasz Kaiser and Samy Bengio. Can active memory replace attention? In" x= 129.6 y= 339.5 h= 9.96
+ukasz p11 "Łukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In" x= 129.6 y= 308.8 h= 9.96
+ukasz p11 "Minh-Thang Luong, Quoc V. Le, Ilya Sutskever, Oriol Vinyals, and Lukasz Kaiser. Multi-task" x= 129.6 y= 113.6 h= 9.96
+llion p1 "Llion Jones" x= 144.3 y= 499.3 h= 9.96
+llion p1 "llion@google.com" x= 126.9 y= 477.5 h= 9.96
+llion p1 "tensor2tensor. Llion also experimented with novel model variants, was responsible for our initial codebase, and" x= 108.0 y= 136.3 h= 8.97
+llion p7 "We trained on the standard WMT 2014 English-German dataset consisting of about 4.5 million" x= 107.5 y= 410.7 h= 9.96
+avaswani p1 "avaswani@google.com" x= 116.7 y= 527.5 h= 9.96
+nikip p1 "nikip@google.com" x= 323.8 y= 527.5 h= 9.96
+usz p1 "Jakob Uszkoreit" x= 424.3 y= 549.3 h= 9.96
+usz p1 "usz@google.com" x= 422.1 y= 527.5 h= 9.96
+usz p12 "Ankur Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. A decomposable attention" x= 129.6 y= 630.3 h= 9.96
+xception p10 "prisingly well, yielding better results than all previously reported models with the exception of the" x= 108.0 y= 484.2 h= 9.96
+xception p11 "Xception: Deep learning with depthwise separable convolutions." x= 206.7 y= 668.4 h= 9.96
+aglar p11 "Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk," x= 129.6 y= 710.0 h= 9.96
+aglar p11 "Junyoung Chung, Çaglar Gülçehre, Kyunghyun Cho, and Yoshua Bengio. Empirical evaluation" x= 129.6 y= 637.7 h= 9.96
+ehre p11 "Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk," x= 129.6 y= 710.0 h= 9.96
+ehre p11 "Junyoung Chung, Çaglar Gülçehre, Kyunghyun Cho, and Yoshua Bengio. Empirical evaluation" x= 129.6 y= 637.7 h= 9.96
+zlag — 原始 item 中不存在
+ckstr p12 "Ankur Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. A decomposable attention" x= 129.6 y= 630.3 h= 9.96
+reverens — 原始 item 中不存在
+zoolinnean — 原始 item 中不存在
+atrav — 原始 item 中不存在
+
+=== Ł / Llion / Vaswani / Niki 原始 item ===
+p1 "Ashish Vaswani" x= 132.9 y= 549.3 h= 9.96 w= 66.9
+p1 "Niki Parmar" x= 338.7 y= 549.3 h= 9.96 w= 53.9
+p1 "Llion Jones" x= 144.3 y= 499.3 h= 9.96 w= 48.8
+p1 "Łukasz Kaiser" x= 394.1 y= 499.3 h= 9.96 w= 61.7
+p1 "detail. Niki designed, implemented, tuned and evaluated countless model variants in our original codebase and" x= 108.0 y= 146.3 h= 8.97 w= 396.0
+p1 "tensor2tensor. Llion also experimented with novel model variants, was responsible for our initial codebase, and" x= 108.0 y= 136.3 h= 8.97 w= 396.0
+p11 "Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk," x= 129.6 y= 710.0 h= 9.96 w= 375.7
+p11 "Xception: Deep learning with depthwise separable convolutions." x= 206.7 y= 668.4 h= 9.96 w= 268.4
+p11 "Łukasz Kaiser and Samy Bengio. Can active memory replace attention? In" x= 129.6 y= 339.5 h= 9.96 w= 294.8
+p11 "Łukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In" x= 129.6 y= 308.8 h= 9.96 w= 272.1

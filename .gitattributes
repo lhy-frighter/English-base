@@ -1,0 +1,13 @@
+* text=auto
+*.png -text
+*.ico -text
+*.sqlite -text
+*.woff2 -text
+*.webm -text
+*.onnx -text
+*.7z -text
+*.zip -text
+*.wav -text
+*.mp3 -text
+*.f32 -text
+*.bin -text

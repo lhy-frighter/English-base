@@ -1,0 +1,62 @@
+        {/* ============ 今日：唯一下一步 ============ */}
+        {tab === "today" && (
+          <div className="page today-page">
+            <div className="page-head">
+              <h2>今日</h2>
+              <span className="muted">{new Date().toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "long" })}</span>
+            </div>
+            {today ? (
+              <>
+                <button className="today-primary" onClick={() => { void todayPrimary(); }}>
+                  {today.primary === "review" && (
+                    <>
+                      <span className="tp-main">继续今日学习</span>
+                      <span className="tp-sub">复习 {today.queue} 张卡，约 {today.est_minutes} 分钟</span>
+                    </>
+                  )}
+                  {today.primary === "reading" && today.resume && (
+                    <>
+                      <span className="tp-main">继续精读</span>
+                      <span className="tp-sub">《{today.resume.title}》· 回到第 {today.resume.pi + 1} 段</span>
+                    </>
+                  )}
+                  {today.primary === "feed" && (
+                    <>
+                      <span className="tp-main">看看今日好文</span>
+                      <span className="tp-sub">挑一篇适合你水平的文章开始精读</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="today-sec">
+                  <div className="today-sec-title">其他入口</div>
+                  <div className="today-cards">
+                    {today.primary !== "reading" && today.resume && (
+                      <button className="tcard" onClick={() => { setTab("read"); void openSaved(Number(today.resume!.refId)); }}>
+                        <b>继续精读</b>
+                        <span>《{today.resume.title}》· 第 {today.resume.pi + 1} 段</span>
+                      </button>
+                    )}
+                    {today.wrong_due > 0 && (
+                      <button className="tcard" onClick={() => setTab("exam")}>
+                        <b>错题复习</b>
+                        <span>{today.wrong_due} 道错题到期重做</span>
+                      </button>
+                    )}
+                    <button className="tcard" onClick={() => setTab("feed")}>
+                      <b>每日好文</b>
+                      <span>按当前水平推荐的新文章</span>
+                    </button>
+                    <button className="tcard" onClick={() => setTab("shadow")}>
+                      <b>跟读台</b>
+                      <span>练一句影子跟读</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="muted">加载中…</div>
+            )}
+          </div>
+        )}
+

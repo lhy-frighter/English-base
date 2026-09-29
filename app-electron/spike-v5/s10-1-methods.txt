@@ -1,0 +1,152 @@
+
+  // —— S10-1 仪表盘聚合（只读；四互斥主流分钟 + 动作次数，绝不互相折算）——
+  // 有效学习日：复习≥10 卡 / read amount≥300词且 active≥3min / shadow≥3句 / 完成1套卷
+  _validDay(a) {
+    return a.reviews >= 10
+      || (a.readWords >= 300 && a.readMs >= 3 * 60_000)
+      || a.shadowSentences >= 3
+      || a.examPapers >= 1;
+  }
+
+  // 聚合 [fromTs, toTs) 内全部事实，返回 Map<dayKey, agg>
+  _aggregateDaily(fromTs, toTs = Date.now() + DAY_MS) {
+    const map = new Map();
+    const ensure = (ts) => {
+      const key = this.dayKey(ts);
+      let a = map.get(key);
+      if (!a) {
+        a = { key, readMs: 0, shadowMs: 0, reviewMs: 0, examMs: 0, reviews: 0,
+          readWords: 0, shadowSentences: 0, examPapers: 0, lookup: 0, note: 0, translation: 0 };
+        map.set(key, a);
+      }
+      return a;
+    };
+    for (const r of this.user
+      .prepare("SELECT kind,started_at,active_ms,amount,unit FROM learning_sessions WHERE started_at>=? AND started_at<? AND status!='open'")
+      .all(fromTs, toTs)) {
+      const a = ensure(r.started_at);
+      if (r.kind === "read") { a.readMs += r.active_ms || 0; if (r.unit === "words") a.readWords += r.amount; }
+      else { a.shadowMs += r.active_ms || 0; if (r.unit === "sentences") a.shadowSentences += r.amount; }
+    }
+    for (const r of this.user.prepare("SELECT rated_at, elapsed_ms FROM review_log WHERE rated_at>=? AND rated_at<?").all(fromTs, toTs)) {
+      const a = ensure(r.rated_at); a.reviews++; a.reviewMs += r.elapsed_ms || 0;
+    }
+    for (const r of this.user.prepare("SELECT started_at, active_ms FROM attempts WHERE started_at>=? AND started_at<?").all(fromTs, toTs)) {
+      const a = ensure(r.started_at); a.examPapers++; a.examMs += r.active_ms || 0; // active_ms=0 不计分钟
+    }
+    const countInto = (sql, f, t, field) => {
+      for (const r of this.user.prepare(sql).all(f, t)) ensure(r.ts)[field]++;
+    };
+    countInto("SELECT created_at AS ts FROM lookup_log WHERE created_at>=? AND created_at<?", fromTs, toTs, "lookup");
+    countInto("SELECT created_at AS ts FROM notes WHERE created_at>=? AND created_at<?", fromTs, toTs, "note");
+    countInto("SELECT updated_at AS ts FROM text_translations WHERE updated_at>=? AND updated_at<? AND status='ok'", fromTs, toTs, "translation");
+    return map;
+  }
+
+  _streak(aggMap) {
+    const validKeys = new Set();
+    for (const [k, a] of aggMap) if (this._validDay(a)) validKeys.add(k);
+    // longest：按日历日相邻计数
+    const keys = [...validKeys].sort();
+    let longest = 0, run = 0, prev = null;
+    for (const k of keys) {
+      const t = new Date(k + "T00:00:00").getTime();
+      if (prev !== null && t - prev === DAY_MS) run++; else run = 1;
+      if (run > longest) longest = run;
+      prev = t;
+    }
+    // current：今天有效从今天起，否则从昨天起；向前走到断签
+    let cur = 0;
+    let cursor = this.dayStart();
+    if (!validKeys.has(this.dayKey(cursor))) cursor -= DAY_MS;
+    while (validKeys.has(this.dayKey(cursor))) { cur++; cursor -= DAY_MS; }
+    return { current: cur, longest };
+  }
+
+  insights(rangeDays = 30) {
+    const n = Math.min(365, Math.max(7, Math.floor(Number(rangeDays) || 30)));
+    const todayStart = this.dayStart();
+    const start = todayStart - (n - 1) * DAY_MS;
+    const rangeMap = this._aggregateDaily(start, todayStart + DAY_MS);
+    const days = [];
+    const totals = { readMs: 0, shadowMs: 0, reviewMs: 0, examMs: 0, reviews: 0, readWords: 0,
+      shadowSentences: 0, examPapers: 0, lookup: 0, note: 0, translation: 0 };
+    for (let i = 0; i < n; i++) {
+      const ts = start + i * DAY_MS;
+      const key = this.dayKey(ts);
+      const a = rangeMap.get(key) || { readMs: 0, shadowMs: 0, reviewMs: 0, examMs: 0, reviews: 0,
+        readWords: 0, shadowSentences: 0, examPapers: 0, lookup: 0, note: 0, translation: 0 };
+      for (const k of Object.keys(totals)) totals[k] += a[k] || 0;
+      const d = new Date(ts);
+      days.push({
+        key, label: `${d.getMonth() + 1}/${d.getDate()}`,
+        minutes: {
+          read: Math.round(a.readMs / 60_000), shadow: Math.round(a.shadowMs / 60_000),
+          review: Math.round(a.reviewMs / 60_000), exam: Math.round(a.examMs / 60_000),
+        },
+        counts: { lookup: a.lookup, note: a.note, translation: a.translation },
+        reviews: a.reviews, readWords: a.readWords, shadowSentences: a.shadowSentences,
+        examPapers: a.examPapers, valid: this._validDay(a),
+      });
+    }
+    const allMap = this._aggregateDaily(0, todayStart + DAY_MS);
+    const coverage = this.user.prepare(`SELECT c.created_at AS ts, c.kind, c.cefr, c.rate,
+        c.total_tokens AS total, c.known_tokens AS known, c.text_id AS textId, t.title
+      FROM coverage_assessments c LEFT JOIN texts t ON t.id=c.text_id
+      ORDER BY c.created_at`).all()
+      .map((r) => ({
+        key: this.dayKey(r.ts), kind: r.kind, cefr: r.cefr, rate: r.rate, total: r.total, known: r.known,
+        textId: r.textId, title: r.title ?? null, deleted: r.textId != null && r.title == null,
+      }));
+    return {
+      range_days: n,
+      days,
+      totals: {
+        minutes: {
+          read: Math.round(totals.readMs / 60_000), shadow: Math.round(totals.shadowMs / 60_000),
+          review: Math.round(totals.reviewMs / 60_000), exam: Math.round(totals.examMs / 60_000),
+        },
+        counts: { lookup: totals.lookup, note: totals.note, translation: totals.translation },
+        reviews: totals.reviews, readWords: totals.readWords, shadowSentences: totals.shadowSentences, examPapers: totals.examPapers,
+      },
+      streak: this._streak(allMap),
+      coverage,
+      history_note: "阅读/跟读完整记录自 v2.16（migration v11）起",
+    };
+  }
+
+  // 某日下钻：会话/套卷逐条（带墓碑），复习/查词/成卡/翻译为汇总条
+  dayTimeline(dateKey) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateKey || ""));
+    if (!m) throw new Error("dateKey 必须是 YYYY-MM-DD");
+    const start = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime();
+    const end = start + DAY_MS;
+    const textExists = new Set(this.user.prepare("SELECT id FROM texts").all().map((r) => r.id));
+    const entries = [];
+    for (const r of this.user.prepare(`SELECT id, kind, started_at AS ts, ref_type AS refType, ref_id AS refId,
+        title_snapshot AS title, amount, unit, active_ms AS ms, status
+      FROM learning_sessions WHERE started_at>=? AND started_at<? ORDER BY started_at`).all(start, end)) {
+      const deleted = r.refType === "text" && !textExists.has(Number(r.refId));
+      entries.push({
+        kind: r.kind, ts: r.ts, title: r.title || (deleted ? "已删除文章" : ""),
+        refType: r.refType, refId: r.refId, deleted,
+        amount: r.amount, unit: r.unit, minutes: Math.round((r.ms || 0) / 60_000), status: r.status,
+      });
+    }
+    for (const r of this.user.prepare(`SELECT a.id, a.started_at AS ts, a.active_ms AS ms, p.title
+      FROM attempts a LEFT JOIN papers p ON p.id=a.paper_id
+      WHERE a.started_at>=? AND a.started_at<? ORDER BY a.started_at`).all(start, end)) {
+      entries.push({ kind: "exam", ts: r.ts, title: r.title || "试卷", amount: 1, unit: "papers",
+        minutes: Math.round((r.ms || 0) / 60_000), deleted: r.title == null });
+    }
+    const a = this._aggregateDaily(start, end).get(dateKey);
+    if (a) {
+      if (a.reviews) entries.push({ kind: "review", amount: a.reviews, unit: "cards", minutes: Math.round(a.reviewMs / 60_000) });
+      if (a.lookup) entries.push({ kind: "lookup", amount: a.lookup, unit: "times" });
+      if (a.note) entries.push({ kind: "note", amount: a.note, unit: "cards" });
+      if (a.translation) entries.push({ kind: "translation", amount: a.translation, unit: "paragraphs" });
+    }
+    entries.sort((x, y) => (y.ts || 0) - (x.ts || 0));
+    return { key: dateKey, valid: a ? this._validDay(a) : false, entries };
+  }
+

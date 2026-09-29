@@ -1,0 +1,8 @@
+
+/* S11-a 复习卡回语境 */
+.context-jump-row { margin-top: 2px; }
+.context-jump {
+  border: 1px solid var(--line); background: var(--surface); color: var(--indigo);
+  border-radius: 6px; padding: 4px 12px; font-size: 12.5px; cursor: pointer;
+}
+.context-jump:hover { border-color: var(--brass); color: var(--brass); background: var(--brass-wash); }

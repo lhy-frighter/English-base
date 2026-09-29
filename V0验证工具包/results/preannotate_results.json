@@ -1,0 +1,638 @@
+{
+ "aggregate_miss_rate": 0.0005434782608695652,
+ "aggregate_denominator": 1840,
+ "aggregate_miss": 1,
+ "texts": [
+  {
+   "name": "textA_news",
+   "tokens_total": 577,
+   "word_tokens": 577,
+   "mwe": 78,
+   "word": 450,
+   "cap_word": 38,
+   "word_lemma": 0,
+   "contraction": 0,
+   "compound": 1,
+   "proper": 7,
+   "number": 3,
+   "miss": 0,
+   "denominator": 567,
+   "miss_rate": 0.0,
+   "mwe_gap_candidates": [],
+   "miss_samples": [],
+   "mwe_hit_samples": [
+    "Grand Jury",
+    "primary election",
+    "the City Executive Committee",
+    "the City",
+    "Superior Court",
+    "interest in",
+    "the number of",
+    "that many",
+    "to the end",
+    "grand jury",
+    "a number of",
+    "among them",
+    "generally accepted",
+    "The City Purchasing Department",
+    "as a result of",
+    "the city take steps",
+    "effective date so that",
+    "abandoned property",
+    "fight for",
+    "for one",
+    "at the end of",
+    "fiscal year",
+    "has been on the books",
+    "take over",
+    "personal property"
+   ],
+   "mwe_junk": [
+    "the City",
+    "interest in",
+    "the number of",
+    "that many",
+    "to the end",
+    "a number of",
+    "among them",
+    "as a result of",
+    "fight for",
+    "for one",
+    "at the end of",
+    "has been on the books",
+    "take over",
+    "do something",
+    "take out",
+    "millions of"
+   ],
+   "mwe_junk_rate": 0.5333333333333333,
+   "polysemy_sample": [
+    {
+     "word": "that",
+     "sense_candidates": 4,
+     "context": "primary election produced no evidence that any irregularities took place The"
+    },
+    {
+     "word": "in",
+     "sense_candidates": 4,
+     "context": "place The jury further said in term-end presentments that the City"
+    },
+    {
+     "word": "reports",
+     "sense_candidates": 4,
+     "context": "Judge Durwood Pye to investigate reports of possible irregularities in the"
+    },
+    {
+     "word": "size",
+     "sense_candidates": 4,
+     "context": "number of voters and the size of this city The jury"
+    },
+    {
+     "word": "find",
+     "sense_candidates": 5,
+     "context": "The jury said it did find that many of Georgia's registration"
+    },
+    {
+     "word": "act",
+     "sense_candidates": 4,
+     "context": "It recommended that Fulton legislators act to have these laws studied"
+    },
+    {
+     "word": "on",
+     "sense_candidates": 4,
+     "context": "them The grand jury commented on a number of other topics"
+    },
+    {
+     "word": "well",
+     "sense_candidates": 5,
+     "context": "departments which it said are well operated and follow generally accepted"
+    },
+    {
+     "word": "next",
+     "sense_candidates": 4,
+     "context": "jury It urged that the next Legislature provide enabling funds and"
+    },
+    {
+     "word": "led",
+     "sense_candidates": 4,
+     "context": "of Texas bankers Daniel personally led the fight for the measure"
+    },
+    {
+     "word": "watered",
+     "sense_candidates": 4,
+     "context": "the measure which he had watered down considerably since its rejection"
+    },
+    {
+     "word": "down",
+     "sense_candidates": 5,
+     "context": "measure which he had watered down considerably since its rejection by"
+    },
+    {
+     "word": "rules",
+     "sense_candidates": 4,
+     "context": "Revenue and Taxation Under committee rules it went automatically to a"
+    },
+    {
+     "word": "as",
+     "sense_candidates": 4,
+     "context": "committee members taunted bankers appearing as witnesses left little doubt that"
+    },
+    {
+     "word": "will",
+     "sense_candidates": 4,
+     "context": "left little doubt that they will recommend passage of it Daniel"
+    },
+    {
+     "word": "help",
+     "sense_candidates": 4,
+     "context": "produce 17 million dollars to help erase an anticipated deficit of"
+    },
+    {
+     "word": "means",
+     "sense_candidates": 4,
+     "context": "the measure would merely provide means of enforcing the escheat law"
+    },
+    {
+     "word": "state",
+     "sense_candidates": 4,
+     "context": "a republic It permits the state to take over bank accounts"
+    },
+    {
+     "word": "accounts",
+     "sense_candidates": 4,
+     "context": "state to take over bank accounts stocks and other personal property"
+    },
+    {
+     "word": "stocks",
+     "sense_candidates": 4,
+     "context": "to take over bank accounts stocks and other personal property of"
+    },
+    {
+     "word": "more",
+     "sense_candidates": 4,
+     "context": "missing for seven years or more The bill which Daniel said"
+    },
+    {
+     "word": "firms",
+     "sense_candidates": 5,
+     "context": "personally would force banks insurance firms pipeline companies and other corporations"
+    },
+    {
+     "word": "report",
+     "sense_candidates": 4,
+     "context": "companies and other corporations to report such property to the state"
+    },
+    {
+     "word": "now",
+     "sense_candidates": 4,
+     "context": "escheat law cannot be enforced now because it is almost impossible"
+    },
+    {
+     "word": "sounded",
+     "sense_candidates": 6,
+     "context": "representing the Texas Bankers Association sounded the opposition keynote when he"
+    },
+    {
+     "word": "when",
+     "sense_candidates": 4,
+     "context": "Association sounded the opposition keynote when he said it would force"
+    }
+   ],
+   "label": "六级/新闻难度"
+  },
+  {
+   "name": "textB_essay",
+   "tokens_total": 670,
+   "word_tokens": 670,
+   "mwe": 101,
+   "word": 552,
+   "cap_word": 15,
+   "word_lemma": 0,
+   "contraction": 0,
+   "compound": 0,
+   "proper": 0,
+   "number": 2,
+   "miss": 0,
+   "denominator": 668,
+   "miss_rate": 0.0,
+   "mwe_gap_candidates": [],
+   "miss_samples": [],
+   "mwe_hit_samples": [
+    "to be",
+    "flying machine",
+    "sort of",
+    "in consequence to the full",
+    "the world",
+    "like a dream",
+    "the world",
+    "the latter",
+    "melt into each other",
+    "do in",
+    "All the",
+    "to be created by",
+    "have been",
+    "I say",
+    "too late",
+    "at least",
+    "on board so to speak at the time",
+    "up with",
+    "out of",
+    "holy man",
+    "nothing but",
+    "talk with",
+    "a little",
+    "a little",
+    "the last"
+   ],
+   "mwe_junk": [
+    "to be",
+    "sort of",
+    "the world",
+    "the world",
+    "the latter",
+    "melt into each other",
+    "do in",
+    "All the",
+    "to be created by",
+    "have been",
+    "I say",
+    "too late",
+    "at least",
+    "up with",
+    "out of",
+    "nothing but",
+    "talk with",
+    "a little",
+    "a little",
+    "the last",
+    "each other",
+    "one of",
+    "now that",
+    "above all",
+    "sit in",
+    "or not",
+    "talk of",
+    "of all kinds",
+    "loads of",
+    "I fear",
+    "in order that",
+    "of all kinds"
+   ],
+   "mwe_junk_rate": 0.8,
+   "polysemy_sample": [
+    {
+     "word": "flying",
+     "sense_candidates": 4,
+     "context": "The flying ship of Professor Lucifer sang"
+    },
+    {
+     "word": "like",
+     "sense_candidates": 6,
+     "context": "Lucifer sang through the skies like a silver arrow the bleak"
+    },
+    {
+     "word": "silver",
+     "sense_candidates": 4,
+     "context": "through the skies like a silver arrow the bleak white steel"
+    },
+    {
+     "word": "in",
+     "sense_candidates": 4,
+     "context": "white steel of it gleaming in the bleak blue emptiness of"
+    },
+    {
+     "word": "blue",
+     "sense_candidates": 4,
+     "context": "it gleaming in the bleak blue emptiness of the evening That"
+    },
+    {
+     "word": "evening",
+     "sense_candidates": 6,
+     "context": "bleak blue emptiness of the evening That it was far above"
+    },
+    {
+     "word": "that",
+     "sense_candidates": 4,
+     "context": "blue emptiness of the evening That it was far above the"
+    },
+    {
+     "word": "more",
+     "sense_candidates": 4,
+     "context": "science and evolution is far more nameless and elusive and like"
+    },
+    {
+     "word": "images",
+     "sense_candidates": 4,
+     "context": "religion since in the latter images and ideas remain themselves eternally"
+    },
+    {
+     "word": "as",
+     "sense_candidates": 4,
+     "context": "identities melt into each other as they do in a nightmare"
+    },
+    {
+     "word": "shapes",
+     "sense_candidates": 4,
+     "context": "gone mad grown into unrecognizable shapes forgetful of their origin forgetful"
+    },
+    {
+     "word": "names",
+     "sense_candidates": 4,
+     "context": "their origin forgetful of their names That thing which looked like"
+    },
+    {
+     "word": "key",
+     "sense_candidates": 4,
+     "context": "which looked like an enormous key with three wheels was really"
+    },
+    {
+     "word": "object",
+     "sense_candidates": 4,
+     "context": "and very deadly revolver That object which seemed to be created"
+    },
+    {
+     "word": "corkscrews",
+     "sense_candidates": 4,
+     "context": "by the entanglement of two corkscrews was really the key The"
+    },
+    {
+     "word": "mistaken",
+     "sense_candidates": 4,
+     "context": "thing which might have been mistaken for a tricycle turned upside-down"
+    },
+    {
+     "word": "corkscrew",
+     "sense_candidates": 4,
+     "context": "important instrument to which the corkscrew was the key All these"
+    },
+    {
+     "word": "all",
+     "sense_candidates": 4,
+     "context": "the corkscrew was the key All these things as I say"
+    },
+    {
+     "word": "even",
+     "sense_candidates": 6,
+     "context": "and him he had not even very greatly improved though he"
+    },
+    {
+     "word": "own",
+     "sense_candidates": 4,
+     "context": "a lasso out of his own back garden in Western Bulgaria"
+    },
+    {
+     "word": "back",
+     "sense_candidates": 5,
+     "context": "lasso out of his own back garden in Western Bulgaria with"
+    },
+    {
+     "word": "garden",
+     "sense_candidates": 4,
+     "context": "out of his own back garden in Western Bulgaria with the"
+    },
+    {
+     "word": "could",
+     "sense_candidates": 4,
+     "context": "covered with white hair You could see nothing but his eyes"
+    },
+    {
+     "word": "enough",
+     "sense_candidates": 4,
+     "context": "old monk had been intellectual enough to detect their fallacy the"
+    },
+    {
+     "word": "name",
+     "sense_candidates": 4,
+     "context": "Michael and the other a name quite impossible to remember or"
+    },
+    {
+     "word": "repeat",
+     "sense_candidates": 4,
+     "context": "quite impossible to remember or repeat in our Western civilization had"
+    },
+    {
+     "word": "still",
+     "sense_candidates": 5,
+     "context": "physicist he made himself happy still I have no intention my"
+    },
+    {
+     "word": "convert",
+     "sense_candidates": 4,
+     "context": "Professor Lucifer of endeavouring to convert you by argument The imbecility"
+    },
+    {
+     "word": "can",
+     "sense_candidates": 4,
+     "context": "The imbecility of your traditions can be quite finally exhibited to"
+    },
+    {
+     "word": "will",
+     "sense_candidates": 4,
+     "context": "men of all kinds You will forgive me said the monk"
+    }
+   ],
+   "label": "外刊/评论难度"
+  },
+  {
+   "name": "textC_academic",
+   "tokens_total": 617,
+   "word_tokens": 617,
+   "mwe": 115,
+   "word": 474,
+   "cap_word": 14,
+   "word_lemma": 0,
+   "contraction": 0,
+   "compound": 1,
+   "proper": 1,
+   "number": 11,
+   "miss": 1,
+   "denominator": 605,
+   "miss_rate": 0.001652892561983471,
+   "mwe_gap_candidates": [],
+   "miss_samples": [
+    {
+     "token": "transpirating",
+     "context": "the mass flow velocity of the transpirating gas was investigated for various arc"
+    }
+   ],
+   "mwe_hit_samples": [
+    "radio emission",
+    "radio emission",
+    "consistent with the very",
+    "thermal conductivity of the surface",
+    "infrared emission",
+    "electrical characteristics of the surface",
+    "radio emission",
+    "to a greater extent",
+    "in some cases",
+    "experimental data",
+    "radio emission",
+    "like that",
+    "black body",
+    "high temperature",
+    "there is",
+    "may be",
+    "and that",
+    "black body",
+    "radio emission",
+    "it seems very likely",
+    "thermal radiation",
+    "have been",
+    "not very",
+    "electric arc",
+    "porous graphite"
+   ],
+   "mwe_junk": [
+    "consistent with the very",
+    "in some cases",
+    "like that",
+    "there is",
+    "may be",
+    "and that",
+    "have been",
+    "not very",
+    "back into",
+    "for instance",
+    "rise to",
+    "in excess of",
+    "more than",
+    "compared with",
+    "due to"
+   ],
+   "mwe_junk_rate": 0.3125,
+   "polysemy_sample": [
+    {
+     "word": "as",
+     "sense_candidates": 4,
+     "context": "of the moon and planets as a new source of information"
+    },
+    {
+     "word": "present",
+     "sense_candidates": 4,
+     "context": "their atmospheres The results of present observations of the thermal radio"
+    },
+    {
+     "word": "low",
+     "sense_candidates": 4,
+     "context": "are consistent with the very low thermal conductivity of the surface"
+    },
+    {
+     "word": "in",
+     "sense_candidates": 4,
+     "context": "was derived from the variation in the infrared emission during eclipses"
+    },
+    {
+     "word": "when",
+     "sense_candidates": 4,
+     "context": "eclipses e g Garstung 1958 When sufficiently accurate and complete measurements"
+    },
+    {
+     "word": "will",
+     "sense_candidates": 4,
+     "context": "complete measurements are available it will be possible to set limits"
+    },
+    {
+     "word": "set",
+     "sense_candidates": 5,
+     "context": "it will be possible to set limits on the thermal and"
+    },
+    {
+     "word": "on",
+     "sense_candidates": 4,
+     "context": "be possible to set limits on the thermal and electrical characteristics"
+    },
+    {
+     "word": "shorter",
+     "sense_candidates": 4,
+     "context": "greater extent than those using shorter wave lengths and should in"
+    },
+    {
+     "word": "surface",
+     "sense_candidates": 4,
+     "context": "the characteristics of the solid surface Radio observations of Venus and"
+    },
+    {
+     "word": "near",
+     "sense_candidates": 4,
+     "context": "by measurements at wave lengths near 3 cm and 10 cm"
+    },
+    {
+     "word": "that",
+     "sense_candidates": 4,
+     "context": "although there is the possibility that the observed radiation may be"
+    },
+    {
+     "word": "like",
+     "sense_candidates": 6,
+     "context": "emission spectrum is definitely not like the spectrum of a black-body"
+    },
+    {
+     "word": "cooled",
+     "sense_candidates": 4,
+     "context": "applying a porous graphite anode cooled by a transpiring gas Argon"
+    },
+    {
+     "word": "transferred",
+     "sense_candidates": 4,
+     "context": "gas Argon Thus the energy transferred from the arc to the"
+    },
+    {
+     "word": "fed",
+     "sense_candidates": 4,
+     "context": "to the anode was partly fed back into the arc It"
+    },
+    {
+     "word": "shown",
+     "sense_candidates": 4,
+     "context": "into the arc It was shown that by proper anode design"
+    },
+    {
+     "word": "net",
+     "sense_candidates": 5,
+     "context": "by proper anode design the net energy loss of the arc"
+    },
+    {
+     "word": "could",
+     "sense_candidates": 4,
+     "context": "the arc to the anode could be reduced to approximately 15"
+    },
+    {
+     "word": "total",
+     "sense_candidates": 5,
+     "context": "to approximately 15 of the total arc energy A detailed energy"
+    },
+    {
+     "word": "detailed",
+     "sense_candidates": 4,
+     "context": "the total arc energy A detailed energy balance of the anode"
+    },
+    {
+     "word": "fluxes",
+     "sense_candidates": 4,
+     "context": "velocities Introduction The high heat fluxes existing at the electrode surfaces"
+    },
+    {
+     "word": "surfaces",
+     "sense_candidates": 4,
+     "context": "fluxes existing at the electrode surfaces of electric arcs necessitate extensive"
+    },
+    {
+     "word": "cooling",
+     "sense_candidates": 4,
+     "context": "of electric arcs necessitate extensive cooling to prevent electrode ablation The"
+    },
+    {
+     "word": "can",
+     "sense_candidates": 4,
+     "context": "with those at the cathode can be explained by the physical"
+    },
+    {
+     "word": "plus",
+     "sense_candidates": 4,
+     "context": "Heat of condensation work function plus kinetic energy of the electrons"
+    }
+   ],
+   "label": "论文/学术难度"
+  }
+ ]
+}

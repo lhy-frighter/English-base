@@ -1,0 +1,168 @@
+{
+  "steps": [],
+  "asr1": {
+    "ms": 878,
+    "text": "you"
+  },
+  "asrDisposedBeforeTts": true,
+  "ttsAcquireMs": 5651,
+  "tts1": {
+    "chunks": [
+      {
+        "words": 6,
+        "pause": 0,
+        "seamless": true,
+        "synthMs": 3566,
+        "wallMs": 3566,
+        "audioMs": 3972,
+        "n": 95326
+      },
+      {
+        "words": 2,
+        "pause": 0,
+        "seamless": false,
+        "synthMs": 1368,
+        "wallMs": 1369,
+        "audioMs": 1650,
+        "n": 39600
+      }
+    ],
+    "totalAudioMs": 5622
+  },
+  "tts1FirstChunkMs": 3566,
+  "tts2": {
+    "chunks": [
+      {
+        "words": 6,
+        "pause": 0,
+        "seamless": true,
+        "synthMs": 2840,
+        "wallMs": 2840,
+        "audioMs": 3037,
+        "n": 72896
+      },
+      {
+        "words": 4,
+        "pause": 190,
+        "seamless": false,
+        "synthMs": 2103,
+        "wallMs": 2103,
+        "audioMs": 2740,
+        "n": 65760
+      },
+      {
+        "words": 3,
+        "pause": 0,
+        "seamless": false,
+        "synthMs": 2007,
+        "wallMs": 2008,
+        "audioMs": 2450,
+        "n": 58800
+      }
+    ],
+    "totalAudioMs": 8227
+  },
+  "tts3": {
+    "chunks": [
+      {
+        "words": 5,
+        "pause": 190,
+        "seamless": false,
+        "synthMs": 1520,
+        "wallMs": 1521,
+        "audioMs": 2015,
+        "n": 48360
+      },
+      {
+        "words": 1,
+        "pause": 190,
+        "seamless": false,
+        "synthMs": 1243,
+        "wallMs": 1244,
+        "audioMs": 1665,
+        "n": 39960
+      },
+      {
+        "words": 5,
+        "pause": 0,
+        "seamless": false,
+        "synthMs": 2549,
+        "wallMs": 2549,
+        "audioMs": 3125,
+        "n": 75000
+      }
+    ],
+    "totalAudioMs": 6805
+  },
+  "ttsDisposed": true,
+  "mt": {
+    "ms": 342,
+    "n": 6,
+    "empty": 0,
+    "pairs": 6,
+    "sample": "该大学的研究人员宣布了一种完全在用户自己的计算机上翻译语言的新方法。"
+  },
+  "mtDisposedBeforeTts2": true,
+  "ttsReacquireMs": 5275,
+  "tts4": {
+    "chunks": [
+      {
+        "words": 6,
+        "pause": 0,
+        "seamless": true,
+        "synthMs": 3033,
+        "wallMs": 3034,
+        "audioMs": 3202,
+        "n": 76855
+      },
+      {
+        "words": 3,
+        "pause": 0,
+        "seamless": false,
+        "synthMs": 1785,
+        "wallMs": 1785,
+        "audioMs": 2125,
+        "n": 51000
+      }
+    ],
+    "totalAudioMs": 5327
+  },
+  "allReleased": true,
+  "rssStageMb": {
+    "rss-baseline": 80,
+    "rss-asr": 1021,
+    "rss-tts1": 483,
+    "rss-tts1-disposed": 140,
+    "rss-mt": 644,
+    "rss-tts2": 570,
+    "rss-final": 144
+  },
+  "rssDeltaMb": {
+    "baseline": 80,
+    "asr": 1021,
+    "tts1": 483,
+    "tts1Disposed": 140,
+    "mt": 644,
+    "tts2": 570,
+    "final": 144
+  },
+  "checks": {
+    "asrReturned": true,
+    "ttsAcquired": true,
+    "tts1HasAudio": true,
+    "tts2HasAudio": true,
+    "tts3HasAudio": true,
+    "tts4HasAudio": true,
+    "firstChunkWarm": true,
+    "mt6ParasNoEmpty": true,
+    "asrDisposedBeforeTts": true,
+    "ttsDisposedBeforeMt": true,
+    "mtDisposedBeforeTts2": true,
+    "allReleased": true,
+    "rssAsrGoneBeforeTts": true,
+    "rssTtsGoneBeforeMt": true,
+    "rssTts2Band": true,
+    "rssFinalNearBaseline": true
+  },
+  "pass": true
+}

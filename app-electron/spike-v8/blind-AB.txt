@@ -1,0 +1,142 @@
+# Blind A/B pack v2 — A/B identity randomized per item. Vote into blind-votes.json BEFORE opening blind-key.json
+
+## item 1 [sciencedaily] (sciencedaily-01)
+EN: A remarkably preserved fossil from northeastern Spain is giving scientists a rare look at the skin, soft tissues, and possible coloration of an ancient crocodile relative that lived about 125 million years ago.
+
+A: 西班牙东北部一个保存得非常丰富的化石 给科学家们提供了罕见的目光 观察皮肤,软组织 以及可能给一个古代鳄鱼亲戚涂色
+
+B: 来自西班牙东北部的一块保存极为完好的化石正让科学家们罕见地观察了生活在约1.25亿年前的古代鳄鱼亲属的皮肤、软组织以及可能的颜色。
+
+## item 2 [sciencedaily] (sciencedaily-04)
+EN: The breakthrough came while paleontologists Oscar Castillo and Jes&uacute;s Serrano were building a database of fossils from the lithographic limestones of Montsec held in Catalan and European museums. When they examined the holotype of Montsecosuchus depereti under ultraviolet light, they noticed structures that appeared to be remnants of soft tissue.
+
+A: 这一突破是在古生物学家奥斯卡·卡斯蒂略和杰斯·阿库特·塞拉诺正在建立来自蒙特塞特石版石灰岩化石的数据库时,这些化石保存在加泰罗尼亚和欧洲的博物馆中。 当他们在紫外线下检查蒙特塞科苏赫迪佩雷蒂的全息型时,注意到这些结构似乎是软组织残留物。
+
+B: 突破的到来,正是古生物学家奥斯卡·卡斯蒂略和杰斯·加卢特;塞拉诺正在建立来自卡泰罗尼亚和欧洲博物馆的蒙特斯古石的石灰岩岩的化石数据库。 当他们检查紫外光下的蒙塞科苏斯·德佩雷蒂的原型时,他们注意到了似乎是软组织残余的结构。
+
+## item 3 [sciencedaily] (sciencedaily-07)
+EN: The scales varied considerably in shape and size across different parts of the body. The researchers also found that the animal lacked the high caudal fin seen in modern crocodiles.
+
+A: 研究者还发现动物缺乏现代鳄鱼所看到的高鳍。
+
+B: 鳞片在身体不同部位的形状和大小上差异很大。 研究人员还发现,这种动物缺乏现代鳄鱼身上可见的高烧鳍。
+
+## item 4 [sciencedaily] (sciencedaily-10)
+EN: "These traits indicate that, despite being a primitive animal, it was already very well adapted to a semi-aquatic lifestyle," concludes Castillo-Visa.
+
+A: 这些特征表明,尽管它是一种原始动物,但已经很好地适应了半水族的生活方式,”卡斯蒂略-维萨总结道。
+
+B: 并让这些动物适应半水生生活方式, 并得出Castillo-Visa的结论。
+
+## item 5 [sciencedaily] (sciencedaily-13)
+EN: Scientists cannot yet determine the exact colors that produced the pattern.
+
+A: 科学家还无法确定产生这种图案的确切颜色。
+
+B: 科学家们还无法确定产生这种图案的具体颜色。
+
+## item 6 [sciencedaily] (sciencedaily-16)
+EN: The research has been mainly funded by the VEBPI, PLEC2021-007903, and ARQ001SOL-173-2022 projects, with support from the Ministry of Science, Innovation and Universities, the NextGenerationEU/PRTR program, the Department of Culture of the Generalitat de Catalunya, and the CERCA program.
+
+A: 该研究主要由VEBPI、PLEC2021-00793和ARQ001SOL-173-2022项目资助,并得到了科学、创新和大学部、NextGenerationEU/PRTR项目、加泰罗尼亚文化部以及CERCA项目的支持。
+
+B: 研究主要由VEBPI、PLEC2121-007903和ARQ001SOL-173-2022项目资助,并得到科学、创新和大学部、下一个GenerationEU/PRTR方案、加泰罗尼亚总工会文化司以及CERCA方案的支助。
+
+## item 7 [sciencedaily] (sciencedaily-19)
+EN: The fossil record includes spiders, flies, wasps or beetles, insect larvae, crustaceans, vertebrates such as fish and amphibians, and a remarkable diversity of plants. Among them is Montsechia, the first known angiosperm in the world. The center is also part of the "Dinosaurs of the Pyrenees" project, a network of museums and interpretation centers showcasing the rich paleontological record of the Catalan Pyrenees.
+
+A: 化石记录包括蜘蛛、苍蝇、黄蜂或甲虫、幼虫、甲壳虫、脊椎动物(如鱼类和两栖动物)以及各种植物,其中莫名其妙的植物有:世界首个已知血管动物蒙特塞西亚。中心也是“比利牛斯人恐龙”项目的一部分,这是一个博物馆和口译中心网络,展示了卡泰罗尼亚比利牛的丰富古生物学记录。
+
+B: 化石记录包括蜘蛛、苍蝇、黄蜂或甲虫、昆虫幼虫、甲壳类动物、鱼类和两栖动物等脊椎动物,以及植物的显著多样性。 其中包括蒙特塞西亚,这是世界上首例已知的血管精子。 该中心也是“比利牛斯山脉恐龙”项目的一部分,该项目由博物馆和解说中心组成,展示加泰罗尼亚比利牛斯山脉丰富的古古生物学历史。
+
+## item 8 [aeon] (aeon-02)
+EN: Leônidas Borges de Oliveira drove the first 300 miles of the world’s longest road trip alone. The date of his departure, in early 1928, meant that the young Brazilian army officer also had the road almost entirely to himself. This gave him time to think about what he had taken on. The vehicle beneath him, a donated Ford Model T with a decade of delivering newspapers on the odometer, chattered with ease over alternating segments of fresh gravel and steaming asphalt that constituted Brazil’s new highway, connecting Rio de Janeiro with São Paulo. On both sides of the road, Oliveira surveyed the deforested Paraíba Valley, which had hosted the world’s first coffee boom – ranks of bean-fruiting bushes whose product had reached global markets in 60-kilo sacks on the backs of mules. Oliveira was among the first to see his nation at highway speed, and velocity could make the eroded landscapes of the past feel irrelevant. He believed he was chasing the future.
+
+A: 仅是998年初,他离开的那一天意味着巴西年轻军官也几乎完全拥有这条道路。 这给了他时间去思考他所走过的。 他下面的一辆汽车,捐赠的福特T型车,在水深计上投递了十年报纸,对巴西新高速公路巴西新公路中交替的新鲜碎石和蒸汽沥青进行轻松的交谈,这块石头和沥青是巴西的新高速公路,连接里约热内卢和圣保罗。 奥利维拉在公路两侧都勘察了被砍伐的帕拉伊巴谷,这块森林是全世界第一个咖啡繁荣的豆芽灌木,其产品在驴背面60公斤的袋中进入全球市场。 奥利维拉是最早看到巴西高速高速高速高速高速的国民之一,快速的过去风景可能让人感到不相干。 他认为他正在追逐着未来。
+
+B: 莱尼达斯·博尔赫斯·德·奥利维拉独自驾驶了世界上最长公路旅行的首公里300英里。 他于1928年初离开,这意味着这位年轻的巴西军官几乎完全只能靠自己。 这让他有时间思考自己所接受的一切。 他身下的车辆是一辆捐赠的福特T型车,其十年间一直在里程表上运送报纸,他轻松地在巴西新高速公路、连接里约热内卢与圣保罗的新路段,交替地翻找着新鲜碎石和蒸汽沥青路段。 在道路两侧,奥利维拉对被砍伐的帕拉伊巴山谷进行了调查,该山谷曾举办过全球首个咖啡热潮——众多含豆类的灌木,其产品以60千匹腿的骡子皮袋进入全球市场。 奥利维拉是最早以高速行驶的国家之一,而速度可能使过去被侵蚀的风景感觉无关紧要。 他相信自己是在追逐未来。
+
+## item 9 [aeon] (aeon-05)
+EN: What Oliveira ultimately wanted was an authentic Pan-American Union, two continents without passports, without customs, and without official barriers at the hemispheres’ many successive borders. Nearly a century later, the fraternal ideals that underpinned this dream and gave birth to the Pan-American Highway might appear unimaginably distant, subverted by nativist sentiment – but, in fact, remain alive in one of the two continents the road was supposed to link.
+
+A: 奥利维拉最终想要的是一个真正的泛美联盟,两个大陆没有护照,没有海关,也没有在半球的许多接连边界上的官方壁垒。 近一个世纪后,支撑这一梦想并诞生泛美高速公路的兄弟理想可能看起来不可想象地遥远,被民族主义情绪破坏,事实上,这条道路应该连接在两大大陆之一,但事实上,这条道路应该仍然能够活在其中的大陆中。
+
+B: 奥利维拉最终想要的是一个正宗的泛美联盟,两大洲没有护照,没有海关,且在西半球多条连续边界上没有官方壁垒。 近一个世纪后,支撑这一梦想并催生泛美公路的兄弟般理想,可能显得难以想象地遥远,被本土主义情绪所颠覆——但实际上,这条道路本应连接的两大洲之一,依然依然充满活力。
+
+## item 10 [aeon] (aeon-08)
+EN: Where the road ran out, his men disassembled their vehicles, packed the components onto mules, and marched them on foot
+
+A: 路面冲出时,他的部下拆散了车辆,将零件装在骡子上,然后徒步行进
+
+B: 路路路路路路路路路路路路路路路途过,他手下拆卸了车辆,将部件装在骡子上,徒步行走,
+
+## item 11 [aeon] (aeon-11)
+EN: The Pan-American Highway that Oliveira hoped to pioneer was indeed born in a burst of fraternal rhetoric. Officially, however, the road was never just about driving a car from Patagonia to Alaska, or vice versa, for the mere amusement of tourists. It was to be a modern network connecting every national capital, from Ottawa and Washington to Santiago and Buenos Aires. And this was to be only a beginning. The network was to then expand until it reached every province and shore, facilitating trade and resource extraction, breaking down old stereotypes and softening contested borders in friendly cultural exchanges. The ideals remained potent for half a century, and in 1966 the US declared the entire US interstate system part of the Pan-American Highway network.
+
+A: 奥利维拉希望开创的泛美高速公路确实诞生于一连串兄弟般的言论中。 然而,官方说来,这条道路从来不仅仅是从帕塔哥尼亚开车到阿拉斯加,或者说相反,只是为游客的娱乐。 它应该是一个连接从渥太华和华盛顿到圣地亚哥和布宜诺斯艾利斯的每一个国家首都的现代化网络。 而这只是个开始。 网络要扩展到到达每一个省和海岸,便利贸易和资源开采,打破旧的陈规旧习,在友好的文化交流中软化有争议的边界。 理想在半个世纪里依然很强劲,1966年美国宣布泛美公路网是美国跨州系统的一部分。
+
+B: 奥利维拉希望开创的泛美公路确实诞生于一场兄弟般的言辞热潮中。 然而,这条路并非仅仅为了吸引游客而驾车从巴塔哥尼亚前往阿拉斯加,反之亦然。 这是一个现代化的网络,连接着从渥太华和华盛顿到圣地亚哥和布宜诺斯艾利斯的每个国家首都。 这仅仅是个开始。 该网络随后将扩展至各个省份和沿岸地区,促进贸易和资源开采,打破陈旧的刻板印象,并在友好的文化交流中软化有争议的边界。 半个世纪以来,这一理念一直很强烈,1966年,美国宣布整个美国州际体系为泛美公路网络的一部分。
+
+## item 12 [aeon] (aeon-14)
+EN: Popular attitudes toward immigrants had fluctuated with economic conditions but, for decades, flaring anti-immigrant sentiment had had little effect on general policy. True, the US barred the entry of prostitutes in 1875, convicts and the insane in 1882, and polygamists in 1891, but other than the 1882 blanket ban on Chinese nationals, most legislation had rather narrow targets against individuals defined as undesirables. Otherwise, the doors were mostly open. Policies, however, changed abruptly in the 1920s, and the highway’s promotion had some impact on the reversal. The same year that Coolidge spoke in favour of building the highway, he also declared that ‘America must be kept American,’ and US Congress passed the broadly restrictive Johnson-Reed Act, whose discriminatory quotas reduced immigrant arrivals by a harsh 80 per cent. Latin Americans were not included in the act, but already by 1929 the US began detaining and repatriating individuals of Mexican descent, some of whom had been born in the US.
+
+A: 人们对移民的态度因经济状况而波动,但几十年来,反移民情绪的高涨对总体政策几乎没有产生影响。 诚然,美国在1875年禁止了妓女入境、1882年禁止了罪犯和疯子入境,1891年禁止了一夫多妻制,但除了1882年针对中国公民的全面禁令外,大多数立法针对被界定为不受欢迎的人的目标相当狭窄。 否则,门大部分都是开着的。 然而,政策在20世纪20年代突然发生了变化,高速公路的推广也在一定程度上影响了这一逆转。 同年,柯立芝曾表态支持修建高速公路,同时他也宣称“美国必须被保留为美国人”,美国国会也通过了《约翰逊-里德法案》,该法案的歧视性配额使移民入境人数减少了80%。 拉丁美洲人并未被纳入该法案,但到1929年,美国已开始拘留和遣返墨西哥裔人士,其中一些人出生在美国。
+
+B: 人们对移民的公众态度随着经济状况而波动,但几十年来,反移民情绪的发酵对总体政策影响甚微。 诚然,美国禁止妓女入境的原因有1875年,罪犯和精神病患者在1885年,1882年,精神病患者在1882年,多子女者在1891年,但除了1882年全面禁止中国国民之外,大多数立法都针对被界定为不受欢迎的人,而目标则相当狭窄。 否则,大门大都敞开。 然而,20世纪20年代的政策发生了突然变化,公路的推进也影响了反弹。 酷利科赞成修建高速公路的同年,他也宣布“美国必须保留美国,”美国国会通过了限制广泛的强生里德法案,该法案的歧视性配额将移民抵达人数减少了80%。 拉美人没有被纳入法案,但到1929年美国就开始拘留和遣返墨西哥裔人,其中一些人出生于美国。
+
+## item 13 [aeon] (aeon-17)
+EN: So those who took to the road in their millions didn’t come in cars with sunglasses on their noses. Rather, they sought new homes far from the places of their chance births. The majority moved on foot from rural areas to the largest cities in their own nations, the great urban migration that began in the 1930s, explained in part by new industrial jobs but greatly facilitated by new roads. Others went greater distances to settle in neighbouring nations: Colombians to Panama City; Nicaraguans to San José; Paraguayans and Bolivians to Buenos Aires. The most adventurous made the long trip to the US. While the highway made movement overland for migrants on foot substantially easier, once they arrived at a border, they typically came up against formidable legal obstacles. Even if they had secured the proper papers, they might be rejected because, without cars, they were identified as poor migrants. The administrative barriers to migration were national, ethnic and racial in character but, most specifically, they were created to turn back the poor and car-less.
+
+A: 这些人在数百万人中走上了公路,但他们却没有坐着满鼻子太阳眼镜的汽车。 相反,他们寻找远离出生地点的新家。 大多数人从农村地区步行到本国最大的城市,从1930年代开始的大规模城市移民,部分是由于新的工业工作,但大为便利,新公路也大大促进了这种移民。 其他人则走远到邻国定居:哥伦比亚人到巴拿马城;尼加拉瓜人到圣何塞;尼加拉瓜人到圣何塞;巴拉圭人和玻利维亚人到布宜诺斯艾利斯。 最冒险的人到美国旅行很长。 虽然高速公路让移民步行旅行更加容易,但他们到达边境后通常会遇到巨大的法律障碍。 即使他们有适当的证件,他们也可能被拒绝,因为没有汽车,他们会被确认为贫穷移民。 移民的行政障碍是民族、种族和种族性质的,但最具体地说,他们被创建起来是为了让穷人和没有汽车的人回路。
+
+B: 因此,那些数百万次上路的人,并没有带着戴太阳镜的车来。 相反,他们在离出生机会的地方很远的地方,却在附近寻找新家。 大多数人从农村地区徒步前往本国最大的城市,这些城市移民始于20世纪30年代,部分得益于新的工业工作岗位,但新道路却极大地促进了这一发展。 其他人则长途跋涉前往邻国定居:前往巴拿马城,前往尼加拉瓜至圣何塞;巴拉圭人和玻利维亚人前往布宜诺斯艾利斯。 最冒险的是长途旅行去美国。 尽管高速公路让徒步出行的移民更容易上岸,但一旦他们抵达边境,通常会遇到巨大的法律障碍。 即使他们已经获得了适当的证件,也可能被拒绝,因为没有汽车,他们被认定为贫困移民。 移民的行政障碍具有民族、民族和种族性质,但最具体地说,是为了让穷人和无车者重新陷入倒退。
+
+## item 14 [aeon] (aeon-20)
+EN: In 1932, the Darién Gap was wider than it is today, and it was the only place that Oliveira was forced to backtrack. He attempted to drive it even though the Colombian military had told him it was impossible. Broad swamps and malarial fevers forced the Brazilians to place their disassembled Fords on the deck of a boat for the first and only time. Oliveira, who might be in the running for the most optimistic person to have ever lived, opined that the Pan-American Highway would never be built overland though the Gap. The topography, he believed, was just too difficult. On that point, he was wrong. Humans have built roads through, over, and under terrain far more difficult than the Gap: Mexico’s Durango to Mazatlán Highway conquers the Sierra Madre with 63 tunnels and 115 bridges, one of them 400 metres high; the Faroese have tunnelled 600 feet below the Atlantic Ocean to connect their remote islands, one segment of which includes the world’s first subseafloor roundabout.
+
+A: 1932年,达里安河谷比今天更加宽阔,也是奥利维拉被迫背弃道路的唯一地方。他试图开车开。 尽管哥伦比亚军方告诉他这是不可能的。 广面积的沼泽和疟疾热迫使巴西人第一次和唯一一次将拆卸的福特放在船上甲板上。 奥利维拉可能为最乐观的人跑步,他相信泛美公路不会通过河口在陆地上修建。 他认为,地形太困难了。 在这一点上,他错了。 人类在穿越、穿越和在地形下修建的道路比Gap要困难得多:墨西哥的杜兰戈至马扎特兰公路用63条隧道和115座桥梁征服了塞拉马德雷,其中一座高达400米;法罗索人已经从大西洋下方600英尺的隧道中挖出600英尺的隧道,连接他们边远的岛屿,其中一部分包括世界第一个海底环绕。
+
+B: 1932年,达里恩峡谷比今天更宽,也是奥利维拉被迫回溯的唯一地方。 他试图驾驶它,尽管哥伦比亚军方告诉他这是不可能的。 广阔的沼泽和疟疾的发热迫使巴西人首次且唯一一次将拆解的福特汽车放在船甲板上。 奥利维拉可能正在竞选有史以来最乐观的人,他认为泛美公路即使在“盖”之下也永远不会在陆路修建。 他认为,地形太难了。 那一点上,他错了。 人类修建的道路经过、穿越、穿越并在地段下比“盖普”公路难得多:墨西哥的杜朗戈至马萨特兰公路拥有63条隧道和115座桥梁,其中一座高400米;法罗群岛在大西洋以下600英尺处隧道,连接其偏远岛屿,其中一段路段包括世界上首个海底环岛。
+
+## item 15 [newsinlevels] (newsinlevels-03)
+EN: Cities like Manchester, which charges 1 pound (1.14 euros) per room, and Edinburgh already use similar fees. The new tax will likely start before 2029. Many businesses in the tourism industry are unhappy about the new tax. They worry that visitors will choose other places to travel to avoid paying extra fees, which could lead to a 1.8 billion pound (2.1 billion euros) loss in tourism spending. Studies show that many tourists might stay fewer nights or spend less money.
+
+A: 曼彻斯特等城市每间房间收取1英镑(1.14欧元),爱丁堡也使用类似的费用。 新的税费可能会在2029年之前开始。 旅游业的许多企业对新税不满意。 他们担心游客会选择其他地方来旅行以避免支付额外费用,这可能导致旅游支出损失18亿英镑(20亿欧元 ) 。 研究表明许多游客可能晚间停留时间更少,或者花费的钱更少。
+
+B: 像曼彻斯特这样的城市,每房收费1英镑(1.14欧元),爱丁堡市也已使用类似的费用。 新税种可能在2029年之前开始。 旅游业中的许多企业对新税负感到不满。 他们担心游客会选择其他旅游地点,以避免支付额外费用,这可能导致旅游支出损失18亿英镑(21亿欧元)。 研究表明,许多游客可能少住一晚或花钱少。
+
+## item 16 [newsinlevels] (newsinlevels-06)
+EN: News in Levels is designed to teach you 3000 words in English. Please follow the instructions
+
+A: 新闻在水平版旨在教你3000个英语单词。 请按照说明操作
+
+B: 关级新闻设计的目的是用英文教你们3000个字。请遵守指令
+
+## item 17 [newsinlevels] (newsinlevels-09)
+EN: Listen to the news from today without reading the text.
+
+A: 听今天的新闻,不看稿子
+
+B: 从今天开始收听新闻,无需阅读文本。
+
+## item 18 [newsinlevels] (newsinlevels-12)
+EN: Josef Průša is a Czech entrepreneur and engineer who became one of Europe’s most influential people in 3D printing. As a student, he experimented with music technology and built his first 3D printer to make customized parts.
+
+A: Josef Pr, ša是捷克企业家和工程师,成为欧洲3D印刷界最有影响力的人之一。 作为学生,他实验了音乐技术,并建立了第一台3D打印机,制作了定制部件。
+
+B: 约瑟夫·普什沙是一位捷克企业家和工程师,后来成为欧洲在3D打印领域最具影响力的人物之一。 作为学生,他尝试了音乐技术,并研制出自己的首款3D打印机来制作定制零件。
+
+## item 19 [newsinlevels] (newsinlevels-15)
+EN: Which large organizations are mentioned as customers of Prusa Research?
+
+A: 哪些大型组织被提到为普鲁萨研究的客户?
+
+B: 哪些大型组织被提及为普鲁萨研究公司的客户?
+
+## item 20 [newsinlevels] (newsinlevels-18)
+EN: Read the news articles from the day before and check if you remember all new words.
+
+A: 阅读前一天的新闻文章,并检查你是否还记得所有新单词。
+
+B: 阅读前一天的新闻报导, 并检查你是否记得所有新字。
+

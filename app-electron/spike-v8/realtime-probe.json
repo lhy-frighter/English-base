@@ -1,0 +1,70 @@
+{
+  "startedAt": "2026-09-26T14:24:27.999Z",
+  "phases": {
+    "C_pcm": {
+      "connectMs": 253,
+      "firstAudioMs": 1701,
+      "audioChunks": 2,
+      "pcmBytes": 73930,
+      "transcript": "Why don't skeletons fight each other? They don't have the guts!"
+    },
+    "D_mp3": {
+      "connectMs": 162,
+      "firstAudioMs": 1569,
+      "audioChunks": 2,
+      "mp3Bytes": 43750,
+      "transcript": "I'm doing great, thanks for asking! How about you?"
+    },
+    "E_history": {
+      "canceledPrefix": "Alright, let's dive into the fascinating world of internal combustion engines! An internal combustion engine operates based on the process of burning fuel inside the engine's cylinders, converting this energy into mechanical motion. Here's a step-by-step breakdown:\n\n1. Intake: The engine's intake valves open, drawing in a mixture of fuel and air into the combustion chambers. This mixture is then compressed by the piston's downward movement.\n\n2. Compression: The piston moves up, squeezing the fuel-air mixture. This compression creates pressure and heat, preparing the fuel for ignition.\n\n3. Ignition: A spark from the spark plug ignites the compressed mixture, causing a rapid expansion of gases. This expansion forces the piston down, producing power.\n\n4. Power Stroke: The piston travels downward, driving the crankshaft and turning the wheels of the vehicle.\n\n5. Exhaust: Exhaust gases are expelled from the combustion chamber through the exhaust valves. The piston's upward movement helps to push these gases out of the engine.\n\n6. Cooling: The engine's cooling system circulates coolant, absorbing excess heat from the engine. This cooled fluid is then circulated back into the engine, reducing the risk of overheating.\n\n7. Scavenging: Some engines use a separate piston or a different mechanism to clear exhaust gases and prepare the combustion chamber for the next intake stroke, a process known as scavenging.\n\nThis cycle repeats hundreds of times per minute, propelling the vehicle forward. Internal combustion engines are marvels of engineering, balancing precision, temperature control, and the efficient use of fuel.",
+      "canceledAudioDeltas": 5,
+      "cancelStatus": "cancelled",
+      "cancelToDoneMs": 6553,
+      "repeatTranscript": "",
+      "distinctiveWords": [
+        "alright",
+        "fascinating",
+        "world",
+        "internal",
+        "combustion",
+        "engines",
+        "engine",
+        "operates",
+        "based",
+        "process",
+        "burning",
+        "inside",
+        "cylinders",
+        "converting",
+        "energy",
+        "mechanical",
+        "motion",
+        "breakdown",
+        "intake",
+        "valves",
+        "drawing",
+        "mixture",
+        "chambers",
+        "compressed"
+      ],
+      "overlapWords": [],
+      "overlapRatio": 0,
+      "verdict": "CANCELED_CONTENT_NOT_IN_HISTORY"
+    },
+    "F1_riff_each": {
+      "speechStartedEvents": 1,
+      "committedEvents": 0,
+      "gotResponse": true,
+      "transcript": "喂，您还在吗？听得到我说话吗？",
+      "audioChunks": 2
+    },
+    "F2_header_once": {
+      "speechStartedEvents": 1,
+      "committedEvents": 0,
+      "gotResponse": true,
+      "transcript": "喂，您还在吗？听得到我说话吗？",
+      "audioChunks": 2
+    }
+  },
+  "finishedAt": "2026-09-26T14:25:20.892Z"
+}

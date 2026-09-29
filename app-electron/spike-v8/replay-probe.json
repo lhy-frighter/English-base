@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-09-26T15:01:06.110Z",
+  "tests": {
+    "context_codeword": {
+      "pass": true,
+      "transcript": "Blueberry.",
+      "status": "completed"
+    },
+    "context_meeting_password": {
+      "pass": true,
+      "transcript": "Raspberry.",
+      "status": "completed"
+    }
+  },
+  "finishedAt": "2026-09-26T15:01:12.327Z"
+}

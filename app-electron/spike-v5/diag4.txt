@@ -1,0 +1,159 @@
+﻿=== bnc/frq 校准 ===
+is bnc=24648 frq=0
+based bnc=0 frq=0
+points bnc=0 frq=0
+laws bnc=0 frq=0
+batches bnc=0 frq=0
+wise bnc=3087 frq=3234
+be bnc=2 frq=2
+but bnc=24 frq=23
+its bnc=58 frq=78
+data bnc=552 frq=559
+point bnc=176 frq=211
+attention bnc=714 frq=591
+position bnc=345 frq=512
+sampling bnc=8222 frq=6151
+log bnc=4322 frq=3423
+likelihood bnc=4994 frq=4596
+auto bnc=11945 frq=3134
+encoding bnc=28602 frq=30997
+mini bnc=9745 frq=11257
+sequence bnc=1691 frq=3143
+aligned bnc=0 frq=42201
+application bnc=608 frq=1519
+should bnc=85 frq=121
+new bnc=81 frq=88
+source bnc=633 frq=597
+target bnc=1095 frq=1281
+forum bnc=3756 frq=4705
+alignment bnc=8946 frq=7898
+model bnc=551 frq=504
+head bnc=209 frq=251
+learning bnc=1745 frq=1455
+rate bnc=297 frq=457
+lemma transformations -> transformation
+lemma information -> MISS
+lemma points -> point
+lemma based -> base
+
+=== vae.pdf 碎片追踪 ===
+Warning: UnknownErrorException: Ensure that the `standardFontDataUrl` API parameter is provided.
+tional p1 "Auto-Encoding Variational Bayes" x= 183.4 y= 669.1 h= 17.22
+tional p1 "distributions, and large datasets? We introduce a stochastic variational inference" x= 143.9 y= 494.0 h= 9.96
+tional p1 "two-fold. First, we show that a reparameterization of the variational lower bound" x= 143.9 y= 461.1 h= 9.96
+tional p1 "variational Bayesian (VB) approach involves the optimization of an approximation to the intractable" x= 108.0 y= 317.3 h= 9.96
+tional p1 "reparameterization of the variational lower bound yields a simple differentiable unbiased estimator" x= 108.0 y= 284.4 h= 9.96
+tional p1 "of the lower bound; this SGVB (Stochastic Gradient Variational Bayes) estimator can be used for ef-" x= 108.0 y= 273.5 h= 9.96
+tional p1 "variational auto-encoder" x= 377.5 y= 157.9 h= 9.96
+tional p1 "on the (global) parameters, and variational inference on the latent variables." x= 108.0 y= 62.1 h= 9.96
+tional p2 ", dashed lines denote the variational approximation" x= 190.8 y= 588.6 h= 9.96
+tional p2 ". The variational parameters" x= 178.3 y= 577.7 h= 9.96
+tional p2 "straightforward to extend this scenario to the case where we also perform variational inference on" x= 108.0 y= 531.7 h= 9.96
+tional p2 "tional distribution" x= 108.0 y= 404.4 h= 9.96
+tional p3 "posterior in mean-field variational inference, it is not necessarily factorial and its parameters" x= 108.0 y= 678.3 h= 9.96
+tional p3 "The variational bound" x= 130.4 y= 560.2 h= 9.96
+tional p3 "is called the (variational)" x= 379.3 y= 483.7 h= 9.96
+tional p3 "both the variational" x= 423.9 y= 406.7 h= 9.96
+tional p3 "variational Bayesian method for inferring a posterior over the parameters is given in the appendix." x= 108.0 y= 268.9 h= 9.96
+tional p3 "We apply this technique to the variational lower bound (eq. (2)), yielding our generic Stochastic" x= 108.0 y= 129.7 h= 9.96
+tional p3 "Gradient Variational Bayes (SGVB) estimator" x= 108.0 y= 116.9 h= 9.96
+tional p4 "be some conditional distribution." x= 206.6 y= 153.6 h= 9.96
+tional p4 "Note that for infinitesimals we use the notational convention" x= 124.1 y= 62.1 h= 8.97
+tional p5 "variational lower bound." x= 108.0 y= 675.9 h= 9.96
+tional p5 "Example: Variational Auto-Encoder" x= 125.9 y= 410.5 h= 11.96
+tional p5 "variational approximate posterior be a multivariate Gaussian with a diagonal covariance structure" x= 108.0 y= 271.8 h= 9.96
+tional p5 "and the variational parameters" x= 295.8 y= 225.8 h= 9.96
+tional p6 "latent variables. Wake-Sleep has the same computational complexity as AEVB per datapoint." x= 108.0 y= 611.2 h= 9.96
+tional p6 "Stochastic variational inference [HBWP13] has recently received increasing interest." x= 108.0 y= 594.3 h= 9.96
+tional p6 "paper was used in an efficient version of a stochastic variational inference algorithm for learning the" x= 108.0 y= 539.5 h= 9.96
+tional p6 "variational objective) and auto-encoders. A connection between" x= 108.0 y= 500.7 h= 9.96
+tional p6 "and a conditional distribution" x= 221.9 y= 467.8 h= 9.96
+tional p6 "ing (w.r.t. parameters) of the mutual information is equivalent to maximizing the conditional en-" x= 108.0 y= 407.0 h= 9.96
+tional p6 "regularization term dictated by the variational bound (e.g. eq. (10)), lacking the usual nuisance regu-" x= 108.0 y= 341.2 h= 9.96
+tional p6 "and stochastic variational inference using the reparameterization trick we describe in this paper." x= 108.0 y= 203.8 h= 9.96
+tional p6 "Their work was developed independently of ours and provides an additional perspective on AEVB." x= 108.0 y= 192.8 h= 9.96
+tional p6 "learning algorithms in terms of the variational lower bound, and the estimated marginal likelihood." x= 108.0 y= 130.2 h= 9.96
+tional p6 "The generative model (encoder) and variational approximation (decoder) from section 3 were used," x= 108.0 y= 113.3 h= 9.96
+tional p7 "Vertical axis: the estimated average variational lower bound per datapoint. The estimator variance" x= 108.0 y= 501.0 h= 9.96
+tional p7 "same encoder (also called recognition model) for the wake-sleep algorithm and the variational auto-" x= 108.0 y= 326.5 h= 9.96
+tional p7 "encoder. All parameters, both variational and generative, were initialized by random sampling from" x= 108.0 y= 315.6 h= 9.96
+tional p7 "which is explained by the regularizing nature of the variational bound." x= 108.0 y= 172.4 h= 9.96
+tional p8 "We have introduced a novel estimator of the variational lower bound, Stochastic Gradient VB" x= 108.0 y= 389.8 h= 9.96
+tional p8 "hierarchical generative architectures with deep neural networks (e.g. convolutional networks) used" x= 108.0 y= 249.6 h= 9.96
+tional p9 "David M Blei, Michael I Jordan, and John W Paisley. Variational Bayesian inference" x= 158.4 y= 650.7 h= 9.96
+tional p9 "Proceedings of the 29th International Conference on Ma-" x= 270.2 y= 639.7 h= 9.96
+tional p9 "tional inference." x= 158.4 y= 450.4 h= 9.96
+tional p9 "TR-2008-12-01, Computational and Biological Learning Lab, Courant Institute, NYU," x= 158.4 y= 384.0 h= 9.96
+tional p9 "Rajesh Ranganath, Sean Gerrish, and David M Blei. Black Box Variational Inference." x= 158.4 y= 328.6 h= 9.96
+tional p9 "propagation and variational inference in deep latent gaussian models." x= 158.4 y= 289.9 h= 9.96
+tional p9 "Tim Salimans and David A Knowles. Fixed-form variational posterior approximation" x= 158.4 y= 234.5 h= 9.96
+tional p9 "International Conference on Artificial Intelligence and Statistics" x= 199.8 y= 195.8 h= 9.96
+tional p10 "The variational lower bound (the objective to be maximized) contains a KL term that can often be" x= 108.0 y= 182.6 h= 9.96
+tional p10 "denote the variational mean and s.d. evaluated at datapoint" x= 108.0 y= 148.3 h= 9.96
+tional p11 "variational parameters" x= 108.0 y= 535.4 h= 9.96
+tional p11 "In variational auto-encoders, neural networks are used as probabilistic encoders and decoders. There" x= 108.0 y= 483.7 h= 9.96
+tional p11 "and the weights and biases are variational parameters" x= 108.0 y= 165.0 h= 9.96
+tional p12 "As written in the paper, it is possible to perform variational inference on both the parameters" x= 108.0 y= 261.6 h= 9.96
+tional p12 "denotes the variational lower bound to the marginal likelihood:" x= 172.1 y= 165.3 h= 9.96
+tional p13 "is the variational lower bound of the marginal likelihood of datapoint" x= 153.0 y= 689.2 h= 9.96
+tional p13 "we can reparameterize conditional samples" x= 186.2 y= 576.4 h= 9.96
+tional p13 "For notational conciseness we introduce a shorthand notation" x= 108.0 y= 335.2 h= 9.96
+tional p13 "(18), the Monte Carlo estimate of the variational lower bound, given" x= 221.8 y= 300.6 h= 9.96
+tional p13 "ance. In this case, we can let the variational approximate posteriors be multivariate Gaussians with" x= 108.0 y= 109.6 h= 9.96
+tional p14 "(Current value of variational parameters)" x= 160.0 y= 673.4 h= 9.96
+tional p14 "the variational approximate posteriors:" x= 108.0 y= 538.5 h= 9.96
+subse p4 ". Subse-" x= 469.8 y= 256.3 h= 9.96
+quently p4 "quently, the sample" x= 108.0 y= 243.6 h= 9.96
+eters p1 "whose continuous latent variables and/or parameters have intractable posterior distributions? The" x= 108.0 y= 328.3 h= 9.96
+eters p1 "parameters, and is straightforward to optimize using standard stochastic gradient ascent techniques." x= 108.0 y= 251.6 h= 9.96
+eters p1 "to efficiently learn the model parameters, without the need of expensive iterative inference schemes" x= 108.0 y= 190.8 h= 9.96
+eters p1 "on the (global) parameters, and variational inference on the latent variables." x= 108.0 y= 62.1 h= 9.96
+eters p2 ". The variational parameters" x= 178.3 y= 577.7 h= 9.96
+eters p2 "rameters" x= 108.0 y= 566.7 h= 9.96
+eters p2 "the global parameters; that algorithm is put in the appendix, but experiments with that case are left to" x= 108.0 y= 520.7 h= 9.96
+eters p2 "parameters" x= 108.0 y= 370.5 h= 9.96
+eters p2 "1. Efficient approximate ML or MAP estimation for the parameters" x= 131.4 y= 150.6 h= 9.96
+eters p2 ". The parameters can be" x= 408.9 y= 150.6 h= 9.96
+eters p2 "for a choice of parameters" x= 143.9 y= 100.9 h= 9.96
+eters p3 "posterior in mean-field variational inference, it is not necessarily factorial and its parameters" x= 108.0 y= 678.3 h= 9.96
+eters p3 "the recognition model parameters" x= 108.0 y= 656.3 h= 9.96
+eters p3 "jointly with the generative model parameters" x= 253.7 y= 656.3 h= 9.96
+eters p3 "parameters" x= 108.0 y= 395.7 h= 9.96
+eters p3 "and generative parameters" x= 166.4 y= 395.7 h= 9.96
+eters p3 "parameters." x= 108.0 y= 290.8 h= 9.96
+eters p3 "variational Bayesian method for inferring a posterior over the parameters is given in the appendix." x= 108.0 y= 268.9 h= 9.96
+eters p4 "Initialize parameters" x= 150.6 y= 674.1 h= 9.96
+eters p4 "Update parameters using gradients" x= 165.6 y= 617.0 h= 9.96
+eters p4 "convergence of parameters" x= 140.4 y= 606.1 h= 9.96
+eters p5 "eters" x= 108.0 y= 365.4 h= 9.96
+eters p5 "Note that in this case, the prior lacks parameters." x= 158.6 y= 337.5 h= 9.96
+eters p5 "rameters are computed from" x= 108.0 y= 315.6 h= 9.96
+eters p5 "and the variational parameters" x= 295.8 y= 225.8 h= 9.96
+eters p6 "natural parameters of exponential-family approximating distributions." x= 108.0 y= 528.5 h= 9.96
+eters p6 "ing (w.r.t. parameters) of the mutual information is equivalent to maximizing the conditional en-" x= 108.0 y= 407.0 h= 9.96
+eters p7 "Parameters are updated using stochastic gradient ascent where gradients are computed by differenti-" x= 108.0 y= 398.3 h= 9.96
+eters p7 "encoder. All parameters, both variational and generative, were initialized by random sampling from" x= 108.0 y= 315.6 h= 9.96
+eters p7 "adapted with Adagrad [DHS10]; the Adagrad global stepsize parameters were chosen from" x= 108.0 y= 293.6 h= 9.96
+eters p8 "Bayesian networks); (iii) application of SGVB to the global parameters; (iv) supervised models" x= 108.0 y= 227.7 h= 9.96
+eters p10 "with the learned parameters" x= 142.3 y= 408.1 h= 9.96
+eters p11 "variational parameters" x= 108.0 y= 535.4 h= 9.96
+eters p11 "and the weights and biases are variational parameters" x= 108.0 y= 165.0 h= 9.96
+eters p12 "weight updates steps using the acquired sample. For all algorithms the parameters were updated" x= 108.0 y= 363.9 h= 9.96
+eters p12 "As written in the paper, it is possible to perform variational inference on both the parameters" x= 108.0 y= 261.6 h= 9.96
+eters p12 "be some hyperprior for the parameters introduced above, parameterized by" x= 154.6 y= 222.7 h= 9.96
+eters p13 "Let the prior over the parameters and latent variables be the centered isotropic Gaussian" x= 108.0 y= 142.4 h= 9.96
+eters p13 ". Note that in this case, the prior lacks parameters. Let’s also" x= 250.9 y= 131.5 h= 9.96
+eters p14 "(Current value of variational parameters)" x= 160.0 y= 673.4 h= 9.96
+dzi — 原始 item 中不存在（可能是布局拼接产物）
+contemple — 原始 item 中不存在（可能是布局拼接产物）
+approriate p3 "See section 2.4 for general strategies for chosing such an approriate distribution" x= 108.0 y= 201.3 h= 9.96
+reconstrution p6 "10], i.e. the negative reconstrution error. However, it is well known that this recon-" x= 165.2 y= 385.1 h= 9.96
+samplingbased — 原始 item 中不存在（可能是布局拼接产物）
+
+=== attention.pdf 碎片追踪 ===
+Warning: UnknownErrorException: Ensure that the `standardFontDataUrl` API parameter is provided.
+rgen p11 "Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, and Jürgen Schmidhuber. Gradient flow in" x= 129.6 y= 473.2 h= 9.96
+rgen p11 "Sepp Hochreiter and Jürgen Schmidhuber. Long short-term memory." x= 129.6 y= 442.5 h= 9.96
+headi — 原始 item 中不存在（可能是布局拼接产物）
+lrate p7 "lrate" x= 162.9 y= 165.0 h= 9.96
+qiki — 原始 item 中不存在（可能是布局拼接产物）

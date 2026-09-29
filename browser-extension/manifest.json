@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "英语底座·网页送读",
+  "version": "0.9.0",
+  "description": "把当前英文网页正文一键发送到本地「个人英语能力底座」书库（127.0.0.1:47823），也可复制/下载为 Markdown。",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://127.0.0.1:47823/*"],
+  "action": { "default_title": "发送到英语底座", "default_popup": "popup.html" }
+}

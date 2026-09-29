@@ -1,0 +1,12 @@
+TITLE: Nighttime Street Lighting and Urban Heat
+LEVEL: C1
+GENRE: 论文风格
+WORDS: 268
+
+Abstract. Municipal lighting is rarely considered in urban heat mitigation, which focuses on vegetation and surface albedo. Using four years of satellite nighttime-light data and in-situ temperature loggers across 240 street segments in three mid-latitude cities, we examine whether illumination intensity is associated with elevated nighttime air temperature. Segments in the highest illumination quartile were on average 0.6–1.1 °C warmer at 02:00 local time than the lowest quartile, after controlling for traffic density, building height, and sky-view factor. The association was strongest in streets with narrow luminaire spacing and full-cutoff fixtures mounted above 8 m.
+
+We propose two mechanisms. First, luminaires convert electrical power largely to heat, released at head height within the pedestrian canopy. Second, bright surfaces delay radiative cooling of adjacent facades. The effects are modest at street scale but non-trivial at city scale: a back-of-envelope calculation suggests lighting-related heat release is comparable to 3–8 % of anthropogenic daytime heat storage in the study districts.
+
+Policy relevance follows from the timing of the effect. Nighttime minima, not daytime maxima, drive heat-related mortality, and relief windows at night are already shrinking in warming cities. Because the association weakened sharply below 8 lux, the results support curfew and dimming policies already adopted in several European municipalities: reductions in after-midnight illumination achieved most of the measurable cooling without measurable increases in crime or accident records in our sample.
+
+Limitations are acknowledged. The observational design cannot exclude residual confounding by commercial activity, and the three cities share a single climate zone. Replication in hot-arid and tropical cities is a priority, as is the coupling of lighting datasets with energy-consumption records.

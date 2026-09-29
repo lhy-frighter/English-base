@@ -1,0 +1,124 @@
+
+  // S9-2 断点续学：滚动位置 5s 节流落库（段落 pi + 段内字符 ch + 段内容 SHA256），打开旧文章恢复；哈希漂移回开头
+  const readerRef = useRef<HTMLDivElement | null>(null);
+  const [resumeNotice, setResumeNotice] = useState("");
+  const resumeTimerRef = useRef<number | null>(null);
+  const resumeSavedRef = useRef<{ pi: number; ch: number } | null>(null);
+  const resumeRestoredRef = useRef<{ id: number; pi: number; reanchored: boolean } | null>(null);
+  const resumeSkipRef = useRef(false); // 词卡跳词定位优先于断点恢复
+
+  const computeAnchor = useCallback(() => {
+    const reader = readerRef.current;
+    if (!reader) return null;
+    const ps = Array.from(reader.querySelectorAll<HTMLElement>("p[data-pi]"));
+    if (!ps.length) return null;
+    const y = Math.max(80, reader.getBoundingClientRect().top + 10);
+    let pi = 0;
+    for (const el of ps) {
+      pi = Number(el.dataset.pi);
+      if (el.getBoundingClientRect().bottom >= y) break;
+    }
+    // 段内字符偏移：用光标 API 取视口线在段 DOM 中的字符位置（恢复粒度以段落为准，ch 留给深链/精确定位）
+    let ch = 0;
+    try {
+      const x = reader.getBoundingClientRect().left + 30;
+      const doc = document as Document & {
+        caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+        caretRangeFromPoint?: (x: number, y: number) => Range | null;
+      };
+      let node: Node | null = null;
+      let off = 0;
+      const cp = doc.caretPositionFromPoint?.(x, y);
+      if (cp) { node = cp.offsetNode; off = cp.offset; }
+      else { const rg = doc.caretRangeFromPoint?.(x, y); if (rg) { node = rg.startContainer; off = rg.startOffset; } }
+      const host = node ? (node.nodeType === 3 ? node.parentElement : node as HTMLElement) : null;
+      const pEl = host?.closest("p[data-pi]") as HTMLElement | null;
+      if (pEl && ps[pi] === pEl && pEl.firstChild && node) {
+        const range = document.createRange();
+        range.setStartBefore(pEl.firstChild);
+        range.setEnd(node, off);
+        ch = range.toString().length;
+      }
+    } catch { ch = 0; }
+    return { pi, ch: Math.max(0, ch) };
+  }, []);
+
+  const flushResume = useCallback(async (textId: number) => {
+    const a = computeAnchor();
+    if (!a) return;
+    const last = resumeSavedRef.current;
+    if (last && last.pi === a.pi && last.ch === a.ch) return;
+    const para = readerParas[a.pi] ?? "";
+    const hash = para ? await sha256Hex(para) : "";
+    try {
+      await api.resumePut("reading", String(textId), { pi: a.pi, ch: a.ch }, hash);
+      resumeSavedRef.current = a;
+    } catch { /* 位置保存失败不阻塞阅读 */ }
+  }, [computeAnchor, readerParas]);
+
+  // 追踪：滚动后最多 5s 落一次；隐藏/卸载/切文章立即补落
+  useEffect(() => {
+    if (annTextId == null) return;
+    resumeSavedRef.current = null;
+    resumeSkipRef.current = false;
+    resumeRestoredRef.current = null;
+    let disposed = false;
+    const curId = annTextId;
+    const schedule = () => {
+      if (resumeTimerRef.current != null) return;
+      resumeTimerRef.current = window.setTimeout(() => {
+        resumeTimerRef.current = null;
+        if (!disposed) void flushResume(curId);
+      }, 5000);
+    };
+    const onHidden = () => { if (document.visibilityState === "hidden") void flushResume(curId); };
+    const onUnload = () => { void flushResume(curId); };
+    window.addEventListener("scroll", schedule, { passive: true });
+    document.addEventListener("visibilitychange", onHidden);
+    window.addEventListener("beforeunload", onUnload);
+    return () => {
+      disposed = true;
+      if (resumeTimerRef.current != null) { window.clearTimeout(resumeTimerRef.current); resumeTimerRef.current = null; }
+      window.removeEventListener("scroll", schedule);
+      document.removeEventListener("visibilitychange", onHidden);
+      window.removeEventListener("beforeunload", onUnload);
+      void flushResume(curId);
+    };
+  }, [annTextId, flushResume]);
+
+  // 恢复：打开旧文章 220ms 后按锚点段落归位；哈希漂移回开头并提示；词卡跳词优先
+  useEffect(() => {
+    if (annTextId == null) return;
+    let cancelled = false;
+    const h = window.setTimeout(async () => {
+      if (resumeSkipRef.current) return;
+      try {
+        const r = await api.resumeGet("reading");
+        if (cancelled || !r || r.refId !== String(annTextId)) return;
+        const pi = Number(r.locator?.pi ?? 0);
+        const para = readerParas[pi] ?? "";
+        const el = readerRef.current?.querySelector<HTMLElement>(`p[data-pi="${pi}"]`);
+        if (!el || !para) return;
+        const hash = await sha256Hex(para);
+        if (r.contentHash && hash !== r.contentHash) {
+          setResumeNotice("原文已变化，已从文章开头开始");
+          window.setTimeout(() => { if (!cancelled) setResumeNotice(""); }, 5000);
+          return;
+        }
+        el.scrollIntoView({ block: "start", behavior: "auto" });
+        resumeRestoredRef.current = { id: annTextId, pi, reanchored: false };
+        setResumeNotice(`已恢复到上次阅读位置（第 ${pi + 1} 段）`);
+        window.setTimeout(() => { if (!cancelled) setResumeNotice(""); }, 4000);
+      } catch { /* 恢复失败留在开头 */ }
+    }, 220);
+    return () => { cancelled = true; window.clearTimeout(h); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [annTextId]);
+
+  // 机翻到达后版面下移，按已恢复段落重新归位一次
+  useEffect(() => {
+    const rr = resumeRestoredRef.current;
+    if (!rr || rr.id !== annTextId || rr.reanchored || !trans) return;
+    const el = readerRef.current?.querySelector<HTMLElement>(`p[data-pi="${rr.pi}"]`);
+    if (el) { el.scrollIntoView({ block: "start", behavior: "auto" }); rr.reanchored = true; }
+  }, [trans, annTextId]);

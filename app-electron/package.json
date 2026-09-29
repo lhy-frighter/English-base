@@ -1,0 +1,83 @@
+{
+  "name": "english-base-electron",
+  "private": true,
+  "version": "1.0.0",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "vite build",
+    "test": "node test/golden.cjs && node test/epub.cjs && node test/backup.cjs && node test/resolve.cjs && node test/s8-lemma.cjs && node test/dict-layers.cjs && node test/wikt-pack.cjs && node test/delete-text.cjs && node test/feeds.cjs && node test/text-sources.cjs && node test/paper.cjs && node test/url.cjs && node test/awl.cjs && node test/pdf-layout.cjs && node test/pdf-e2e.cjs && node test/unicode-words.cjs && node test/s9-contract.cjs && node test/v13-conversation.cjs && node test/conv-session.cjs && node --experimental-strip-types test/conv-context.ts && node test/cloud-settings.cjs && node --experimental-strip-types test/cloud-sse.ts && node test/s9-session.cjs && node test/s9-resume.cjs && node test/s9-today.cjs && node test/s10-insights.cjs && node test/s11-context-jump.cjs && node test/s11-related.cjs && node test/s11-recycle.cjs && node test/s11-shadow-review.cjs && node test/s12-assessment.cjs && node test/audit-heuristics.cjs && node test/model-store.cjs && node test/model-catalog.cjs && node test/serve-file.cjs && node test/lrecog.cjs && node test/spelling.cjs && node test/shadow-note.cjs && node test/regression.cjs && node --experimental-strip-types test/shadow-align.ts && node --experimental-strip-types test/shadow-send.ts && node test/mt-cache.cjs && node --experimental-strip-types test/tts-chunks.ts && node test/v14-migration.cjs && node test/v15-migration.cjs && node test/asset-service.cjs && node test/debrief.cjs && node --experimental-strip-types test/tutor-gate.ts && node --experimental-strip-types test/teach-parse.ts && node --experimental-strip-types test/grammar-normalize.ts && node --experimental-strip-types test/fft.ts && node --experimental-strip-types test/smartturn-mel.ts && node --experimental-strip-types test/turn-assembler.ts && node --experimental-strip-types test/teach-prompt.ts && node test/realtime-relay.cjs && node test/realtime-relay.e2e.cjs && node test/ipc-contract.cjs && node --experimental-strip-types test/call-state.ts && node test/call-loop.cjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1",
+    "@mlc-ai/web-llm": "0.2.85",
+    "@ricky0123/vad-web": "^0.0.31",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "jszip": "^3.10.2",
+    "loglevel": "^1.9.2",
+    "mammoth": "^1.12.2",
+    "pdfjs-dist": "^4.10.38",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tesseract.js": "^7.0.0",
+    "ts-fsrs": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^38.0.0",
+    "electron-builder": "^26.15.3",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  },
+  "description": "个人英语能力底座 · 本地优先的英语学习工具",
+  "build": {
+    "appId": "com.local.englishbase",
+    "productName": "个人英语能力底座",
+    "icon": "icon.png",
+    "asar": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "*.cjs",
+      "package.json",
+      "data/dict.sqlite",
+      "data/builtins.cjs",
+      "data/assessment-bank.json",
+      "data/packs/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.png",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": false,
+      "artifactName": "EnglishBase-Setup-${version}.${ext}",
+      "differentialPackage": false,
+      "shortcutName": "个人英语能力底座"
+    },
+    "compression": "normal"
+  },
+  "productName": "English Base"
+}

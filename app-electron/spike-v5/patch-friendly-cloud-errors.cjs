@@ -1,0 +1,13 @@
+const fs = require("node:fs");
+const p = "D:/vibe coding/英语学习/app-electron/src/conversation/ConversationPage.tsx";
+let s = fs.readFileSync(p, "utf8");
+const old = `      const code = (e as Error).message?.slice(0, 120) || "unknown";
+      const asstTurn = await api.convUpdateTurn({ turnKey: asstKey, status: "failed", errorCode: code })`;
+const neu = `      let code = (e as Error).message?.slice(0, 120) || "unknown";
+      if (code.startsWith("cloud_http_429")) code = "云端模型繁忙（访问量过大），可稍后重试或切本地";
+      else if (code.startsWith("cloud_http_401")) code = "云端 key 无效或过期，请重新保存";
+      const asstTurn = await api.convUpdateTurn({ turnKey: asstKey, status: "failed", errorCode: code })`;
+if (!s.includes(old)) throw new Error("error-code anchor missing");
+s = s.replace(old, neu);
+fs.writeFileSync(p, s);
+console.log("friendly cloud error codes added");

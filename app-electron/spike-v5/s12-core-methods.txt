@@ -1,0 +1,91 @@
+  // ============ S12 平行文本能力测评（冻结蓝图，不冻结文章）============
+  _assessmentBank() {
+    if (!this._ab) this._ab = require(path.join(__dirname, "data", "assessment-bank.json"));
+    return this._ab;
+  }
+  _usedAssessments() {
+    const row = this.user.prepare("SELECT value FROM app_settings WHERE key='parallel_used_forms'").get();
+    let arr = [];
+    try { arr = row ? JSON.parse(row.value) : []; } catch { arr = []; }
+    return new Set(Array.isArray(arr) ? arr : []);
+  }
+  _markAssessmentUsed(formId) {
+    const set = this._usedAssessments();
+    set.add(formId);
+    this.user.prepare("INSERT INTO app_settings(key,value) VALUES('parallel_used_forms',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(JSON.stringify([...set]));
+  }
+  // 测评蓝图列表（含剩余平行卷数）
+  assessmentBlueprints() {
+    const bank = this._assessmentBank();
+    const used = this._usedAssessments();
+    return bank.blueprints.map((bp) => {
+      const forms = bank.forms.filter((f) => f.blueprint === bp.id);
+      return { ...bp, forms_total: forms.length, forms_left: forms.filter((f) => !used.has(f.id)).length };
+    });
+  }
+  // 取一篇未用过的同级平行卷，返回题目与开卷覆盖率（fresh annotate）
+  assessmentStart(blueprintId) {
+    const bank = this._assessmentBank();
+    const bp = bank.blueprints.find((x) => x.id === blueprintId);
+    if (!bp) throw new Error("未知测评等级");
+    const used = this._usedAssessments();
+    const pool = bank.forms.filter((f) => f.blueprint === bp.id && !used.has(f.id));
+    if (!pool.length) throw new Error("该等级的测评卷已用完（每篇只用一次，防止练习效应）");
+    const form = pool[Math.floor(Math.random() * pool.length)];
+    const builtin = this.builtins.find((b) => b.id === form.builtin_id);
+    if (!builtin) throw new Error("测评原文缺失");
+    const cov = this._assessmentCoverage(builtin.text);
+    return {
+      form_id: form.id, blueprint: bp.id, cefr: bp.cefr, title: builtin.title,
+      questions: form.questions, coverage: cov,
+    };
+  }
+  _assessmentCoverage(text) {
+    const ann = this.annotate(text).filter((t) => t.label !== "punct");
+    const total = ann.length;
+    const known = ann.filter((t) => t.label !== "miss").length;
+    return { rate: total ? known / total : 0, total, known };
+  }
+  // 交卷：合成"陌生同级材料独立理解得分"，写 coverage_assessments(kind=parallel_test) 并标记该卷已用
+  assessmentFinish(input) {
+    const { form_id, active_ms, lookups, translated_paras, answers } = input || {};
+    const bank = this._assessmentBank();
+    const form = bank.forms.find((f) => f.id === form_id);
+    if (!form) throw new Error("未知测评卷");
+    const bp = bank.blueprints.find((x) => x.id === form.blueprint);
+    const builtin = this.builtins.find((b) => b.id === form.builtin_id);
+    const cov = this._assessmentCoverage(builtin.text);
+    const ms = Math.max(0, Math.floor(active_ms || 0));
+    const wpm = ms > 0 ? Math.round(cov.total / (ms / 60000)) : 0;
+    const nLook = Math.max(0, Math.floor(lookups || 0));
+    const nTrans = Math.max(0, Math.floor(translated_paras || 0));
+    const ans = Array.isArray(answers) ? answers : [];
+    let correct = 0;
+    form.questions.forEach((q, i) => { if (ans[i] === q.answer) correct++; });
+    const compScore = (correct / form.questions.length) * 100;
+    const coverageScore = cov.rate * 100;
+    // 速度分：20 wpm≈10 分，95 wpm 封顶 100
+    const speedScore = Math.max(0, Math.min(100, 10 + (wpm - 20) * 1.2));
+    // 中文依赖分：100 起步，查词一次 -6，整段机翻一次 -10
+    const depScore = Math.max(0, 100 - nLook * 6 - nTrans * 10);
+    const score = Math.round(compScore * 0.45 + coverageScore * 0.25 + speedScore * 0.15 + depScore * 0.15);
+    const snap = {
+      blueprint: bp.id, form: form.id, correct, questions: form.questions.length,
+      wpm, active_ms: ms, lookups: nLook, translated_paras: nTrans,
+      comp: Math.round(compScore), coverage: Math.round(coverageScore),
+      speed: Math.round(speedScore), dependence: Math.round(depScore),
+      formula: "0.45 comp + 0.25 coverage + 0.15 speed + 0.15 dependence",
+      bankVersion: bank.version,
+    };
+    this.user.prepare("INSERT INTO coverage_assessments (text_id,kind,cefr,total_tokens,known_tokens,rate,snapshot_json,created_at) VALUES(NULL,'parallel_test',?,?,?,?,?,?)").run(
+      bp.cefr, cov.total, cov.known, score / 100, JSON.stringify(snap), nowMs());
+    this._markAssessmentUsed(form.id);
+    return { score, ...snap };
+  }
+  assessmentHistory(limit = 20) {
+    return this.user.prepare("SELECT cefr, rate, snapshot_json, created_at FROM coverage_assessments WHERE kind='parallel_test' ORDER BY created_at DESC LIMIT ?")
+      .all(limit).map((r) => {
+        let s = {}; try { s = JSON.parse(r.snapshot_json); } catch {}
+        return { cefr: r.cefr, score: Math.round(r.rate * 100), created_at: r.created_at, ...s };
+      });
+  }

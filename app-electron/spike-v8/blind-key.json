@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-09-17T06:21:49.949Z",
+  "seed": 772231165,
+  "items": {
+    "item 1": {
+      "paraId": "sciencedaily-01",
+      "kind": "sciencedaily",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 2": {
+      "paraId": "sciencedaily-04",
+      "kind": "sciencedaily",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 3": {
+      "paraId": "sciencedaily-07",
+      "kind": "sciencedaily",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 4": {
+      "paraId": "sciencedaily-10",
+      "kind": "sciencedaily",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 5": {
+      "paraId": "sciencedaily-13",
+      "kind": "sciencedaily",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 6": {
+      "paraId": "sciencedaily-16",
+      "kind": "sciencedaily",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 7": {
+      "paraId": "sciencedaily-19",
+      "kind": "sciencedaily",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 8": {
+      "paraId": "aeon-02",
+      "kind": "aeon",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 9": {
+      "paraId": "aeon-05",
+      "kind": "aeon",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 10": {
+      "paraId": "aeon-08",
+      "kind": "aeon",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 11": {
+      "paraId": "aeon-11",
+      "kind": "aeon",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 12": {
+      "paraId": "aeon-14",
+      "kind": "aeon",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 13": {
+      "paraId": "aeon-17",
+      "kind": "aeon",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 14": {
+      "paraId": "aeon-20",
+      "kind": "aeon",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 15": {
+      "paraId": "newsinlevels-03",
+      "kind": "newsinlevels",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 16": {
+      "paraId": "newsinlevels-06",
+      "kind": "newsinlevels",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    },
+    "item 17": {
+      "paraId": "newsinlevels-09",
+      "kind": "newsinlevels",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 18": {
+      "paraId": "newsinlevels-12",
+      "kind": "newsinlevels",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 19": {
+      "paraId": "newsinlevels-15",
+      "kind": "newsinlevels",
+      "A": "Opus-MT",
+      "B": "Bergamot"
+    },
+    "item 20": {
+      "paraId": "newsinlevels-18",
+      "kind": "newsinlevels",
+      "A": "Bergamot",
+      "B": "Opus-MT"
+    }
+  }
+}

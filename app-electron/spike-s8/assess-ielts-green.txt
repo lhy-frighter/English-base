@@ -1,0 +1,14 @@
+TITLE: Urban Green Spaces and Public Health
+LEVEL: C1
+GENRE: 雅思风格
+WORDS: 345
+
+It is often claimed that parks are a luxury that cities can afford only in good economic times. A growing body of public-health research challenges this view, suggesting that access to green space is closer to a necessity, and that its absence carries measurable costs.
+
+The most consistent finding concerns mental health. Large studies in several countries have reported that people living within a short walk of a park report lower levels of stress and are less likely to be diagnosed with depression, even after researchers control for income, employment, and housing quality. The explanations proposed are varied: green spaces encourage physical activity, reduce exposure to traffic noise, provide spaces for social contact, and may restore attention in a way that built environments do not.
+
+Physical health effects appear smaller but still significant. Tree cover cools streets during heat waves, which matters because heat kills more people each year than floods or storms in many regions. Vegetation also filters fine particles from the air, although the effect is local and depends on wind patterns. Some studies link greener neighbourhoods to lower rates of heart disease; critics note that such findings are correlational, since wealthier districts usually have both more parks and better healthcare.
+
+This objection is serious, and it shapes current policy debates. Randomised evidence is difficult to produce — nobody can randomly assign a park to a neighbourhood — but researchers have used natural experiments, such as the renovation of existing green spaces, to track changes in nearby residents before and after. Results generally point in the same direction, with the strongest effects among children and older adults.
+
+For city planners, the practical conclusions are modest and specific. Small interventions matter: street trees, pocket gardens, and schoolyards opened to the public on weekends all extend access at low cost. The distribution question is harder. New parks raise property values, which can push out the very residents who needed the health benefits most, a phenomenon planners call green gentrification. Building green, in other words, is an engineering problem; sharing it fairly is a political one.

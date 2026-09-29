@@ -1,0 +1,20 @@
+const fs = require("fs");
+const p = "D:/vibe coding/英语学习/app-electron/src/api.ts";
+let s = fs.readFileSync(p, "utf8");
+const oldStr = `  card_id: number;
+  note_id: number;
+  card_type: string;
+  sentence: string;`;
+if (!s.includes(oldStr)) throw new Error("anchor missing");
+const newStr = `  card_id: number;
+  note_id: number;
+  asset_id?: number | null;
+  asset_kind?: AssetKind | null;
+  payload?: Record<string, unknown> | null;
+  card_type: string;
+  sentence: string;`;
+// indexOf/slice 避免 $ 替换问题
+const i = s.indexOf(oldStr);
+s = s.slice(0, i) + newStr + s.slice(i + oldStr.length);
+fs.writeFileSync(p, s);
+console.log("ReviewCard fields added");

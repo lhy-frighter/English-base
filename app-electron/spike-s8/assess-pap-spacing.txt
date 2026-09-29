@@ -1,0 +1,12 @@
+TITLE: Spacing Effects in L2 Vocabulary: A Replication Study
+LEVEL: C1
+GENRE: 论文风格
+WORDS: 297
+
+Abstract. Spaced repetition schedules are widely recommended for second-language (L2) vocabulary learning, yet the interaction between spacing interval and learner proficiency remains under-specified. This study replicates and extends Nakata and Suzuki (2019) by examining whether optimal spacing differs for learners at CEFR B1 and C1 levels. One hundred and twelve Chinese-speaking learners of English studied 40 pseudo-words in four conditions: massed, 1-day, 3-day, and 7-day expanding intervals. Recognition and form-recall were tested at one week and four weeks.
+
+Results showed a main effect of spacing on four-week retention, F(3, 108) = 9.42, p < .001, ηp² = .21. For B1 learners, the 3-day condition outperformed both massed and 7-day conditions; for C1 learners, the 7-day condition was superior. We interpret this as evidence that the optimal gap scales with prior vocabulary size, consistent with the stabilising-assumptions framework of memory models. Practical implications for scheduling software are discussed, including the observation that default uniform intervals may be systematically sub-optimal for advanced learners.
+
+Introduction. The spacing effect — the finding that repeated study is more effective when repetitions are distributed in time rather than massed — is among the most robust in experimental psychology. Its application to L2 vocabulary has produced a substantial literature, but two limitations recur. First, most studies sample university learners of intermediate proficiency only, limiting generalisation. Second, few studies test the interaction between spacing and learner variables, although memory models predict such interactions directly: learners with stronger existing representations should benefit from longer intervals.
+
+The present study addresses both limitations. We chose pseudo-words rather than real words to control for prior exposure, and we pre-registered our analysis plan. Our research questions were: (1) Does the spacing effect replicate across two proficiency levels? (2) Does the ranking of intervals differ by level, as memory models predict?

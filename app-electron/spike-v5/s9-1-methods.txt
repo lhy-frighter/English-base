@@ -1,0 +1,112 @@
+
+  // —— S9-1 学习会话（learning_sessions）——
+  // 开放生命周期：begin（幂等，同 session_key 重试返回同一行）→ heartbeat（20s 刷新同一行）→ close。
+  // active_ms/amount 由前端累计后上报，服务端只做单调钳制（网络重发/乱序不会把值改小）。
+  beginSession(o = {}) {
+    const kind = String(o.kind || "");
+    if (kind !== "read" && kind !== "shadow") throw new Error("会话 kind 只能是 read/shadow");
+    const refType = String(o.refType || "");
+    const refId = String(o.refId ?? "");
+    const title = String(o.titleSnapshot || "").slice(0, 300);
+    const locator = this._sessionLocator(o.locator);
+    const contentHash = String(o.contentHash || "").slice(0, 128);
+    const amount = Math.max(0, Math.floor(Number(o.amount) || 0));
+    const unit = o.unit === "words" || o.unit === "sentences" ? o.unit : "";
+    const key = String(o.sessionKey || `${kind}:${refType}:${refId || "none"}:${nowMs()}`);
+    const existing = this.user.prepare("SELECT * FROM learning_sessions WHERE session_key=?").get(key);
+    if (existing) return this._sessionDto(existing);
+    const t = nowMs();
+    this.user.prepare(`INSERT INTO learning_sessions
+      (kind,session_key,ref_type,ref_id,title_snapshot,locator_json,content_hash,amount,unit,started_at,ended_at,last_active_at,status,active_ms)
+      VALUES (?,?,?,?,?,?,?,?,?,?,NULL,?,'open',0)`)
+      .run(kind, key, refType, refId, title, locator, contentHash, amount, unit, t, t);
+    return this._sessionDto(this.user.prepare("SELECT * FROM learning_sessions WHERE session_key=?").get(key));
+  }
+
+  heartbeatSession(key, o = {}) {
+    const row = this.user.prepare("SELECT * FROM learning_sessions WHERE session_key=?").get(String(key));
+    if (!row) throw new Error("会话不存在或已清理");
+    if (row.status !== "open") return this._sessionDto(row);
+    const activeMs = Math.max(row.active_ms, Math.max(0, Math.floor(Number(o.activeMs) || 0)));
+    const amount = Math.max(row.amount, Math.max(0, Math.floor(Number(o.amount) || 0)));
+    const t = nowMs();
+    this.user.prepare("UPDATE learning_sessions SET active_ms=?, amount=?, last_active_at=?, locator_json=? WHERE id=?")
+      .run(activeMs, amount, t, o.locator ? this._sessionLocator(o.locator) : row.locator_json, row.id);
+    return this._sessionDto(this.user.prepare("SELECT * FROM learning_sessions WHERE id=?").get(row.id));
+  }
+
+  closeSession(key, o = {}) {
+    const row = this.user.prepare("SELECT * FROM learning_sessions WHERE session_key=?").get(String(key));
+    if (!row) return null;
+    if (row.status === "open") {
+      const activeMs = Math.max(row.active_ms, Math.max(0, Math.floor(Number(o.activeMs) || 0)));
+      const amount = Math.max(row.amount, Math.max(0, Math.floor(Number(o.amount) || 0)));
+      const t = nowMs();
+      this.user.prepare("UPDATE learning_sessions SET status='closed', ended_at=?, active_ms=?, amount=?, last_active_at=?, locator_json=? WHERE id=?")
+        .run(t, activeMs, amount, t, o.locator ? this._sessionLocator(o.locator) : row.locator_json, row.id);
+    }
+    return this._sessionDto(this.user.prepare("SELECT * FROM learning_sessions WHERE id=?").get(row.id));
+  }
+
+  // 启动回收：open 且 last_active 早于 10 分钟前 → abandoned，ended_at 补 last_active+一个刷新周期(20s)
+  reapAbandonedSessions(now = nowMs()) {
+    const cutoff = now - 10 * 60 * 1000;
+    const r = this.user.prepare(
+      `UPDATE learning_sessions SET status='abandoned', ended_at=MIN(last_active_at+20000, ?)
+       WHERE status='open' AND last_active_at < ?`).run(now, cutoff);
+    return r.changes || 0;
+  }
+
+  _sessionLocator(loc) {
+    let json = "{}";
+    if (loc && typeof loc === "object") json = JSON.stringify(loc);
+    else if (typeof loc === "string") json = loc;
+    try { JSON.parse(json); } catch { throw new Error("locator 不是合法 JSON"); }
+    return json;
+  }
+
+  _sessionDto(r) {
+    return {
+      id: r.id, kind: r.kind, sessionKey: r.session_key, refType: r.ref_type, refId: r.ref_id,
+      titleSnapshot: r.title_snapshot, locator: JSON.parse(r.locator_json || "{}"),
+      contentHash: r.content_hash, amount: r.amount, unit: r.unit,
+      startedAt: r.started_at, endedAt: r.ended_at, lastActiveAt: r.last_active_at,
+      status: r.status, activeMs: r.active_ms,
+    };
+  }
+
+  // S9-1：标注阶段记录"可成卡但尚无资产"的漏网词相遇事实（每篇每 lemma 一行，按当前词频覆盖，不累加）
+  recordUnknownEncounters(textId, tokens) {
+    const CARDABLE = new Set(["word", "cap_word", "word_lemma", "contraction", "compound"]);
+    const freq = new Map();
+    for (const t of tokens) {
+      if (t.label === "punct" || !CARDABLE.has(t.label)) continue;
+      const low = normApos(String(t.text).toLowerCase());
+      const lem = this.canonical(low) || low;
+      if (this.learned.has(low) || this.learned.has(lem)) continue;
+      freq.set(lem, (freq.get(lem) || 0) + 1);
+    }
+    const t = nowMs();
+    const up = this.user.prepare(`INSERT INTO unknown_encounters(lemma,text_id,count,first_seen_at,last_seen_at)
+      VALUES(?,?,?,?,?)
+      ON CONFLICT(lemma,text_id) DO UPDATE SET count=excluded.count, last_seen_at=excluded.last_seen_at`);
+    for (const [lem, count] of freq) up.run(lem, textId, count, t, t);
+  }
+
+  // S9-1：每篇文章首次标注写一条不可变覆盖率快照（重新标注不覆盖、不追加）
+  recordFirstCoverage(textId, stats) {
+    const exists = this.user.prepare("SELECT 1 FROM coverage_assessments WHERE text_id=? AND kind='first_annotate'").get(textId);
+    if (exists) return false;
+    const total = Math.max(0, Math.floor(stats.words || 0));
+    const known = Math.min(total, Math.max(0, Math.floor(stats.learnedTokens || 0)));
+    const rate = total ? known / total : 0;
+    this.user.prepare(`INSERT INTO coverage_assessments
+      (text_id,kind,cefr,total_tokens,known_tokens,rate,snapshot_json,created_at)
+      VALUES(?,?,?,?,?,?,?,?)`).run(
+        textId, "first_annotate", stats.cefr || "", total, known, rate,
+        JSON.stringify({
+          words: stats.words, learnedTokens: stats.learnedTokens, learnedUnique: stats.learnedUnique,
+          lexicalWords: stats.lexicalWords, awlRate: stats.awlRate, statsVersion: "v11",
+        }), nowMs());
+    return true;
+  }

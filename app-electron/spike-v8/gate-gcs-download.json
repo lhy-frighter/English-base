@@ -1,0 +1,62 @@
+{
+  "at": "2026-09-17T08:36:36.615Z",
+  "cases": {
+    "realDownload": {
+      "ok": true,
+      "revision": "llmaat-finetune10m-qe8-2024",
+      "totalBytes": 49913927,
+      "tookMs": 12886,
+      "deepVerify": [
+        {
+          "path": "model.enzh.intgemm.alphas.bin",
+          "ok": true
+        },
+        {
+          "path": "lex.50.50.enzh.s2t.bin",
+          "ok": true
+        },
+        {
+          "path": "srcvocab.enzh.spm",
+          "ok": true
+        },
+        {
+          "path": "trgvocab.enzh.spm",
+          "ok": true
+        }
+      ],
+      "hasInstalledEvent": true
+    },
+    "secondRunOffline": {
+      "ok": true,
+      "netCalls": 0
+    },
+    "offlineFault": {
+      "failed": true,
+      "noManifest": true,
+      "noActive": true,
+      "error": "fetch failed"
+    },
+    "realInstall": {
+      "ok": true,
+      "tookMs": 13759,
+      "deepVerify": [
+        {
+          "path": "model.enzh.intgemm.alphas.bin",
+          "ok": true
+        },
+        {
+          "path": "lex.50.50.enzh.s2t.bin",
+          "ok": true
+        },
+        {
+          "path": "srcvocab.enzh.spm",
+          "ok": true
+        },
+        {
+          "path": "trgvocab.enzh.spm",
+          "ok": true
+        }
+      ]
+    }
+  }
+}

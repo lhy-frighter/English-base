@@ -1,0 +1,10 @@
+const { DatabaseSync } = require("node:sqlite");
+const path = require("path");
+const db = new DatabaseSync(path.resolve(__dirname, "..", "data", "user.sqlite"));
+console.log("coverage rows =", db.prepare("SELECT COUNT(*) n FROM coverage_assessments").get().n);
+console.log("backfilled =", db.prepare("SELECT COUNT(*) n FROM coverage_assessments WHERE json_extract(snapshot_json,'$.backfilled')=1").get().n);
+console.log("unknown rows =", db.prepare("SELECT COUNT(*) n FROM unknown_encounters").get().n);
+console.log("texts with unknown =", db.prepare("SELECT COUNT(DISTINCT text_id) n FROM unknown_encounters").get().n);
+console.log("sessions =", db.prepare("SELECT COUNT(*) n FROM learning_sessions").get().n);
+console.log("sample unknown:", db.prepare("SELECT lemma,text_id,count FROM unknown_encounters ORDER BY count DESC LIMIT 5").all());
+db.close();

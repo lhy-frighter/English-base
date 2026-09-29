@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font: 13px/1.6 system-ui, "Microsoft YaHei", sans-serif; width: 280px; margin: 0; padding: 14px; color: #1c2b3a; }
+  h1 { font-size: 14px; margin: 0 0 8px; }
+  button { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #2f4d8a; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  .primary { background: #2f4d8a; color: #fff; }
+  .ghost { background: #f4f3ec; color: #1c2b3a; border-color: #ddd8c9; }
+  #st { font-size: 12px; color: #5a6b7a; margin-top: 8px; white-space: pre-wrap; }
+  .ok { color: #1a7a3c !important; } .bad { color: #b3342b !important; }
+  .muted { color: #8a97a5; font-size: 11.5px; margin-top: 10px; border-top: 1px dashed #ddd8c9; padding-top: 8px; }
+</style>
+</head>
+<body>
+  <h1>英语底座·网页送读</h1>
+  <button class="primary" id="send">发送本页正文到底座</button>
+  <button class="ghost" id="copy">复制正文（Markdown）</button>
+  <button class="ghost" id="download">下载为 .md</button>
+  <div id="st">请先打开并停留在目标英文网页，再点上方按钮。</div>
+  <div class="muted">需要桌面应用保持运行（本地接收服务 127.0.0.1:47823）。正文在页面内提取，只发送到本机，不上传任何服务器。</div>
+  <script src="popup.js"></script>
+</body>
+</html>

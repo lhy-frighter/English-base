@@ -1,0 +1,10 @@
+const fs = require("fs");
+const p = "D:/vibe coding/英语学习/app-electron/src/api.ts";
+let s = fs.readFileSync(p, "utf8");
+if (s.includes("phonetics:")) throw new Error("already");
+const anchor = "  addPronProductionCard: (assetId: number) => Promise<{ card_id: number; created: boolean }>;";
+if (s.indexOf(anchor) < 0) throw new Error("anchor missing");
+const add = "\n  phonetics: (words: string[]) => Promise<(string | null)[]>;";
+s = s.replace(anchor, anchor + add);
+fs.writeFileSync(p, s);
+console.log("api method added");

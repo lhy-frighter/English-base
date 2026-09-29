@@ -1,0 +1,310 @@
+# CS/AI 术语包词条（words）
+# 格式：word|pos|translation   （# 开头为注释；空行忽略）
+# 命名空间 tag 统一为 cs-ai；与 L0 ECDICT 同词头时作为补充义项追加，不覆盖原义。
+# === 基础深度学习 ===
+softmax|n.|[AI] Softmax 函数；归一化指数函数，把一组分数压缩成和为 1 的概率分布
+sigmoid|n.|[AI] Sigmoid 激活函数，输出 0 到 1 之间
+relu|n.|[AI] ReLU 线性整流函数，f(x)=max(0,x)
+gelu|n.|[AI] GELU 高斯误差线性单元，Transformer 常用激活函数
+tanh|n.|[AI] 双曲正切函数，常用激活函数
+activation|n.|[AI] 激活值；activation function 激活函数
+backpropagation|n.|[AI] 反向传播，用链式法则从损失反传梯度
+backprop|n.|[AI] 反向传播（backpropagation 的简称）
+backpropagate|v.|[AI] 反向传播（梯度）
+optimizer|n.|[AI] 优化器，按梯度更新模型参数的算法
+epoch|n.|[AI] 训练轮次，整个训练集完整过一遍为一个 epoch
+batch|n.|[AI]（一个）批次，一次迭代同时喂入模型的样本组
+minibatch|n.|[AI] 小批量，训练时随机抽取的一小批样本
+hyperparameter|n.|[AI] 超参数，训练前人为设定、不通过学习得到的参数（如学习率）
+regularization|n.|[AI] 正则化，抑制过拟合的手段
+regularize|v.|[AI] 对……施加正则化
+regularizer|n.|[AI] 正则项；正则化器
+dropout|n.|[AI] Dropout 随机失活，训练时随机丢弃神经元以防过拟合
+overfitting|n.|[AI] 过拟合，训练集表现好但泛化差
+underfitting|n.|[AI] 欠拟合，模型容量不足、训练集也学不好
+overfit|v.|[AI] 过拟合
+underfit|v.|[AI] 欠拟合
+generalization|n.|[AI] 泛化能力，模型对未见过数据的表现
+inference|n.|[AI] 推理，训练完成后用模型做预测的阶段
+latency|n.|[计] 延迟，请求到响应的耗时
+throughput|n.|[计] 吞吐量，单位时间处理量
+convergence|n.|[AI] 收敛，训练损失趋于稳定
+converge|v.|[AI] 收敛
+plateau|n.|[AI] 平台期，损失/指标长期停滞
+momentum|n.|[AI] 动量，带动量项的优化方法
+adam|n.|[AI] Adam 自适应矩估计优化器
+adamw|n.|[AI] AdamW 解耦权重衰减的 Adam 优化器
+scheduler|n.|[AI] 学习率调度器
+warmup|n.|[AI]（学习率）预热，训练初期线性抬升学习率
+loss|n.|[AI] 损失，模型预测与真值的差距
+objective|n.|[AI] 目标函数；优化目标
+gradient|n.|[AI] 梯度（ECDICT 已收，此为机器学习常用义）
+tensor|n.|[AI] 张量，标量/向量/矩阵的高维推广
+scalar|n.|[数] 标量
+matmul|n.|[AI] 矩阵乘法（matrix multiplication）
+elementwise|a.|[AI] 逐元素的（运算）
+broadcasting|n.|[AI] 广播，不同形状张量自动扩展对齐的机制
+logit|n.|[AI] Logit，归一化前的原始分数
+# === 训练范式 / 微调 ===
+fine-tune|v.|[AI] 微调，在预训练模型上用下游数据继续训练
+fine-tuning|n.|[AI] 微调
+finetune|v.|[AI] 微调（fine-tune 合写）
+pretrain|v.|[AI] 预训练
+pretrained|a.|[AI] 预训练好的
+pre-trained|a.|[AI] 预训练的
+pretraining|n.|[AI] 预训练阶段
+checkpoint|n.|[AI] 检查点，某一步保存的模型权重快照
+ablation|n.|[AI] 消融实验，移除或替换模型组件以验证其作用
+baseline|n.|[AI] 基线，用来对照的基础模型或方法
+sota|n.|[AI] 当前最优水平（state of the art）
+state-of-the-art|a.|[AI] 最先进的；当前水平最高的
+end-to-end|a.|[AI] 端到端的，原始输入直接到最终输出
+pipeline|n.|[计] 流水线；数据处理流程
+quantization|n.|[AI] 量化，用低精度数值存储权重以压缩模型
+quantize|v.|[AI] 量化
+distillation|n.|[AI]（知识）蒸馏，用大模型教小模型
+pruning|n.|[AI] 剪枝，删除冗余权重或连接以压缩模型
+ensemble|n.|[AI] 集成，组合多个模型的预测
+ensembling|n.|[AI] 模型集成
+bagging|n.|[AI] Bagging 自助聚合集成方法
+boosting|n.|[AI] Boosting 提升集成方法
+xgboost|n.|[AI] XGBoost 梯度提升树库
+lightgbm|n.|[AI] LightGBM 轻量梯度提升树库
+svm|n.|[AI] 支持向量机（support vector machine）
+# === 网络结构 / 架构 ===
+transformer|n.|[AI] Transformer，基于自注意力的神经网络架构
+autoregressive|a.|[AI] 自回归的，逐 token 依赖前文生成
+autoencoder|n.|[AI] 自编码器
+encoder|n.|[AI] 编码器，把输入压缩成表示（ECDICT [计]义之外的机器学习义）
+decoder|n.|[AI] 解码器，从表示还原出输出（ECDICT [计]义之外的机器学习义）
+encoder-decoder|n.|[AI] 编码器-解码器架构（seq2seq）
+decoder-only|a.|[AI] 仅解码器的（如 GPT 类架构）
+encoder-only|a.|[AI] 仅编码器的（如 BERT 类架构）
+bidirectional|a.|[NLP] 双向的
+unidirectional|a.|[NLP] 单向的
+masked|a.|[AI] 被掩码的，遮住部分输入让模型预测
+causal|a.|[AI] 因果的，只允许看见当前位置之前的信息
+cross-attention|n.|[AI] 交叉注意力
+feedforward|a.|[AI] 前馈的
+convolution|n.|[AI] 卷积
+conv|n.|[AI] 卷积；卷积层（convolution 的口语缩写）
+convs|n.|[AI] 卷积层（复数，convolutions 的缩写）
+pooling|n.|[AI] 池化，对局部特征做降采样聚合
+downsample|v.|[AI] 下采样；降低分辨率
+upsample|v.|[AI] 上采样；提高分辨率
+stride|n.|[AI] 步幅，卷积窗口每次移动的距离
+padding|n.|[AI] 填充，给序列或特征边缘补位
+backbone|n.|[AI] 骨干网络，承担主要特征提取的主体结构
+dense|a.|[AI] 全连接的；稠密的
+sparse|a.|[AI] 稀疏的，大部分元素为零
+sparsity|n.|[AI] 稀疏性
+denoising|n.|[AI] 去噪，从含噪输入还原干净信号
+diffusion|n.|[AI] 扩散（模型），逐步去噪生成样本
+gan|n.|[AI] 生成对抗网络（generative adversarial network）
+vae|n.|[AI] 变分自编码器（variational autoencoder）
+rnn|n.|[AI] 循环神经网络（recurrent neural network）
+lstm|n.|[AI] 长短期记忆网络（long short-term memory）
+gru|n.|[AI] 门控循环单元（gated recurrent unit）
+cnn|n.|[AI] 卷积神经网络（convolutional neural network）
+mlp|n.|[AI] 多层感知机（multilayer perceptron）
+nn|n.|[AI] 神经网络（neural network 的缩写）
+attention|n.|[AI] 注意力机制（ECDICT 通用义之外的机器学习义）
+perplexity|n.|[NLP] 困惑度，语言模型预测质量指标，越低越好
+# === NLP / 语言模型 ===
+nlp|n.|[NLP] 自然语言处理（natural language processing）
+asr|n.|[AI] 自动语音识别（automatic speech recognition）
+tts|n.|[AI] 语音合成；文本转语音（text to speech）
+nmt|n.|[NLP] 神经机器翻译（neural machine translation）
+token|n.|[NLP] 词元，模型处理文本的最小单位
+tokenization|n.|[NLP] 分词；词元化（tokenisation 为英式拼写）
+tokenisation|n.|[NLP] 分词；词元化（tokenization 的英式拼写）
+tokenize|v.|[NLP] 分词；切分词元
+tokenizer|n.|[NLP] 分词器；词元切分器
+subword|n.|[NLP] 子词，比单词更小的切分单位
+vocab|n.|[NLP] 词表（vocabulary 的缩写）
+embedding|n.|[NLP] 嵌入（如词嵌入），把离散符号映射成稠密向量
+wordpiece|n.|[NLP] WordPiece 子词切分算法
+bpe|n.|[NLP] 字节对编码（byte-pair encoding）子词算法
+sentencepiece|n.|[NLP] SentencePiece 子词切分工具/算法
+lemmatization|n.|[NLP] 词形还原，把屈折形式还原为词典原形
+stemming|n.|[NLP] 词干提取，粗粒度地截断出词干
+stopword|n.|[NLP] 停用词
+n-gram|n.|[NLP] n 元组，连续 n 个词构成的片段
+treebank|n.|[NLP] 树库，带句法标注的语料库
+paraphrase|n.|[NLP] 释义；用另一种说法表达相同意思
+back-translation|n.|[NLP] 回译，翻译成另一语言再翻回来做数据增强
+augmentation|n.|[AI]（数据）增强，通过变换扩充训练数据
+bleu|n.|[NLP] BLEU，机器翻译自动评分指标
+rouge|n.|[NLP] ROUGE，文本摘要自动评分指标
+ner|n.|[NLP] 命名实体识别（named entity recognition）
+ocr|n.|[AI] 光学字符识别（optical character recognition）
+eos|n.|[NLP] 序列结束符（end of sequence）
+bos|n.|[NLP] 序列开始符（beginning of sequence）
+unk|n.|[NLP] 未登录词标记（unknown）
+cls|n.|[NLP] BERT 类模型用于聚合句向量的特殊分类标记 <[BOS_never_used_51bce0c785ca2f68081bfa7d91973934]>
+attn|n.|[NLP] attention 的缩写写法
+prompt|n.|[NLP] 提示词，给模型的指令或前缀
+prompting|n.|[NLP] 提示（方法）
+hallucination|n.|[AI]（模型）幻觉，编造看似合理但不属实的内容
+rag|n.|[AI] 检索增强生成（retrieval-augmented generation）
+agent|n.|[AI] 智能体，能自主规划并调用工具完成任务的系统
+alignment|n.|[AI] 对齐，让模型行为符合人类意图与价值观
+zero-shot|a.|[AI] 零样本的，不给示例直接完成任务
+few-shot|a.|[AI] 少样本的，给少量示例再完成任务
+generative|a.|[AI] 生成式的
+multimodal|a.|[AI] 多模态的，同时处理文本/图像/语音等
+modality|n.|[AI] 模态，如文本、图像、声音
+multitask|a.|[AI] 多任务的
+multi-task|a.|[AI] 多任务的
+discriminative|a.|[AI] 判别式的
+classifier|n.|[AI] 分类器
+clustering|n.|[AI] 聚类，无监督地把相似样本分组
+segmentation|n.|[AI] 分割（诸如图像语义分割）
+detection|n.|[AI] 检测（任务）
+latent|a.|[AI] 潜在的；latent space 潜空间
+likelihood|n.|[统] 似然度
+temperature|n.|[AI] 温度，控制采样随机性的参数
+top-k|n.|[AI] top-k 采样，只在概率最高的 k 个候选中抽样
+top-p|n.|[AI] top-p（nucleus）采样，按累计概率截断候选
+# === 经典模型 / 数据集 / 会议 ===
+bert|n.|[NLP] BERT，双向 Transformer 编码器预训练模型
+gpt|n.|[NLP] GPT，生成式预训练 Transformer 解码器模型
+llama|n.|[NLP] LLaMA，Meta 开源的大语言模型系列
+word2vec|n.|[NLP] Word2vec 词向量模型
+glove|n.|[NLP] GloVe 全局词向量模型（与手套 glove 同形）
+fasttext|n.|[NLP] FastText 轻量词向量/分类模型
+elmo|n.|[NLP] ELMo 上下文相关词向量模型
+vit|n.|[AI] ViT 视觉 Transformer（vision transformer）
+resnet|n.|[AI] ResNet 残差网络
+bytenet|n.|[NLP] ByteNet，基于膨胀卷积的早期神经翻译模型
+gnmt|n.|[NLP] GNMT，谷歌神经机器翻译系统
+imagenet|n.|[AI] ImageNet 大规模图像数据集
+wmt|n.|[NLP] WMT 机器翻译会议评测任务
+newstest|n.|[NLP] NewsTest，WMT 历年标准测试集
+wsj|n.|[NLP] WSJ，华尔街日报语料（树库常用）
+arxiv|n.|[学术] arXiv 论文预印本平台
+preprint|n.|[学术] 预印本，尚未经同行评审的论文稿
+proceedings|n.|[学术]（会议）论文集
+reproducibility|n.|[学术] 可复现性
+rebuttal|n.|[学术]  Rebuttal，审稿阶段作者的回复与反驳
+camera-ready|a.|[学术]（论文）终稿的，可付印的
+# === 工程 / 通用 CS ===
+gpu|n.|[计] 图形处理器，适合并行矩阵运算
+tpu|n.|[计] 谷歌张量处理器
+cuda|n.|[计] CUDA，NVIDIA 并行计算平台
+cpu|n.|[计] 中央处理器
+codebase|n.|[计] 代码库，一个项目的全部源码
+dataloader|n.|[AI] 数据加载器，负责批量取数与打乱
+dataset|n.|[AI] 数据集
+runtime|n.|[计] 运行时；程序运行期间
+repository|n.|[计] 代码仓库
+repo|n.|[计] 代码仓库（repository 的缩写）
+endpoint|n.|[计] 接口端点，API 的访问地址
+serialization|n.|[计] 序列化，把对象转成可存储/传输的格式
+serialize|v.|[计] 序列化
+deserialize|v.|[计] 反序列化
+deserialization|n.|[计] 反序列化
+idempotent|a.|[计] 幂等的，重复执行结果相同
+asynchronous|a.|[计] 异步的
+async|a.|[计] 异步的（asynchronous 的缩写）
+concurrency|n.|[计] 并发
+deterministic|a.|[计] 确定性的，相同输入必得相同输出
+stochastic|a.|[统] 随机的
+probabilistic|a.|[统] 概率的；基于概率的
+heuristic|n.|[AI] 启发式方法；凭经验规则的近似解法
+recursion|n.|[计] 递归
+memoization|n.|[计] 记忆化，缓存函数结果避免重复计算
+trie|n.|[计] 前缀树；字典树
+dag|n.|[计] 有向无环图（directed acyclic graph）
+acyclic|a.|[计] 无环的
+topological|a.|[计] 拓扑的（topological sort 拓扑排序）
+regex|n.|[计] 正则表达式（regexp）
+regexp|n.|[计] 正则表达式
+lexer|n.|[计] 词法分析器
+ast|n.|[计] 抽象语法树（abstract syntax tree）
+linter|n.|[计] 静态检查工具（linter）
+transpile|v.|[计] 转译，把一种源码翻译成另一种
+bundler|n.|[计] 打包工具
+minify|v.|[计] 压缩（代码）
+polyfill|n.|[计] 垫片代码，为旧环境补新特性
+payload|n.|[计] 载荷，请求/消息中实际携带的数据
+webhook|n.|[计] 网络钩子，事件触发的回调
+websocket|n.|[计] 全双工网络通信协议
+polling|n.|[计] 轮询
+proxy|n.|[计] 代理（服务器）
+loopback|n.|[计] 回环地址（如 127.0.0.1）
+localhost|n.|[计] 本机地址
+cdn|n.|[计] 内容分发网络
+cors|n.|[计] 跨源资源共享机制
+tls|n.|[计] 传输层安全协议
+jwt|n.|[计] JSON 网络令牌
+oauth|n.|[计] 开放授权协议
+debounce|v.|[计] 防抖，停止触发一段时间后才执行
+throttle|v.|[计] 节流，固定频率执行
+microservice|n.|[计] 微服务
+container|n.|[计] 容器
+orchestration|n.|[计]（容器）编排
+observability|n.|[计] 可观测性
+telemetry|n.|[计] 遥测数据
+legacy|a.|[计] 遗留的（旧系统/旧代码）
+deprecate|v.|[计] 弃用，不建议继续使用并将在未来移除
+refactor|v.|[计] 重构，在不改行为的前提下改善代码结构
+rollback|n.|[计] 回滚，恢复到旧版本
+migration|n.|[计]（数据库/系统）迁移
+scaffolding|n.|[计] 脚手架代码，自动生成的项目骨架
+seed|n.|[计] 随机种子；初始种子数据
+fixture|n.|[计] 测试夹具，固定的测试样本
+mock|n.|[计] 模拟对象（测试替身）
+stub|n.|[计] 桩，占位的简化实现
+regression|n.|[计] 回归测试（统计/机器学习中另作“回归”）
+smoke-test|n.|[计] 冒烟测试
+idempotency|n.|[计] 幂等性
+upstream|a.|[计] 上游的
+downstream|a.|[计] 下游的；下游任务（如 fine-tuning 的下游任务）
+pseudocode|n.|[计] 伪代码
+unicode|n.|[计] Unicode 统一字符集
+ascii|n.|[计] ASCII 字符编码
+whitespace|n.|[计] 空白字符（空格/制表/换行）
+newline|n.|[计] 换行符
+hashmap|n.|[计] 哈希表
+mutex|n.|[计] 互斥锁
+syscall|n.|[计] 系统调用
+toolchain|n.|[计] 工具链
+boilerplate|n.|[计] 样板代码
+in-place|a.|[计] 原地的，不另开内存
+zero-indexed|a.|[计] 从零开始编号的
+off-by-one|a.|[计] 差一错误的（off-by-one error）
+hardcode|v.|[计] 硬编码
+hard-coded|a.|[计] 硬编码的
+# === 论文/框架高频补充（S2 审计回填）===
+ffn|n.|[AI] 前馈网络层（feed-forward network 的缩写）
+concat|v.|[计] 拼接（concatenate 的缩写）
+flops|n.|[计] 浮点运算量（floating-point operations）
+tflops|n.|[计] 每秒万亿次浮点运算（TFLOPS）
+layernorm|n.|[AI] 层归一化（LayerNorm 的粘连写法）
+parallelizable|a.|[计] 可并行化的
+en-de|n.|[NLP] 英语到德语的翻译方向（语言对）
+en-fr|n.|[NLP] 英语到法语的翻译方向（语言对）
+github|n.|[计] GitHub 代码托管与开源协作平台
+tensorflow|n.|[AI] TensorFlow 深度学习框架
+pytorch|n.|[AI] PyTorch 深度学习框架
+jax|n.|[AI] JAX 函数式数值计算与深度学习框架
+keras|n.|[AI] Keras 高层神经网络库
+jupyter|n.|[计] Jupyter 交互式代码笔记本环境
+acl|n.|[学术] ACL，计算语言学协会年会
+naacl|n.|[学术] NAACL，北美计算语言学协会年会
+iclr|n.|[学术] ICLR，学习表征国际会议
+nips|n.|[学术] NIPS，神经信息处理系统会议（NeurIPS 旧称）
+neurips|n.|[学术] NeurIPS，神经信息处理系统大会
+icml|n.|[学术] ICML，国际机器学习会议
+emnlp|n.|[学术] EMNLP，自然语言处理实证方法会议
+coling|n.|[学术] COLING，国际计算语言学会议
+cvpr|n.|[学术] CVPR，计算机视觉与模式识别会议
+iccv|n.|[学术] ICCV，国际计算机视觉大会
+eccv|n.|[学术] ECCV，欧洲计算机视觉大会
+aaai|n.|[学术] AAAI，人工智能促进协会年会
+ijcai|n.|[学术] IJCAI，国际人工智能联合会议
+sigir|n.|[学术] SIGIR，信息检索年会
+kdd|n.|[学术] KDD，知识发现与数据挖掘会议
+depthwise|a.|[AI] 逐通道的；深度（卷积）的（depthwise separable convolution 深度可分离卷积）
+pointwise|a.|[AI] 逐点的（pointwise convolution 1×1 卷积）

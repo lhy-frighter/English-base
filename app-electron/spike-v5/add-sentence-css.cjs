@@ -1,0 +1,10 @@
+const fs = require("fs");
+const p = "D:/vibe coding/英语学习/app-electron/src/styles.css";
+let s = fs.readFileSync(p, "utf8");
+if (s.indexOf(".teach-sentence-add") >= 0) throw new Error("already");
+const anchor = ".teach-zh { font-size: 12px; margin-top: 2px; }";
+if (s.indexOf(anchor) < 0) throw new Error("anchor missing");
+const rule = ".teach-sentence-add { margin-top: 6px; font-size: 12px; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }\r\n.teach-sentence-add:hover { border-color: var(--ink-soft); }\r\n";
+s = s.replace(anchor, anchor + "\r\n" + rule.trimEnd());
+fs.writeFileSync(p, s);
+console.log("css added");

@@ -1,0 +1,44 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+app-electron/dist/
+app-electron/release/
+app/src-tauri/target/
+app/src-tauri/gen/
+
+# ===== 运行时数据（本地优先：模型/缓存/个人数据不进 git，首跑自建） =====
+app-electron/data/
+!app-electron/data/
+app-electron/data/*
+!app-electron/data/dict.sqlite
+!app-electron/data/builtins.cjs
+!app-electron/data/assessment-bank.json
+!app-electron/data/packs/
+
+# Tauri 旧版（ADR-2 已弃用，仅留源码；其 dict 副本不追踪）
+app/src-tauri/data/
+
+# ===== Spike 大文件（模型/语料/缓存；报告与代码保留） =====
+app-electron/spike-s8/wikt/
+app-electron/spike-s8/oewn/
+app-electron/spike-v6/
+app-electron/spike-v8/kokoro-model/
+app-electron/spike-v8/opus-cache/
+app-electron/spike-v8/vendor-kokoro/
+app-electron/spike-v8/models/
+app-electron/spike-v8/smartturn-model/
+app-electron/spike-v8/smartturn-raw/
+app-electron/spike-v8/smartturn-feats/
+app-electron/spike-v8/fixtures/
+app-electron/spike-v5/baseline-*.json
+
+# ===== V0 验证工具包：Brown 语料与 ecdict 副本（公开语料可重下） =====
+V0验证工具包/data/
+
+# ===== 日志与临时文件 =====
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# ===== 旧 Tauri 版本（ADR-2 已弃用）：自带独立 git 仓库，不嵌入新仓库 =====
+app/

@@ -1,0 +1,39 @@
+{
+  "pair": "en->zh-Hans",
+  "architecture": "base-memory",
+  "releaseStatus": "Release",
+  "registry": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
+  "fetchedAt": "2026-09-17T02:28:36.875Z",
+  "engine": "@browsermt/bergamot-translator@0.4.9 (MPL-2.0)",
+  "files": [
+    {
+      "name": "model.enzh.intgemm.alphas.bin",
+      "bytes": 43849787,
+      "gzBytes": 33375922,
+      "sha256": "4e5accc141373565ddc8fa1565bceaa8d0c3482a82cab8131c719ebcc6c2157c",
+      "gzUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/model.enzh.intgemm.alphas.bin.gz",
+      "verifiedAgainstRegistry": true
+    },
+    {
+      "name": "lex.50.50.enzh.s2t.bin",
+      "bytes": 4485184,
+      "gzBytes": 2536039,
+      "sha256": "8575d8daa10e2dbff316dcdf8e1ce475357bcc2c92bdc63b736a2d5add22f681",
+      "gzUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/lex.50.50.enzh.s2t.bin.gz"
+    },
+    {
+      "name": "srcvocab.enzh.spm",
+      "bytes": 806952,
+      "gzBytes": 407784,
+      "sha256": "bd9b65504acc6d9726dd281f7defc2adb7c2c22d0688fe2f84697de25197c8c5",
+      "gzUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/srcvocab.enzh.spm.gz"
+    },
+    {
+      "name": "trgvocab.enzh.spm",
+      "bytes": 772004,
+      "gzBytes": 425748,
+      "sha256": "aded6993c36e440284d11cec3f6b8aef9c0e43188a772d80be342a713adf223d",
+      "gzUrl": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/models/en-zh/llmaat_finetune10M_qe8_f2_ByQcSxGXQRqGi-UTxYE43g/exported/trgvocab.enzh.spm.gz"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+Bergamot 翻译引擎（浏览器/WASM 构建产物）
+=========================================
+
+来源包：@browsermt/bergamot-translator@0.4.9
+npm：https://www.npmjs.com/package/@browsermt/bergamot-translator
+上游源码：https://github.com/browsermt/bergamot-translator
+许可证：MPL-2.0（全文见 LICENSE.txt）
+
+文件清单：
+- bergamot-translator-worker.js / .wasm  上游 npm 包 worker/ 目录内原始产物，未做任何二进制/源码修改
+- upstream-translator-worker.js       上游自带的 Worker 封装样例（保留以备溯源；生产不直接加载）
+- translator-worker.js                本应用自有的 Worker 封装（应用自有代码，MPL 兼容）
+
+说明：
+1. 上游样例通过在 WebAssembly.instantiateStreaming 的 importObject 中注入 wasm_gemm
+   fallback 解决 Chromium 无 Firefox mozIntGemm 的问题，因此本项目不需要对上游胶水文件
+   打补丁（spike 阶段的 patch-gemm.cjs 路线已废弃）。
+2. 模型文件不随引擎分发：Mozilla en->zh base-memory 四文件由应用内模型商店按可信清单
+   （钉死字节数与 SHA256）下载到 data/models，许可证同为 MPL-2.0。
+3. MPL-2.0 为文件级弱 copyleft：修改本目录内上游文件须公开修改后的源码；与应用自有代码
+   以独立文件并存即合规。发行物须随附 THIRD_PARTY_NOTICES 与本许可证全文（ADR-4 裁决 #7）。
