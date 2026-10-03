@@ -22,6 +22,8 @@ const FUNCTION_POS_RE = /^\s*(art|prep|conj|pron|det|int|interj|num|modal|aux|pa
 const DAY_MS = 86_400_000;
 const REQUEST_RETENTION = 0.9;
 const NEW_PER_DAY = 12;
+// 推荐流保留天数（#207）：45 天——够读完一轮，又不至于让本地库无限长
+const FEED_KEEP_DAYS = 45;
 const BACKUP_KEEP = 7;
 // 本地日期戳 YYYY-MM-DD（备份文件命名按用户本地天）
 function ymd(d) {
@@ -141,6 +143,7 @@ const MIGRATIONS = [
   migrateV7,
   // v8：每日好文 RSS 源与条目（feeds.cjs，建表语句全部 IF NOT EXISTS，天然可重入）
   MIGRATION_V8,
+
   // v9：文章多来源表（S6 书库卡片化）。来源不进 stats_json（重新标注会整包覆盖），独立成表可多来源并存
   `CREATE TABLE IF NOT EXISTS text_sources(
     id INTEGER PRIMARY KEY,
@@ -189,7 +192,20 @@ const MIGRATIONS = [
   migrateV13,
   migrateV14,
   migrateV15,
+  // ��数组占位（v16）：历史上有一步迁移被合并移除，导致存量库停在 16。
+  // 保留一个幂等空迁移占位，让后续新增迁移能从 17 继续编号，不必回填旧版本。
+  `SELECT 1;`,
+  // #208 好文题材分类（v17）：依赖 feed_items 已由 MIGRATION_V8 建好。
+  // 写成函数而非裸 SQL：ALTER TABLE ADD COLUMN 在列已存在时会抛错，
+  // 而重复执行（含测试反复建 Core）必须安全，故按列是否存在分支。
+  migrateTopics,
+
 ];
+// 测试与诊断用：迁移跑完后的期望 user_version。
+// 迁移按数组下标对应版本号，新增/合并任一项都会让它变化——
+// 测试硬编码版本号会在每次加迁移时集体失败，所以统一从这里取。
+const MIGRATIONS_VERSION_HINT = MIGRATIONS.length;
+
 
 // v7 迁移体（独立函数，便于在事务内调用且可重入）
 function migrateV7(db) {
@@ -433,6 +449,14 @@ function migrateV14(db) {
 }
 
 // v15：①asset_evidence 重建 result CHECK 扩 10 值；②shadow_sentences 加来源；③debrief_drafts
+// v17：feed_items 加题材分类两列 + 索引（可重入）
+function migrateTopics(db) {
+  const cols = db.prepare("PRAGMA table_info(feed_items)").all().map((c) => c.name);
+  if (!cols.includes("topic")) db.exec("ALTER TABLE feed_items ADD COLUMN topic TEXT;");
+  if (!cols.includes("gist")) db.exec("ALTER TABLE feed_items ADD COLUMN gist TEXT NOT NULL DEFAULT '';");
+  db.exec("CREATE INDEX IF NOT EXISTS idx_feed_items_topic ON feed_items(topic, published_at DESC);");
+}
+
 function migrateV15(db) {
   // ① evidence 重建（旧 6 值全部包含在新 10 值内，直接拷贝；可重入：检测 CHECK 口径）
   const evRow = db.prepare(
@@ -566,6 +590,9 @@ class Core {
     this.repairReadAmounts();
     // S9-1：启动回收——上次未正常关闭的 open 会话按遗弃处理
     this.reapAbandonedSessions();
+    // 推荐流回收（#207）：超过保留期且用户没点开也没忽略的条目硬删。
+    // 只删 status='new'，且已导入的（text_id 非空）永远不碰。
+    try { this.pruneStaleFeedItems(FEED_KEEP_DAYS); } catch { /* 清理失败不该挡住启动 */ }
   }
 
   // PRAGMA integrity_check：健康时恰好返回单行 "ok"
@@ -633,6 +660,8 @@ class Core {
     const now = nowMs();
     const notes = this.user.prepare("SELECT id FROM notes").all();
     for (const n of notes) {
+      // 迁移重建的是 v14 的历史卡，不在这里插新题型——存量补建交给
+      // backfillTranslateCards()，那里是幂等的且只补有句子的笔记。
       for (const ct of ["r_recog", "cloze", "recall", "l_recog", "spelling"]) {
         this.user
           .prepare("INSERT OR IGNORE INTO cards(note_id, card_type, due, state, created_at) VALUES(?,?,?,0,?)")
@@ -772,6 +801,10 @@ class Core {
 
   migrate() {
     let v = this.user.prepare("PRAGMA user_version").get().user_version;
+    // 存量库可能带着「比当前数组更长」的历史版本号（迁移项被删过/合并过）。
+    // 原逻辑只做 `v < i+1`，这种库会被整个跳过——后面的加列迁移永远不执行，
+    // 症状是代码已就位但真库报 no such column。收敛到数组长度即可安全续跑。
+    if (v > MIGRATIONS.length) v = MIGRATIONS.length;
     const dbFile = path.join(this.dataDir, "user.sqlite");
     for (let i = 0; i < MIGRATIONS.length; i++) {
       if (v < i + 1) {
@@ -989,6 +1022,11 @@ class Core {
       const status = o.status === "abandoned" ? "abandoned" : "closed";
       this.user.prepare("UPDATE conversation_sessions SET status=?, ended_at=?, active_ms=?, last_active_at=? WHERE id=?")
         .run(status, t, activeMs, t, row.id);
+      // #204：会话收口即自动沉淀本场候选。此前只有用户在复盘面板手动确认才会建资产，
+      // 于是 learning_assets 长期为 0、复习只剩词卡一种。失败不影响关闭流程。
+      try {
+        this.debriefAutoArchive({ origin_kind: 'conversation', origin_ref: row.session_key, session_key: row.session_key });
+      } catch (e) { console.warn('[convClose] 自动沉淀候选失败（不影响会话关闭）', e && e.message); }
     }
     return this._convSessionDto(this.user.prepare("SELECT * FROM conversation_sessions WHERE id=?").get(row.id));
   }
@@ -1283,8 +1321,17 @@ class Core {
   assessmentHistory(limit = 20) {
     return this.user.prepare("SELECT cefr, rate, snapshot_json, created_at FROM coverage_assessments WHERE kind='parallel_test' ORDER BY created_at DESC LIMIT ?")
       .all(limit).map((r) => {
-        let s = {}; try { s = JSON.parse(r.snapshot_json); } catch {}
-        return { cefr: r.cefr, score: Math.round(r.rate * 100), created_at: r.created_at, ...s };
+        // snapshot_json 损坏时不能静默当 {} 返回：展开后 wpm/comp/coverage 全是 undefined，
+        // 上层按类型当 number 用，页面会渲染出 NaN，而这条记录看上去仍像一次正常测评。
+        // 改为显式标记 corrupt，让 UI 能说「这条记录读不出来」而不是假装有数据（#195）。
+        let s = null;
+        try { s = JSON.parse(r.snapshot_json); } catch (e) {
+          console.warn("[assessmentHistory] snapshot_json 解析失败，已标记为损坏：cefr=" + r.cefr + " id=" + r.id, e && e.message);
+        }
+        if (!s || typeof s !== "object") {
+          return { cefr: r.cefr, score: Math.round(r.rate * 100), created_at: r.created_at, corrupt: true };
+        }
+        return { cefr: r.cefr, score: Math.round(r.rate * 100), created_at: r.created_at, corrupt: false, ...s };
       });
   }
 
@@ -1348,6 +1395,89 @@ class Core {
       }
     }
     this.user.prepare("INSERT OR IGNORE INTO app_settings(k,v) VALUES('func_encounters_pruned',?)").run(String(removed));
+  }
+
+  // —— 好文题材分类（#208）——
+
+  /** 未分类的条目（topic IS NULL）。手动触发时只处理这些，避免重复付费。 */
+  feedItemsNeedingTopic(limit = 400) {
+    return this.user.prepare(`
+      SELECT feed_id, guid, title, summary FROM feed_items
+      WHERE topic IS NULL AND status!='dismissed'
+      ORDER BY published_at DESC LIMIT ?`).all(limit);
+  }
+
+  /** 写入分类结果。未知 guid 一律忽略（条目可能已被清理）。 */
+  applyTopics(rows) {
+    if (!Array.isArray(rows) || rows.length === 0) return { applied: 0 };
+    const up = this.user.prepare(
+      "UPDATE feed_items SET topic=?, gist=? WHERE feed_id=? AND guid=?");
+    let applied = 0;
+    this.user.exec('BEGIN');
+    try {
+      for (const r of rows) {
+        const ch = up.run(String(r.topic || 'other'), String(r.gist || ''),
+          String(r.feed_id || ''), String(r.guid || ''));
+        applied += ch.changes;
+      }
+      this.user.exec('COMMIT');
+    } catch (e) {
+      try { this.user.exec('ROLLBACK'); } catch { /* 已回滚则忽略 */ }
+      throw e;
+    }
+    return { applied };
+  }
+
+  /** 按题材分组，供分区浏览页渲染。计数与预览都一次取回，避免 N 次查询。 */
+  feedTopicsOverview() {
+    const rows = this.user.prepare(`
+      SELECT topic, COUNT(*) AS n FROM feed_items
+      WHERE status!='dismissed' GROUP BY topic`).all();
+    const byTopic = new Map(rows.map((r) => [r.topic, r.n]));
+    const total = rows.reduce((a, r) => a + r.n, 0);
+    const classified = rows.reduce((a, r) => a + (r.topic == null ? 0 : r.n), 0);
+    return {
+      total,
+      classified,
+      unclassified: byTopic.get(null) || 0,
+      counts: Object.fromEntries(byTopic),
+    };
+  }
+
+  /** 某个题材下的条目（含 gist）。 */
+  feedItemsByTopic(topic, limit = 200) {
+    const t = String(topic || '');
+    if (t === '__unclassified__') {
+      return this.user.prepare(`
+        SELECT feed_id, guid, title, summary, published_at, cefr, rate, text_id
+        FROM feed_items WHERE topic IS NULL AND status!='dismissed'
+        ORDER BY published_at DESC LIMIT ?`).all(limit);
+    }
+    return this.user.prepare(`
+      SELECT feed_id, guid, title, summary, published_at, cefr, rate, text_id
+      FROM feed_items WHERE topic=? AND status!='dismissed'
+      ORDER BY published_at DESC LIMIT ?`).all(t, limit);
+  }
+
+  // 推荐流过期清理（#207）
+  //
+  // 为什么要清：feed_items 每天抓取都会新增，而它只是「推荐列表 + 摘要」缓存。
+  // 用户不点开就不会积累成 texts，但行数与摘要会一直涨——长期是本地库的主要增长项。
+  //
+  // 清理口径（刻意保守，宁可留也不误删）：
+  //   1) 已导入的（text_id 非空）一律不碰——那是用户主动收下的资产；
+  //   2) 已标记 dismissed 的保留（用户主动忽略过，重现会烦）；
+  //   3) 只删 status='new' 且已过保留期的——没被点开、也没被忽略的纯推荐。
+  // 删除是硬删（不留 dismissed 墓碑行），否则行数不会下降，等于没清。
+  pruneStaleFeedItems(days = 45) {
+    const n = Number(days);
+    if (!Number.isFinite(n) || n < 1) return { removed: 0, skipped: 'bad_days' };
+    const cutoff = nowMs() - Math.round(n * 86400_000);
+    const r = this.user.prepare(`
+      DELETE FROM feed_items
+      WHERE status='new' AND text_id IS NULL AND COALESCE(fetched_at, published_at, 0) < ?
+    `).run(cutoff);
+    return { removed: r.changes, days: n, cutoff };
   }
 
   // 一次性合并：旧版按表层形记录的复数/屈折相遇归并到原形（同文计数相加）
@@ -2464,7 +2594,14 @@ class Core {
         .run(lexemeId, textId, sentence, now);
       const noteId = Number(this.user.prepare("SELECT last_insert_rowid() AS id").get().id);
       let cards_created = 0;
-      for (const ct of ["r_recog", "cloze", "recall", "l_recog", "spelling"]) {
+      // 六卡：前五张是词级题型（认读/挖空/释义/听音辨义/听写），
+      // note_translate 是句子级题型——手写翻译后走三层批改（本地逐字对比 →
+      // 本地相似度 → 云端语法剖析，见 translate-judge.ts）。它挂在 note 上而非
+      // asset 上：句子就是笔记的 context_sentence，答案随原文走，不另立资产（#205）。
+      // 占位句不是真句子，不建翻译卡（否则复习时会出现「把占位说明翻成英文」的卡）
+      const isPlaceholder = String(sentence || "").startsWith("（从词表收录");
+      for (const ct of ["r_recog", "cloze", "recall", "l_recog", "spelling",
+        ...(isPlaceholder ? [] : ["note_translate"])]) {
         this.user
           .prepare("INSERT INTO cards(note_id,card_type,due,state,created_at) VALUES(?,?,?,0,?)")
           .run(noteId, ct, now, now);
@@ -2556,7 +2693,14 @@ class Core {
         .prepare("INSERT INTO notes(lexeme_id,text_id,context_sentence,source,created_at) VALUES(?,NULL,?,'shadow',?)")
         .run(lexemeId, sent, now);
       noteId = Number(this.user.prepare("SELECT last_insert_rowid() AS id").get().id);
-      for (const ct of ["r_recog", "cloze", "recall", "l_recog", "spelling"]) {
+      // 六卡：前五张是词级题型（认读/挖空/释义/听音辨义/听写），
+      // note_translate 是句子级题型——手写翻译后走三层批改（本地逐字对比 →
+      // 本地相似度 → 云端语法剖析，见 translate-judge.ts）。它挂在 note 上而非
+      // asset 上：句子就是笔记的 context_sentence，答案随原文走，不另立资产（#205）。
+      // 占位句不是真句子，不建翻译卡（否则复习时会出现「把占位说明翻成英文」的卡）
+      const isPlaceholder = String(sentence || "").startsWith("（从词表收录");
+      for (const ct of ["r_recog", "cloze", "recall", "l_recog", "spelling",
+        ...(isPlaceholder ? [] : ["note_translate"])]) {
         this.user
           .prepare("INSERT INTO cards(note_id,card_type,due,state,created_at) VALUES(?,?,?,0,?)")
           .run(noteId, ct, now, now);
@@ -2756,6 +2900,136 @@ class Core {
     return this.user.prepare("SELECT * FROM debrief_drafts WHERE draft_key=?").get(draftKey);
   }
 
+  // —— 自动沉淀复盘候选（#204）——
+  // 背景：captureAsset 的唯一触发点是 DebriefPanel 的手动确认，���户不点，
+  // learning_assets 就永远是 0 张卡——库里躺着一堆 status='open' 的草稿
+  // （实测 4 份，含真实 chunk/word 候选），资产链从未启动。这就是
+  // 「复习页有时候出不了词」的根因：不是随机故障，是资产侧从没被填充。
+  //
+  // 这里做保守自动归档，只沉淀「确定性足够」的候选：
+  //   word    —— 已在词库里（lexemes 有对应 lemma），建卡是纯收益，无歧义
+  //   chunk   —— 有 canonical 且内容够长（≥3 词），能当词块记忆
+  //   grammar/concept/pronunciation —— 一律不自动建，它们需要人工判断对错
+  // 剩下的仍留在草稿里等用户手动确认，不丢。
+  // 为存量笔记补建句子翻译卡（#205）。
+  // 翻译卡是本次新加的题型，库里已有的笔记一张都没有——不补的话用户永远见不到它。
+  // 幂等：靠「该 note 是否已有 note_translate」判定，重复调用不会重复建。
+  // 只补 context_sentence 非空的笔记：没有句子就没有可翻译的内容，建了也是空卡。
+  // 从文章既有译文里取某句的中文：reader 的划词配对与此处同源（#205）
+  _sentenceTranslation(textId, sentence) {
+    if (!textId || !sentence) return "";
+    const want = String(sentence).trim();
+    if (!want) return "";
+    const rows = this.user.prepare(
+      "SELECT pairs_json FROM text_translations WHERE text_id=? AND dst_lang='zh' ORDER BY para_index").all(textId);
+    for (const r of rows) {
+      let pairs;
+      try { pairs = JSON.parse(r.pairs_json || "[]"); } catch { continue; }
+      if (!Array.isArray(pairs)) continue;
+      for (const p of pairs) {
+        if (!Array.isArray(p) || p.length < 2) continue;
+        if (String(p[0] || "").trim() === want) return String(p[1] || "").trim();
+      }
+      // 选区可能是整句的一部分：与某句有足够重叠时也认（划词常只选半句）
+      for (const p of pairs) {
+        if (!Array.isArray(p) || p.length < 2) continue;
+        const en = String(p[0] || "").trim();
+        if (!en) continue;
+        if (want.includes(en) || en.includes(want)) return String(p[1] || "").trim();
+      }
+    }
+    return "";
+  }
+
+  backfillTranslateCards() {
+    const now = nowMs();
+    // 排除占位句「（从词表收录，暂无语境句…）」：它不是真句子，送去翻译题毫无意义，
+    // 用户会看到一道「把这行中文翻成英文」的荒诞卡（#205）。
+    const rows = this.user.prepare(`
+      SELECT n.id AS note_id, n.context_sentence
+      FROM notes n
+      WHERE n.context_sentence IS NOT NULL AND TRIM(n.context_sentence) <> ''
+        AND n.context_sentence NOT LIKE '（从词表收录%'
+        AND n.context_sentence NOT LIKE '(%从词表收录%'
+        AND NOT EXISTS (SELECT 1 FROM cards c WHERE c.note_id = n.id AND c.card_type = 'note_translate')
+    `).all();
+    let created = 0;
+    this.user.exec('BEGIN');
+    try {
+      for (const r of rows) {
+        this.user.prepare("INSERT INTO cards(note_id,card_type,due,state,created_at) VALUES(?, 'note_translate', ?, 0, ?)")
+          .run(r.note_id, now, now);
+        created++;
+      }
+      this.user.exec('COMMIT');
+    } catch (e) {
+      try { this.user.exec('ROLLBACK'); } catch { /* 已回滚则忽略 */ }
+      throw e;
+    }
+    // 清理历史遗留：占位句上已建出来的翻译卡（迁移早期版本没排除）
+    const purged = this.user.prepare(`
+      DELETE FROM cards WHERE card_type='note_translate' AND note_id IN (
+        SELECT id FROM notes WHERE context_sentence LIKE '（从词表收录%'
+      )`).run().changes;
+    return { created, scanned: rows.length, purged };
+  }
+
+  debriefAutoArchive(o) {
+    const originKind = String(o.origin_kind || '');
+    const originRef = String(o.origin_ref || '');
+    const sessionKey = o.session_key || null;
+    const draftKey = originKind + ':' + originRef;
+    const draft = this.user.prepare(
+      "SELECT * FROM debrief_drafts WHERE draft_key=? AND status='open'").get(draftKey);
+    if (!draft) return { archived: 0, draft_key: draftKey, skipped: 'no-open-draft' };
+    let cands = [];
+    try { cands = JSON.parse(draft.candidates_json || '[]'); } catch { cands = []; }
+    if (!Array.isArray(cands) || cands.length === 0) return { archived: 0, draft_key: draftKey, skipped: 'empty' };
+
+    let archived = 0; const left = [];
+    for (const c of cands) {
+      const kind = String(c && c.kind || '');
+      const canonical = String((c && (c.canonical || c.clicked)) || '').trim();
+      if (!canonical) { left.push(c); continue; }
+      if (kind === 'word') {
+        const lem = canonical.toLowerCase();
+        const lex = this.user.prepare("SELECT id FROM lexemes WHERE lemma=?").get(lem);
+        // 没进词库的一律留给手动：建 word 资产要求 lexeme_id 外键，猜不得
+        if (!lex) { left.push(c); continue; }
+        try {
+          this.captureAsset({
+            asset_kind: 'word', canonical: lem, gloss: String(c.gloss || ''),
+            lexeme_id: lex.id, origin_kind: originKind, origin_ref: originRef,
+            session_key: sessionKey,
+            idempotency_key: 'auto:' + draftKey + ':word:' + lem,
+          });
+          archived++;
+        } catch { left.push(c); }
+        continue;
+      }
+      if (kind === 'chunk' && canonical.split(/\s+/).filter(Boolean).length >= 3) {
+        try {
+          this.captureAsset({
+            asset_kind: 'chunk', canonical,
+            gloss: String(c.gloss || c.zh_intent || ''),
+            payload: { example_en: String(c.example_en || draft.candidates_json ? '' : ''), zh_intent: String(c.zh_intent || '') },
+            origin_kind: originKind, origin_ref: originRef, session_key: sessionKey,
+            idempotency_key: 'auto:' + draftKey + ':chunk:' + canonical.slice(0, 80),
+          });
+          archived++;
+        } catch { left.push(c); }
+        continue;
+      }
+      left.push(c);
+    }
+    // 有沉淀就把草稿收口；剩下的候选原样回写，保持可恢复
+    this.debriefPut({
+      origin_kind: originKind, origin_ref: originRef, candidates: left,
+    });
+    if (archived > 0 && left.length === 0) this.debriefSetStatus(draftKey, 'done');
+    return { archived, draft_key: draftKey, remaining: left.length };
+  }
+
   debriefSetStatus(draftKey, status) {
     if (!['open','done','skipped'].includes(status)) throw new Error('status 非法');
     const now = nowMs();
@@ -2890,11 +3164,17 @@ class Core {
     const normRaw = normalizeExpression(raw);
     const tokens = raw.toLowerCase().match(/[a-z][a-z'’-]*/g) || [];
     const lemmas = new Set();
+    // 单条失败此前是纯静默：一次对话几十个词元，失败几条既没计数也没日志，
+    // 事后完全无法判断「用出证据」是否可信（#195）。
+    let lemmaFail = 0, evidenceFail = 0;
     for (const t of tokens) {
       lemmas.add(t);
       const l = this.lemmaOf.get(t);
       if (l) lemmas.add(l);
-      else { try { const rl = this.ruleLemma(t); if (rl) lemmas.add(rl); } catch { /* */ } }
+      else {
+        try { const rl = this.ruleLemma(t); if (rl) lemmas.add(rl); }
+        catch (e) { lemmaFail++; if (lemmaFail <= 3) console.warn("[detectUsedAssets] lemma 解析失败:", t, e && e.message); }
+      }
     }
 
     const promptedIds = Array.isArray(prompted) ? prompted : [];
@@ -2909,7 +3189,10 @@ class Core {
           payload: { session_key: sessionKey }, idempotency_key: idem,
         });
         out.push({ asset_id: asset.id, result, replayed: r.replayed });
-      } catch { /* 单条失败跳过 */ }
+      } catch (e) {
+        evidenceFail++;
+        if (evidenceFail <= 3) console.warn("[detectUsedAssets] 证据写入失败 asset=" + asset.id, e && e.message);
+      }
     };
 
     const wordAssets = this.user.prepare(
@@ -2942,6 +3225,9 @@ class Core {
         : (normCorrection && normCorrection.indexOf(hit) !== -1
           ? "used_after_correction" : "used_spontaneously");
       classify(a, hit, result);
+    }
+    if (lemmaFail || evidenceFail) {
+      console.warn(`[detectUsedAssets] 本轮部分失败：lemma 解析 ${lemmaFail} 条 · 证据写入 ${evidenceFail} 条（结论可能不完整）`);
     }
     return out;
   }
@@ -3077,17 +3363,35 @@ class Core {
       .get(todayStart).n;
     const newQuota = Math.max(0, Math.min(NEW_PER_DAY - introduced, limit));
     if (newQuota > 0) {
-      const fresh = this.user
-        .prepare("SELECT id, note_id, asset_id, card_type, state FROM cards WHERE state=0 ORDER BY created_at LIMIT ?")
-        .all(newQuota);
+      // 新卡配额按「张数」截断，但一个笔记现在有 6 张卡（含 note_translate），
+      // 照张数截会让同一个笔记的词卡+翻译卡把配额吃满，把后面的独立卡整个挤掉
+      // （实测 3 个笔记时 abandon 的卡永远进不了队列）。改为按笔记归属去重后再截，
+      // 语义回到「今天引入 N 个新知识点」，与配额本意一致。
+      const freshAll = this.user
+        .prepare("SELECT id, note_id, asset_id, card_type, state FROM cards WHERE state=0 ORDER BY created_at, id").all();
+      const freshSeen = new Set();
+      const fresh = [];
+      for (const r of freshAll) {
+        const k = r.card_type === 'note_translate' ? `translate:${r.note_id}`
+          : r.note_id != null ? `note:${r.note_id}` : `asset:${r.asset_id}`;
+        if (freshSeen.has(k)) continue;
+        freshSeen.add(k);
+        fresh.push(r);
+        if (fresh.length >= newQuota) break;
+      }
       queue = queue.concat(fresh);
     }
 
     const seenOwners = new Set();
     const out = [];
-    for (const row of queue) {
-      // 归属键：词卡 note:<id>，资产卡 asset:<id>（asset 卡 note_id 为 NULL，不能再用 note_id 互埋）
-      const ownerKey = row.note_id != null ? `note:${row.note_id}` : `asset:${row.asset_id}`;
+for (const row of queue) {
+      // 归属键：词卡 note:<id>，资产卡 asset:<id>（资产卡 note_id 为 NULL，不能再用 note_id 互埋）
+      // 兄弟卡互埋：同一个笔记的 5 张词级卡一次只出一张，避免一轮里连着问同一个词。
+      // note_translate 是例外——它考的是「整句翻译」这个不同维度，与词卡不冲突；
+      // 若也按 note 去重，它永远排在 r_recog 之后被挤掉，等于白建（#205）。
+      const ownerKey = row.card_type === 'note_translate'
+        ? `translate:${row.note_id}`
+        : row.note_id != null ? `note:${row.note_id}` : `asset:${row.asset_id}`;
       if (seenOwners.has(ownerKey)) continue; // 兄弟卡互埋
       seenOwners.add(ownerKey);
       let n, d;
@@ -3115,19 +3419,29 @@ class Core {
       }
       let shown = n.sentence;
       let answer = n.lemma;
+      let reference = ""; // 仅 note_translate 用：参考答案译文（翻译题批改基准）
+      let noExample = false; // 词块填空缺例句：正面即答案，不可自答（#200）
       let miss = false;
       let choices;
       let correctChoice = null;
       if (row.card_type === "chunk_recall") {
         // 词块回忆：正面英文词块，背面中文意图+例句
-        shown = a.canonical; answer = a.gloss || payload.zh_intent || "";
+        shown = a.canonical;
+        // 无 gloss 时不返回空串当答案——那样卡背��只能显示「（无释义）」，
+        // 用户既没处写也没法核验。改为空时由前端走「自己写中文意图」流程（#200）。
+        answer = a.gloss || payload.zh_intent || "";
       } else if (row.card_type === "chunk_cloze") {
-        // 词块填空：例句中挖掉该词块
+        // 词块填空：例句中挖掉该词块。
+        // 没有例句时不能退化成「显示完整词块」——那样正面就是答案，等于没挖（#200）。
+        // 这种情况标记 noExample，由前端提示补例句，不给出一张永远做不对的假卡。
         const ex0 = payload.example_en || "";
         if (ex0) {
           const esc0 = a.canonical.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          shown = ex0.replace(new RegExp(esc0, "i"), "_____");
-        } else shown = a.canonical;
+          shown = ex0.replace(new RegExp(esc0, "i"), "＿＿＿＿");
+        } else {
+          shown = a.canonical;
+          noExample = true;
+        }
         answer = a.canonical;
       } else if (row.card_type === "grammar_pattern") {
         // 语法练习：正面题目，背面答案+解释
@@ -3142,9 +3456,43 @@ class Core {
       } else if (row.card_type === "concept") {
         // 错题概念卡：正面=错因+考点（sense），背面=题干/解析（context_sentence）
         shown = n.sense;
+      } else if (row.card_type === "note_translate") {
+        // 句子翻译：正面英文原句，背面参考答案。
+        // 参考译文三处来源，按可靠度降级：
+        //   1) 该笔记所属文章的 text_translations.pairs_json —— reader 划词时用的
+        //      就是这份按句配对数据，用同一份才能保证「你看到的那句译文」=
+        //      「复习时该填的那句译文」；
+        //   2) 词典 translation（单词级，对整句不合适，仅作兜底）；
+        //   3) 都没有 → 空串，前端提示「暂无参考译文，只能自评」。
+        // 注意：不要回退到词典的 d.translation——那是**单词**释义（"plain" 会返回
+        // 一大串「平原/朴实无华/清楚地」），塞给整句翻译题当参考答案毫无意义，
+        // 用户会照着一堆词性释义拼答案。宁可空着让前端提示「只能自评」。（#205）
+        const zhRef = this._sentenceTranslation(n.text_id, n.sentence)
+          || payload.zh_reference || "";
+        shown = n.sentence || n.lemma;
+        answer = zhRef;
+        reference = zhRef;
       } else if (row.card_type === "cloze") {
         const cl = buildCloze(this, n.sentence, n.lemma);
         shown = cl.text; answer = cl.answer; miss = cl.miss;
+      } else if (row.card_type === "r_recog") {
+        // 认读卡原来直接显示整句+高亮词，等于把答案摆在眼前（#200）。
+        // 改成：有真语境句就挖空该词、无语境句（词表收录的词）就退化为
+        // 「显示单词 + 释义四选一」——两种都不直接给答案。
+        const isPlaceholder = /^[（(]\s*从词表收录/.test(String(n.sentence || ""));
+        if (isPlaceholder || !n.sentence) {
+          // 无语境句：正面给单词本身，配释义四选一（百词斩的「认→选义」范式）
+          shown = n.lemma;
+          answer = n.lemma;
+          correctChoice = n.sense || (d.translation || "").split("\n")[0].trim() || n.lemma;
+          choices = this.meaningChoices(correctChoice, n.lemma);
+        } else {
+          // 有语境句：挖空该词，四选一给释义
+          const cl = buildCloze(this, n.sentence, n.lemma);
+          shown = cl.text; answer = cl.answer; miss = cl.miss;
+          correctChoice = n.sense || (d.translation || "").split("\n")[0].trim() || n.lemma;
+          choices = this.meaningChoices(correctChoice, n.lemma);
+        }
       } else if (row.card_type === "recall") {
         shown = n.sense || n.lemma;
         correctChoice = shown;
@@ -3165,7 +3513,7 @@ class Core {
         sentence: shown, full: n.sentence, text_id: n.text_id ?? null, word: n.lemma,
         phonetic: d.phonetic || "", exchange: d.exchange || "", definition: d.definition || "",
         sense: n.sense, answer, clozeMiss: miss, state: row.state,
-        choices, correctChoice,
+        choices, correctChoice, reference, noExample,
       });
       if (out.length >= limit) break;
     }
@@ -3720,7 +4068,10 @@ class Core {
           sections: Array.isArray(s.sections) ? s.sections : [],
         };
       }
-    } catch { /* 保留空结构 */ }
+    } catch (e) {
+      // 试卷是用户自己攒的资产，整套降级成 0 题而无痕 = 用户以为内容丢了。必须留痕（#195）。
+      console.warn(`[getPaper] struct_json 损坏，试卷降级为空结构：id=${r.id} title=${r.title}`, e && e.message);
+    }
     return { id: r.id, title: r.title, kind: r.kind, raw_md: r.raw_md, n_questions: r.n_questions,
       audio: r.audio || "", struct, created_at: r.created_at };
   }
@@ -4220,4 +4571,5 @@ function buildCloze(core, sentence, lemma) {
   return { text: sentence, miss: true, answer: lemma };
 }
 
-module.exports = { Core, MIGRATIONS, extractSentence, buildCloze, nowMs, NEW_PER_DAY, parsePaper, decodeHtmlEntities, normalizeExpression, assetIdentity, shortHash };
+module.exports = {
+  MIGRATIONS_VERSION_HINT, Core, MIGRATIONS, extractSentence, buildCloze, nowMs, NEW_PER_DAY, parsePaper, decodeHtmlEntities, normalizeExpression, assetIdentity, shortHash };

@@ -188,6 +188,8 @@ export interface ReviewCard {
   clozeMiss: boolean;
   choices?: string[];
   correctChoice?: string | null;
+  reference?: string;   // 仅 note_translate：参考答案译文（翻译批改基准）
+  noExample?: boolean; // 仅 chunk_cloze：缺例句时正面即答案（#200）
   state: number;
 }
 export interface LexemeInfo {
@@ -342,6 +344,7 @@ export interface CloudConsent {
   historyText: boolean;  // 历史对话文本
   audio: boolean;        // 录音原文
   grammarCloud: boolean; // 文本送云端做语法深度分析（S15-1）
+  topicClassify: boolean; // 好文标题+摘要送云端做题材分类（#208）
   baseUrl: string;       // OpenAI 兼容端点
   model: string;         // 云端模型名
   updatedAt: number;
@@ -448,6 +451,9 @@ export const api = (window as any).electronAPI as {
   }>;
   cloudSaveConsent: (consent: CloudConsent) => Promise<CloudConsent>;
   cloudSetKey: (apiKey: string) => Promise<{ keySet: boolean }>;
+  // 连通性自检：在主进程执行（渲染层拿不到 key 明文），只发一次 1-token 请求
+  cloudProbe: (p: { baseUrl: string; model: string }) =>
+    Promise<{ ok: boolean; reason?: string; model?: string }>;
   cloudClearKey: () => Promise<{ keySet: boolean }>;
   cloudGetKey: () => Promise<string>;
   annotate: (text: string, title?: string, source?: { kind: TextSourceKind; label?: string; uri?: string; externalRef?: string }) => Promise<Annotated>;
@@ -502,6 +508,17 @@ export const api = (window as any).electronAPI as {
     word: string; sentence: string;
   }) => Promise<{ lexeme_id: number; note_id: number; cards_created: number; already: boolean; merged: boolean }>;
   captureAsset: (p: CaptureAssetInput) => Promise<CaptureAssetResult>;
+  // #208 好文题材分类
+  feedItemsNeedingTopic: (p?: { limit?: number }) => Promise<FeedTopicInput[]>;
+  feedApplyTopics: (p: { rows: { feed_id: string; guid: string; topic: string; gist: string }[] }) =>
+    Promise<{ applied: number }>;
+  feedTopicsOverview: () => Promise<FeedTopicOverview>;
+  feedItemsByTopic: (p: { topic: string; limit?: number }) => Promise<FeedTopicItem[]>;
+  pruneStaleFeedItems: (p?: { days?: number }) => Promise<{ removed: number; days: number }>;
+  // 自动沉淀复盘候选（#204）：会话/文章收口时把确定性候选转成学习资产，
+  // 不必等用户手动打开复盘面板。preload-drift 守卫要求两侧键集一致。
+  debriefAutoArchive: (p: { origin_kind: string; origin_ref: string; session_key?: string | null }) =>
+    Promise<{ archived: number; draft_key: string; remaining?: number; skipped?: string }>;
   addPronProductionCard: (assetId: number) => Promise<{ card_id: number; created: boolean }>;
   findAssetByCanonical: (kind: AssetKind, canonical: string) => Promise<number | null>;
   addAssetEvidence: (p: AssetEvidenceInput) => Promise<{ evidence_id: number; replayed: boolean }>;
@@ -564,6 +581,10 @@ export const api = (window as any).electronAPI as {
   onModelProgress: (cb: (p: ModelProgress) => void) => () => void;
   pathForFile: (file: File) => string;
   onIngested: (cb: (p: { title: string; url: string; at: number }) => void) => () => void;
+  // Realtime 中继：Key 只在主进程，port 经 window.postMessage 在 DOM 层转移（不能走 contextBridge）。
+  // 此前这条漏了声明，call-engine 只好自己手写一份 as unknown as —— 契约没 formalized 的典型代价。
+  // test/ipc-contract.cjs 现在会锁 preload 暴露面与本块的键集一致（#197）。
+  realtimeOpen: (opts?: unknown) => void;
   // —— 语音回归集 ——
   regressionList: () => Promise<RegressionClip[]>;
   regressionSave: (p: RegressionSave) => Promise<RegressionClip>;
@@ -614,6 +635,18 @@ export interface AssessmentHistoryItem {
   cefr: string; score: number; created_at: number;
   wpm: number; correct: number; questions: number;
   comp: number; coverage: number; speed: number; dependence: number;
+  // snapshot_json 损坏/非对象时为 true，此时上面那些数值字段不可信（core 不会填），
+  // UI 须显式提示而不是照常渲染出 NaN（#195）。
+  corrupt?: boolean;
+}
+
+export interface FeedTopicInput { feed_id: string; guid: string; title: string; summary: string }
+export interface FeedTopicItem extends FeedTopicInput {
+  published_at: number; cefr: string; rate: number | null; text_id: number | null;
+}
+export interface FeedTopicOverview {
+  total: number; classified: number; unclassified: number;
+  counts: Record<string, number>;
 }
 
 export interface ModelFileRec { path: string; bytes: number; sha256: string }
@@ -670,4 +703,6 @@ export interface FeedItem {
   status: "new" | "imported" | "dismissed";
   words: number | null; known: number | null; rate: number | null; cefr: string | null;
   text_id: number | null; feed_title: string;
+  topic: string | null;   // #208 题材；null = 尚未分类
+  gist: string;           // 一句话中文提要（云端生成）
 }

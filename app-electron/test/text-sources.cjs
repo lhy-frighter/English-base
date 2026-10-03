@@ -1,5 +1,6 @@
 // S6 书库卡片化：migration v9 text_sources、多来源、全文 CEFR、listTexts 分页/排序/筛选、回填与删文级联
 // 运行：node test/text-sources.cjs
+const EXPECTED_VER = require("../core.cjs").MIGRATIONS_VERSION_HINT;
 const { Core } = require("../core.cjs");
 const path = require("node:path");
 const fs = require("node:fs"), os = require("node:os");
@@ -15,7 +16,7 @@ function check(name, cond, extra) {
 }
 
 // —— 1. migration v9 ——
-check("user_version=15", core.user.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新（迁移已完成）", core.user.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 check("text_sources 已建表", !!core.user.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='text_sources'").get());
 
 // —— 2. annotateAndSave 写来源、幂等、多来源 ——

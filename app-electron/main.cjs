@@ -1,5 +1,5 @@
 // Electron 主进程：窗口 + IPC → core.cjs
-const { app, BrowserWindow, ipcMain, Menu, protocol, safeStorage, MessageChannelMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, Menu, protocol, safeStorage, MessageChannelMain, dialog, nativeImage } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
 const { Core } = require("./core.cjs");
@@ -269,6 +269,224 @@ function createWindow() {
     // 视觉验收（APP_SHOT=1）：切各 tab 截图到 data/shots/，供设计评审
     const shotDir = path.join(__dirname, "data", "shots");
     fs.mkdirSync(shotDir, { recursive: true });
+    // 像素回归（APP_SHOT_BASELINE=1 建基线；此后每跑自动对比）：BGRA 原始位图逐像素比较，
+    // 每通道容差 12 以容忍合成器微抖；-1 表示尺寸不匹配（窗口/布局级变化）
+    const baselineDir = path.join(__dirname, "data", "shots-baseline");
+    const wantBaseline = process.env.APP_SHOT_BASELINE === "1";
+    fs.mkdirSync(baselineDir, { recursive: true });
+    const diffs = {}, audits = {};
+    const diffImages = (a, b) => {
+      const sa = a.getSize(), sb = b.getSize();
+      if (sa.width !== sb.width || sa.height !== sb.height) return -1;
+      const da = a.toBitmap(), db = b.toBitmap();
+      if (da.length !== db.length) return -1;
+      const TOL = 12;
+      let diff = 0;
+      for (let i = 0; i < da.length; i += 4) {
+        if (Math.abs(da[i] - db[i]) > TOL || Math.abs(da[i + 1] - db[i + 1]) > TOL || Math.abs(da[i + 2] - db[i + 2]) > TOL) diff++;
+      }
+      return diff / (da.length / 4);
+    };
+    // 活数据页不做像素回归：这页渲染实时 RSS，每次内容都不一样（实测同一份代码
+    // 基线是 Aeon 文章、隔天就是 ScienceDaily，diff 13%+），基线对它没有意义——
+    // 长期报警会被习惯性忽略，反而盖住真正的版面变化。截图仍存（供人工看版式），
+    // 程序化审计（溢出/热区/对比度）照跑，只跳过 diff。
+    // capturePage 偶发返回空位图（合成器尚未产出该帧），会让 diff 报 size-mismatch。
+    // 实测会随机落在不同 tab 上、与代码无关——一个会随机误报的回归信号等于没有信号，
+    // 久了就没人看它。所以空图必须重试，而不是记成 size-mismatch（#198）。
+    const capture = async () => {
+      for (let i = 0; i < 4; i++) {
+        const img = await win.webContents.capturePage();
+        if (!img.isEmpty() && img.getSize().width > 0) return img;
+        await new Promise((r) => setTimeout(r, 400));
+      }
+      console.log("SHOT warn capturePage 连续返回空图");
+      return await win.webContents.capturePage();
+    };
+    const LIVE_DATA_PAGES = new Set(["feed"]);
+    const recordShot = (tag, img) => {
+      const png = img.toPNG();
+      fs.writeFileSync(path.join(shotDir, tag + ".png"), png);
+      if (wantBaseline) { fs.writeFileSync(path.join(baselineDir, tag + ".png"), png); return; }
+      if (LIVE_DATA_PAGES.has(tag)) { diffs[tag] = "skipped(活数据页)"; return; }
+      const bPath = path.join(baselineDir, tag + ".png");
+      if (fs.existsSync(bPath)) {
+        const r = diffImages(img, nativeImage.createFromPath(bPath));
+        diffs[tag] = r;
+        console.log("DIFF " + tag + " " + (r < 0 ? "size-mismatch" : (r * 100).toFixed(2) + "%"));
+      }
+    };
+    // 程序化 UI 审计（report-only，结果写 shots/ui-audit.json）：横向溢出 / 点击热区<32px /
+    // 文本对比度（WCAG 采样，≥24px 或 ≥18.66px 粗体按 3:1，其余 4.5:1；半透明玻璃底穿透到最近实底近似）。
+    // 注意：脚本注入经模板字面量，正则统一不用 \d 类转义（会被烤制成字面量），颜色解析用逗号切分。
+    // 采样前把指针移出页面并让出一帧，让 :hover 状态确定性地回到「无 hover」，
+    // 否则 hover 显形的控件（.lib-del 等，静止 opacity:0）会被随机采到或采不到——
+    // 同一份代码两次运行结论相反，正是 #203 的成因。CSS 强制清除不可行：
+    // :hover 由指针位置驱动，注入 :not(:hover) 改不了它，只能靠真实移出指针。
+    const settleNoHover = async () => {
+      try {
+        win.webContents.sendInputEvent({ type: "mouseMove", x: -10, y: -10 });
+      } catch { /* 某些平台不支持负坐标，忽略 */ }
+      await new Promise((r) => setTimeout(r, 120));
+    };
+    const auditPage = async () => {
+      await settleNoHover();
+      try {
+      return await win.webContents.executeJavaScript(`(() => {
+      const out = { overflow: false, smallTap: [], smallTapCount: 0, contrast: [], contrastCount: 0, sampled: 0, unknown: 0,
+        glass: { attr: "", total: 0, blurred: 0 } };
+      const de = document.documentElement, bd = document.body;
+      if (de && bd) out.overflow = de.scrollWidth > de.clientWidth + 1 || bd.scrollWidth > bd.clientWidth + 1;
+      // 液态玻璃逃生门是否真的生效（#191）：只读 CSS 规则不算数——属性没写上、
+      // 选择器拼错、!important 被覆盖，任何一环断了按钮都会「点了没反应」，
+      // 而代码里完全看不出来。这里直接量渲染后的 backdrop-filter。
+      if (bd) {
+        out.glass.attr = bd.getAttribute("data-glass") || "";
+        document.querySelectorAll(".glass, .glass-strong").forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.width <= 0 || r.height <= 0) return;
+          out.glass.total++;
+          const cs = getComputedStyle(el);
+          const bf = cs.backdropFilter || cs.webkitBackdropFilter || "none";
+          if (bf !== "none") out.glass.blurred++;
+        });
+      }
+      const vis = (el) => {
+        const r = el.getBoundingClientRect(); const cs = getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && cs.display !== "none" && cs.visibility !== "hidden" && cs.opacity !== "0";
+      };
+      const small = [];
+      document.querySelectorAll('button, a, [role="button"], select, input[type="checkbox"]').forEach((el) => {
+        if (!vis(el)) return;
+        const r = el.getBoundingClientRect();
+        // 被整行 <label> 包住的小控件（复选框等）：浏览器把点击映射到 label 内的 input，
+        // 真实热区是 label 而不是 input 自身盒子。取 label 的盒子来判，才与用户实际点击一致。
+        const lb = el.closest("label");
+        const box = lb && lb !== el ? lb.getBoundingClientRect() : r;
+        if (Math.min(box.width, box.height) < 32) small.push({ tag: el.tagName.toLowerCase(), cls: String(el.className).slice(0, 48), w: Math.round(box.width), h: Math.round(box.height) });
+      });
+      // 按「标签+类名」聚合：同页几十个同类实例会把明细刷满前 8 条，导致被截断的类完全看不见。
+      // kinds = 去重后的类目数，是真正需要逐条判读的规模；count = 元素总数，是影响面。
+      // 已登记的豁免（热力格子等密集数据网格）单独计数并标注，不从数字里悄悄抹掉——
+      // 豁免必须留痕，否则下一个人会以为「已经是 0 了」。
+      const TAP_EXEMPT = ["hm-cell"];
+      const byTap = new Map();
+      for (const s of small) {
+        const k = s.tag + "." + s.cls;
+        if (!byTap.has(k)) byTap.set(k, { tag: s.tag, cls: s.cls, w: s.w, h: s.h, n: 0, exempt: TAP_EXEMPT.some((x) => s.cls.indexOf(x) !== -1) });
+        byTap.get(k).n++;
+      }
+      const tapAll = [...byTap.values()];
+      const tapReal = tapAll.filter((x) => !x.exempt);
+      const tapSkip = tapAll.filter((x) => x.exempt);
+      out.smallTap = tapReal.slice(0, 24);
+      out.smallTapExempt = tapSkip.map((x) => ({ cls: x.cls, w: x.w, h: x.h, n: x.n }));
+      out.smallTapCount = small.length;
+      out.smallTapKinds = tapReal.length;
+      out.smallTapExemptCount = tapSkip.reduce((a, x) => a + x.n, 0);
+      const lum = (r, g, b) => {
+        const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = (s) => {
+        if (!s) return null;
+        // 渐变串里的色标 Chromium 有时给 rgb()、有时原样保留 hex/#fff，两种都得认，
+        // 否则切不出色标就会退回父级浅色底，把「白字配蓝头像」算成 1.13 的假阳性。
+        if (s.charAt(0) === "#") {
+          let e = 1;
+          while (e < s.length && "0123456789abcdefABCDEF".indexOf(s.charAt(e)) !== -1) e++;
+          const h = s.slice(1, e);
+          const sh = h.length === 3 ? h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2) : h;
+          if (sh.length !== 6) return null;
+          return { r: parseInt(sh.slice(0, 2), 16), g: parseInt(sh.slice(2, 4), 16), b: parseInt(sh.slice(4, 6), 16), a: 1 };
+        }
+        if (s.indexOf("rgb") !== 0) return null;
+        const parts = s.slice(s.indexOf("(") + 1, s.lastIndexOf(")")).split(",");
+        if (parts.length < 3) return null;
+        const n = parts.map((x) => parseFloat(x));
+        if (n.some((v) => isNaN(v))) return null;
+        return { r: n[0], g: n[1], b: n[2], a: parts.length > 3 ? n[3] : 1 };
+      };
+      // 渐变底解析：getComputedStyle 的 backgroundColor 只是渐变「下面」的底色，真实像素由
+      // background-image 决定。此前直接拿它算，得到白字配白底的 1.08 —— 纯假阳性，
+      // 会把人力浪费在根本没问题的地方。这里把渐变串里所有色标切出来当候选底，
+      // 对每个色标都算一遍取最差值。linear-gradient 的最差色标通常在两端，
+      // 这个近似对卡片渐变、侧栏渐变、头像渐变都成立。
+      // 切串不用正则：注入脚本经模板字面量烤制，正则里的 \d 会被烤成字面量（见本函数上方注释）。
+      const stopsOf = (img) => {
+        const list = []; let i = 0;
+        while (i < img.length) {
+          const jr = img.indexOf("rgb", i);
+          const jh = img.indexOf("#", i);
+          let j = -1, end = -1;
+          if (jr !== -1 && (jh === -1 || jr <= jh)) { j = jr; const k = img.indexOf(")", jr); if (k === -1) break; end = k + 1; }
+          else if (jh !== -1) { j = jh; let e = jh + 1; while (e < img.length && "0123456789abcdefABCDEF".indexOf(img.charAt(e)) !== -1) e++; end = e; }
+          else break;
+          const c = parse(img.slice(j, end));
+          if (c && c.a > 0.85) list.push(c);
+          i = end;
+        }
+        return list;
+      };
+      const bgOf = (el) => {
+        let n = el;
+        while (n && n !== document.documentElement) {
+          const cs = getComputedStyle(n);
+          const img = cs.backgroundImage;
+          if (img && img !== "none" && img.indexOf("gradient") !== -1) {
+            const st = stopsOf(img);
+            if (st.length) return st;
+            return null; // 有渐变但一个色标都切不出（命名色/color-mix/新版语法）→ 不可判定，
+                          // 宁可报「测不了」也不退回父级浅底硬算，那只会稳定产出假阳性
+          }
+          const c = parse(cs.backgroundColor);
+          if (c && c.a > 0.85) return [c];
+          n = n.parentElement;
+        }
+        return [{ r: 244, g: 243, b: 236, a: 1 }];
+      };
+      const bad = [];
+      const all = bd ? bd.querySelectorAll("*") : [];
+      for (const el of all) {
+        if (out.sampled >= 500) break;
+        if (el.children.length) continue;
+        const txt = (el.textContent || "").trim();
+        if (!txt || !vis(el)) continue;
+        out.sampled++;
+        const cs = getComputedStyle(el);
+        const fg = parse(cs.color);
+        if (!fg) continue;
+        const bgs = bgOf(el);
+        if (!bgs) { out.unknown++; continue; }
+        const l1 = lum(fg.r, fg.g, fg.b);
+        let ratio = Infinity;
+        for (const b of bgs) {
+          const l2 = lum(b.r, b.g, b.b);
+          const r = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+          if (r < ratio) ratio = r;
+        }
+        const px = parseFloat(cs.fontSize);
+        const large = px >= 24 || (px >= 18.66 && parseInt(cs.fontWeight, 10) >= 700);
+        if (ratio < (large ? 3 : 4.5) - 0.01) bad.push({ cls: String(el.className).slice(0, 48) || el.tagName.toLowerCase(), ratio: +ratio.toFixed(2), px, txt: txt.slice(0, 24) });
+      }
+      // 对比度同样按类聚合：同一个类里的问题只需判读一次，记最差值与一条样例文本
+      const byCon = new Map();
+      for (const b of bad) {
+        const cur = byCon.get(b.cls);
+        if (!cur) byCon.set(b.cls, { cls: b.cls, ratio: b.ratio, px: b.px, txt: b.txt, n: 1 });
+        else { cur.n++; if (b.ratio < cur.ratio) { cur.ratio = b.ratio; cur.px = b.px; cur.txt = b.txt; } }
+      }
+      out.contrast = [...byCon.values()].sort((x, y) => x.ratio - y.ratio).slice(0, 24);
+      out.contrastCount = bad.length; out.contrastKinds = byCon.size;
+      return out;
+    })()`);
+      } catch (e) { return { error: String(e).slice(0, 140) }; }
+    };
+    const recordAudit = async (tag) => {
+      const a = await auditPage();
+      audits[tag] = a;
+      console.log("AUDIT " + tag + " overflow=" + a.overflow + " smallTap=" + a.smallTapCount + "/" + (a.smallTapKinds || 0) + "类" + " (豁免" + (a.smallTapExemptCount || 0) + ")" + " contrast=" + a.contrastCount + "/" + (a.contrastKinds || 0) + "类" + " glass=[" + (a.glass ? a.glass.attr || "on" : "?") + "]" + (a.glass ? " 毛玻璃 " + a.glass.blurred + "/" + a.glass.total : "") + (a.error ? " err=" + a.error : ""));
+    };
     win.webContents.on("did-finish-load", () => {
       void (async () => {
         await new Promise((r) => setTimeout(r, 2500)); // 等首屏数据
@@ -317,19 +535,47 @@ function createWindow() {
         for (const t of tabs) {
           try {
             await clickNav(t);
-            const img = await win.webContents.capturePage();
-            fs.writeFileSync(path.join(shotDir, t + ".png"), img.toPNG());
-            console.log("SHOT " + t);
+            recordShot(t, await capture());
+            await recordAudit(t);
           } catch (e) { console.log("SHOT fail " + t + " " + (e && e.message)); }
         }
         // 窄窗复检：今日 + 词库
         win.setBounds({ width: 900, height: 800 });
         await clickNav("today");
-        let img = await win.webContents.capturePage();
-        fs.writeFileSync(path.join(shotDir, "today-narrow.png"), img.toPNG());
+        recordShot("today-narrow", await capture());
+        await recordAudit("today-narrow");
         await clickNav("lex");
-        img = await win.webContents.capturePage();
-        fs.writeFileSync(path.join(shotDir, "lex-narrow.png"), img.toPNG());
+        recordShot("lex-narrow", await capture());
+        await recordAudit("lex-narrow");
+        // —— 第二遍：prefers-reduced-motion 下再审一遍（#200）——
+        // 为什么必须有这一遍：#190 把 hero 渐变压深后，reduced-motion 兜底里那条
+        // .hero-panel 仍留着旧浅蓝（白字 2.83:1），而常规审计从不切动效偏好，
+        // 于是这个洞活过了整整两轮对比度整改。降级路径同样要过审。
+        // 用 CDP Emulation 按页模拟，而不是重启进程带 --force-prefers-reduced-motion：
+        // 省掉一整轮 2.5s 首屏等待，且与常规遍共用同一个窗口。
+        try {
+          win.webContents.debugger.attach("1.3");
+          win.webContents.debugger.sendCommand("Emulation.setEmulatedMedia", {
+            features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+          });
+          const redAudits = {};
+          let redIssues = 0;
+          for (const t of tabs) {
+            try {
+              await clickNav(t);
+              const a = await auditPage();
+              redAudits[t] = a;
+              const bad = (a.overflow ? 1 : 0) + (a.contrastCount || 0) + (a.smallTapCount || 0);
+              redIssues += bad;
+              console.log("AUDIT-RED " + t + " overflow=" + a.overflow + " smallTap=" + a.smallTapCount + " contrast=" + a.contrastCount);
+            } catch (e) { console.log("AUDIT-RED fail " + t + " " + (e && e.message)); }
+          }
+          fs.writeFileSync(path.join(shotDir, "ui-audit-reduced.json"), JSON.stringify(redAudits, null, 2));
+          win.webContents.debugger.detach();
+          console.log("REDUCED-ISSUES " + redIssues);
+        } catch (e) { console.log("REDUCED skip " + (e && e.message)); }
+        fs.writeFileSync(path.join(shotDir, "diff.json"), JSON.stringify(diffs, null, 2));
+        fs.writeFileSync(path.join(shotDir, "ui-audit.json"), JSON.stringify(audits, null, 2));
         console.log("SHOTS DONE");
         app.exit(0);
       })();
@@ -746,6 +992,31 @@ app.whenReady().then(() => {
         if (!safeStorage.isEncryptionAvailable()) throw new Error("系统加密能力不可用，无法读取 key");
         return safeStorage.decryptString(Buffer.from(cipher, "base64"));
       },
+      // 连通性自检（#206）：必须在主进程做——渲染层拿不到 key 明文。
+      // 只发一次最小请求（1 token），不携带任何学习数据。
+      cloudProbe: async ({ baseUrl, model }) => {
+        const url = String(baseUrl || "").trim().replace(/\/+$/, "");
+        const m = String(model || "").trim();
+        if (!url || !m) return { ok: false, reason: "缺少端点或模型名" };
+        const cipher = core.getSetting("cloud_key_cipher", "");
+        if (!cipher) return { ok: false, reason: "未保存 API Key" };
+        if (!safeStorage.isEncryptionAvailable()) return { ok: false, reason: "系统加密能力不可用" };
+        const key = safeStorage.decryptString(Buffer.from(cipher, "base64"));
+        try {
+          const resp = await fetch(url + "/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+            body: JSON.stringify({
+              model: m, stream: false, max_tokens: 1,
+              messages: [{ role: "user", content: "hi" }],
+            }),
+          });
+          if (!resp.ok) return { ok: false, reason: `HTTP ${resp.status}` };
+          return { ok: true, model: m };
+        } catch (e) {
+          return { ok: false, reason: String((e && e.message) || e).slice(0, 80) };
+        }
+      },
       resumePut: ({ scope, refId, locator, contentHash }) =>
         core.saveResumeState(scope, refId, locator, contentHash),
       resumeGet: ({ scope }) => core.getResumeState(scope),
@@ -756,6 +1027,13 @@ app.whenReady().then(() => {
       createStandaloneNote: (p) => core.createStandaloneNote(p),
       createShadowNote: (p) => core.createShadowNote(p),
       captureAsset: (p) => core.captureAsset(p),
+      // #208 好文题材分类
+      feedItemsNeedingTopic: ({ limit } = {}) => core.feedItemsNeedingTopic(limit),
+      feedApplyTopics: ({ rows } = {}) => core.applyTopics(rows),
+      feedTopicsOverview: () => core.feedTopicsOverview(),
+      feedItemsByTopic: ({ topic, limit } = {}) => core.feedItemsByTopic(topic, limit),
+      pruneStaleFeedItems: ({ days } = {}) => core.pruneStaleFeedItems(days),
+      debriefAutoArchive: (p) => core.debriefAutoArchive(p),
     phonetics: (p) => core.phoneticsFor(p.words),
       addPronProductionCard: ({ assetId }) => core.addPronProductionCard(assetId),
       findAssetByCanonical: ({ kind, canonical }) => core.findAssetByCanonical(kind, canonical),

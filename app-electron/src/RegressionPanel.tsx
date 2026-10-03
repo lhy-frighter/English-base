@@ -23,7 +23,7 @@ export default function RegressionPanel() {
     const installed = cs.filter((c) => c.state === "installed").map((c) => c.id);
     if (installed.includes("whisper-base")) setEvalModel("whisper-base");
     else if (installed.length) setEvalModel(installed[0]);
-  }).catch(() => {});
+  }).catch((e) => { console.error("[regression] 模型目录加载失败", e); });
   useEffect(() => { load(); loadModels(); }, []);
   useEffect(() => () => { if (playUrlRef.current) URL.revokeObjectURL(playUrlRef.current); }, []);
 

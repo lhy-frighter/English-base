@@ -356,7 +356,7 @@ export function ExamPage({ onCardsChanged, onSendShadow, onConversationDrill }: 
   if (view === "take" && paper) {
     const qs = paper.struct.questions;
     return (
-      <div className="page exam-take">
+      <div className="page">
         <div className="page-head">
           <button className="ghost2" onClick={async () => {
             const ok = await confirmDialog({ title: "退出本次做题？", body: "本次作答不会保存。", danger: true, okLabel: "退出", cancelLabel: "继续作答" });
@@ -372,7 +372,7 @@ export function ExamPage({ onCardsChanged, onSendShadow, onConversationDrill }: 
           <button className="primary" onClick={submit}>交卷判分</button>
         </div>
         <div className="exam-body">
-          <div className="exam-passages">
+          <div>
             {paper.struct.sections.map((s, si) => (
               <section key={si} className="exam-section">
                 <h3>{s.title}{s.kind === "listening" && <span className="sec-tag">听力</span>}{s.kind === "writing" && <span className="sec-tag">写作/翻译</span>}</h3>

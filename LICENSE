@@ -1,0 +1,94 @@
+Business Source License 1.1
+
+License text copyright (c) 2017 MariaDB Corporation Ab, 2018 OSS Development Foundation, Inc.
+License text copyright (c) 2022 lhy-frighter (英语底库 / english-base)
+
+Licensor:                lhy-frighter
+Licensed Work:           英语底库 (english-base)
+                        The Licensed Work is (c) 2026 lhy-frighter
+Change Date:             2030-01-01
+Change License:          Apache License, Version 2.0
+
+Additional Use Grant:    无。本项目不授予任何商业使用许可；商业使用须事先取得
+                        Licensor 的书面授权。
+
+────────────────────────────────────────────────────────────────────────
+
+Business Source License, Version 1.1
+
+Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative
+works, redistribute, and make non-production use of the Licensed Work. The
+Licensor may make an Additional Use Grant, above, permitting limited production
+use.
+
+Effective on the Change Date, or the fourth anniversary of the first publicly
+available distribution of a specific version of the Licensed Work under this
+License, whichever comes first, the Licensor hereby grants you rights under
+the terms of the Change License, and the rights granted in the paragraph
+above terminate.
+
+If your use of the Licensed Work does not comply with the requirements
+currently in effect, you must purchase a commercial license from the Licensor,
+its affiliated entities, or authorized resellers, or you must refrain from
+using the Licensed Work.
+
+All copies of the original and modified Licensed Work, and derivative works
+of the Licensed Work, are subject to this License. This License does not
+grant any rights to use the Licensed Work for a different purpose than
+specified in this License.
+
+Definitions
+
+The term "Licensed Work" means the work of authorship, whether in Source or
+object form, made available under the License, as indicated by a copyright
+notice that is included in or attached to the work.
+
+The term "Additional Use Grant" means any additional rights or grants to use
+the Licensed Work that the Licensor specifies in this License, other than
+those set forth in the first paragraph of this License.
+
+The term "Change Date" means the date on which the Licensor publicly releases
+a specific version of the Licensed Work under this License.
+
+The term "Change License" means the open source license, identified in the
+first paragraph of this License, that applies to the Licensed Work after the
+Change Date.
+
+NOTICE
+
+Business Source License 1.1
+
+Additional Use Grant（中文说明，非正式翻译，以英文原文为准）
+
+本项目采用 BUSL 1.1。你可以获得：
+
+  ✓ 复制、修改、创建衍生作品
+  ✓ 再分发（任何形式）
+  ✓ 非生产性使用
+  ✓ Fork 本仓库（GitHub 上 Fork 按钮可用）
+
+你不能获得：
+
+  ✗ 任何商业用途 —— 包括但不限于销售衍生作品、作为商业产品的一部分
+    集成、提供 SaaS 服务、出售订阅或授权
+  ✗ 未经许可将本软件用于任何盈利性场景
+
+若你希望商业使用，必须事先取得 Licensor 的书面授权（见 Additional Use
+Grant，本项目未授予）。
+
+Change Date 之后（2030-01-01 或首次公开分发后第四周年，取先到者），
+本项目将转为 Apache License 2.0 —— 届时可自由商用。
+
+附：署名要求
+
+即使在上述授权范围内使用，也请在衍生作品的显著位置保留本项目的
+版权声明与项目链接。
+
+COPYRIGHT
+
+Copyright (c) 2026 lhy-frighter
+英语底库 (english-base)
+
+本项目及源代码版权归 lhy-frighter 所有。

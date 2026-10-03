@@ -2,7 +2,10 @@
 // canvas 2D 力导向简化布局：中心词固定，L1=同根族（AWL/exchange），L2=近义；
 // 节点大小=卡片数，色相=考纲等级，红环=有遗忘；点击节点切换中心；整体轻微漂浮。
 // 数据：api.relatedWords(lemma)（词典查询，含 gloss）+ api.listLexemes 已学集合由外部传入。
-import { useEffect, useRef, useState } from "react";
+//
+// 节流对齐 HeroCanvas（#193）：页面不可见时停帧；prefers-reduced-motion 时只按需重绘，
+// 不跑常驻 rAF——漂浮是纯装饰，没动的时候没有任何东西需要逐帧更新。
+import { useCallback, useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { api, type Related } from "./api";
 
 type GNode = { _sx?: number; _sy?: number;
@@ -31,6 +34,13 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
   const nodesRef = useRef<GNode[]>([]);
   const [hover, setHover] = useState<{ word: string; gloss: string; x: number; y: number } | null>(null);
   const [rel, setRel] = useState<Related | null>(null);
+  // hover 与 onPick 只影响「怎么画」和「点了之后干什么」，不该触发整图重建。
+  // 旧实现把它们放进了 effect 依赖：鼠标每扫过一个新词就重算布局+重建节点+重启 rAF，
+  // 顺带把 t0 刷新导致漂浮动画肉眼可见地跳一下。改为 ref + 按需重绘。
+  const hoverRef = useRef(hover);
+  const onPickRef = useRef(onPick);
+  const repaintRef = useRef<(() => void) | null>(null);
+  onPickRef.current = onPick;
 
   useEffect(() => {
     if (!center?.word) { setRel(null); return; }
@@ -38,6 +48,12 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
     api.relatedWords(center.word).then((r) => { if (alive) setRel(r); }).catch(() => { if (alive) setRel(null); });
     return () => { alive = false; };
   }, [center?.word]);
+
+  // hover 变化 → 让 canvas 补画一帧（动画模式下 rAF 本来就在跑，这里只在静止模式有意义）
+  useEffect(() => {
+    hoverRef.current = hover;
+    repaintRef.current?.();
+  }, [hover]);
 
   useEffect(() => {
     const cv = cvRef.current;
@@ -76,10 +92,10 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
     const ctx = cv.getContext("2d");
     if (!ctx) return;
     ctx.scale(dpr, dpr);
-    let raf = 0, t0 = performance.now(), running = true;
+    let raf = 0, t0 = performance.now(), running = false;
+    const animate = !reduced;
 
-    const draw = (t: number) => {
-      if (!running) return;
+    const paint = (t: number) => {
       const time = (t - t0) / 1000;
       ctx.clearRect(0, 0, W, H);
       // 连线（中心→L1 实线，L1→L2 细线）
@@ -128,7 +144,7 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
           ctx.lineWidth = 1.4;
           ctx.strokeStyle = n.learned ? "rgba(255,255,255,0.9)" : "rgba(16,24,40,0.18)";
           ctx.stroke();
-          if (hover?.word === n.word) {
+          if (hoverRef.current?.word === n.word) {
             ctx.beginPath(); ctx.arc(x, y, n.r + 3.5, 0, Math.PI * 2);
             ctx.strokeStyle = "rgba(36,86,245,0.8)"; ctx.lineWidth = 2; ctx.stroke();
           }
@@ -138,37 +154,65 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
           ctx.fillText(n.word.length > 9 ? n.word.slice(0, 8) + "…" : n.word, x, y);
         }
       }
-      raf = requestAnimationFrame(draw);
+      // 只有动画模式才续帧；reduced-motion 下由 hover 变化按需补一帧即可。
+      if (running && animate) raf = requestAnimationFrame(paint);
     };
-    raf = requestAnimationFrame(draw);
 
-    // hover 命中
-    const onMove = (e: MouseEvent) => {
-      const rect = cv.getBoundingClientRect();
-      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      const hit = [...nodes].reverse().find((n) =>
-        n._sx != null && Math.hypot(mx - n._sx, my - (n._sy ?? 0)) <= n.r + 4);
-      if (hit && hit.layer !== 0) {
-        setHover((h) => (h?.word === hit.word ? h : { word: hit.word, gloss: hit.gloss, x: hit._sx!, y: (hit._sy ?? 0) - hit.r - 8 }));
-        cv.style.cursor = "pointer";
-      } else { setHover((h) => (h ? null : h)); cv.style.cursor = "default"; }
+    const start = () => {
+      if (running || document.hidden) return;
+      running = true;
+      t0 = performance.now();
+      if (animate) raf = requestAnimationFrame(paint);
+      else paint(t0);
     };
-    const onClick = () => {
-      const hit = hover;
-      if (hit?.word) onPick(hit.word);
-    };
-    cv.addEventListener("mousemove", onMove);
-    cv.addEventListener("click", onClick);
+    const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; };
+    const onVis = () => (document.hidden ? stop() : start());
+    repaintRef.current = animate ? null : () => { if (running) paint(performance.now()); };
+    start();
+    document.addEventListener("visibilitychange", onVis);
     return () => {
-      running = false; cancelAnimationFrame(raf);
-      cv.removeEventListener("mousemove", onMove);
-      cv.removeEventListener("click", onClick);
+      stop();
+      repaintRef.current = null;
+      document.removeEventListener("visibilitychange", onVis);
     };
-  }, [center?.word, center?.lapses, center?.tag, rel, learned, hover?.word, onPick, height]);
+    // learned/onPick 由调用点 useMemo/useCallback 稳定化，这里可以安全进依赖
+  }, [center?.word, center?.lapses, center?.tag, rel, learned, height]);
+
+  // hover 命中。用 offsetX/offsetY 直接拿画布内坐标，省掉每次 mousemove 的
+  // getBoundingClientRect()（强制同步布局）。命中检测倒序扫，中心词垫底不参与。
+  const onMove = useCallback((e: ReactMouseEvent<HTMLCanvasElement>) => {
+    const cv = cvRef.current;
+    const nodes = nodesRef.current;
+    if (!cv || !nodes.length) return;
+    const mx = e.nativeEvent.offsetX, my = e.nativeEvent.offsetY;
+    let hit: GNode | undefined;
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      const n = nodes[i];
+      if (n.layer === 0 || n._sx == null) continue;
+      if (Math.hypot(mx - n._sx, my - (n._sy ?? 0)) <= n.r + 4) { hit = n; break; }
+    }
+    if (hit) {
+      setHover((h) => (h?.word === hit!.word ? h : { word: hit!.word, gloss: hit!.gloss, x: hit!._sx!, y: (hit!._sy ?? 0) - hit!.r - 8 }));
+      cv.style.cursor = "pointer";
+    } else {
+      setHover((h) => (h ? null : h));
+      cv.style.cursor = "default";
+    }
+  }, []);
+  const onClick = useCallback(() => {
+    const w = hoverRef.current?.word;
+    if (w) onPickRef.current(w);
+  }, []);
 
   return (
     <div style={{ position: "relative" }}>
-      <canvas ref={cvRef} style={{ width: "100%", height, display: "block" }} />
+      <canvas
+        ref={cvRef}
+        style={{ width: "100%", height, display: "block" }}
+        onMouseMove={onMove}
+        onClick={onClick}
+        onMouseLeave={() => setHover((h) => (h ? null : h))}
+      />
       {hover && (
         <div className="glass-strong" style={{
           position: "absolute", left: hover.x, top: Math.max(4, hover.y - 46),
@@ -178,7 +222,7 @@ export function LexGraph({ center, learned, onPick, height = 460 }: {
           <b>{hover.word}</b>{hover.gloss ? ` — ${hover.gloss}` : ""}
         </div>
       )}
-      {nodesRef.current.length === 0 && (
+      {!center?.word && (
         <div className="muted" style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
           暂无中心词
         </div>

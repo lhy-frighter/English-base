@@ -6,6 +6,7 @@ const DEFAULT_CONSENT = Object.freeze({
   historyText: false, // 历史对话文本
   audio: false, // 录音原文
   grammarCloud: false, // 文本送云端做语法深度分析（S15-1）
+  topicClassify: false, // 好文标题+摘要送云端做题材分类（#208）
   baseUrl: "https://open.bigmodel.cn/api/paas/v4/", // OpenAI 兼容端点
   model: "glm-4.7-flash", // 云端模型名
   updatedAt: 0,
@@ -17,6 +18,7 @@ function normalizeConsent(c) {
     historyText: !!c?.historyText,
     audio: !!c?.audio,
     grammarCloud: !!c?.grammarCloud,
+    topicClassify: !!c?.topicClassify,
     baseUrl: String(c?.baseUrl ?? DEFAULT_CONSENT.baseUrl).slice(0, 300),
     model: String(c?.model ?? DEFAULT_CONSENT.model).slice(0, 120),
     updatedAt: Date.now(),

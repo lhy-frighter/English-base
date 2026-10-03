@@ -1,5 +1,6 @@
 // S11-c 跟读句 1/3/7 轻量复习：调度推进 / 提前练不推进 / 出师 / 忽略 / 计数 / todayBrief / shadow resume scope
 // 运行：node test/s11-shadow-review.cjs
+const EXPECTED_VER = require("../core.cjs").MIGRATIONS_VERSION_HINT;
 const { Core } = require("../core.cjs");
 const path = require("node:path");
 const fs = require("node:fs"), os = require("node:os");
@@ -16,7 +17,7 @@ const DAY = 86400000;
 const setDuePast = (hash) => db.prepare("UPDATE shadow_sentences SET due_at=? WHERE sentence_hash=?").run(Date.now() - 1000, hash);
 
 // 0. migration v12
-check("user_version=15", db.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新（迁移已完成）", db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 
 // 1. 首次练完：stage=0，约 1 天后到期，进入 due（未到期不计）
 const S1 = "Attention mechanisms have become an integral part of compelling sequence modeling.";

@@ -21,7 +21,11 @@ core.createNote({ word: "benefit", label: "word", phrase: null, sense: "n. 利�
 const lexId = core.user.prepare("SELECT id FROM lexemes WHERE lemma='benefit'").get().id;
 check("两篇文章各建一条笔记", core.user.prepare("SELECT COUNT(*) n FROM notes WHERE lexeme_id=?").get(lexId).n === 2);
 const cardsBefore = core.user.prepare("SELECT COUNT(*) n FROM cards c JOIN notes n ON c.note_id=n.id WHERE n.lexeme_id=?").get(lexId).n;
-check("两篇共 10 张卡", cardsBefore === 10, cardsBefore);
+// 每篇 6 张（5 张词级 + 1 张句子翻译 note_translate，#205）
+check("两篇共 12 张卡（每篇 6 张）", cardsBefore === 12, cardsBefore);
+check("其中翻译卡 2 张", core.user.prepare(
+  "SELECT COUNT(*) n FROM cards c JOIN notes n ON c.note_id=n.id WHERE n.lexeme_id=? AND c.card_type='note_translate'"
+).get(lexId).n === 2);
 
 const r1 = core.deleteText(a.text_id);
 check("删 A 返回删除成功且 1 条笔记", r1.deleted === true && r1.notes === 1, JSON.stringify(r1));

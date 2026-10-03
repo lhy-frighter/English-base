@@ -28,11 +28,12 @@ check("resume 带标题与段落", !!b.resume && b.resume.title === "测试文�
 // 3. 阅读中查词建卡（5 张新卡 state=0）→ 今日新卡余额 12，队列 >0 → 复习优先
 const off = raw.indexOf("investigate");
 const made = core.createNote({ word: "investigate", label: "word", phrase: "", sense: "", textId: saved.text_id, offset: off });
-check("建卡成功 5 张", made.cards_created === 5, JSON.stringify(made));
+// 每笔记 6 张：5 张词级 + 1 张句子翻译（note_translate，#205）
+check("建卡成功 6 张", made.cards_created === 6, JSON.stringify(made));
 b = core.todayBrief();
 check("有卡后 primary=review", b.primary === "review", JSON.stringify({ p: b.primary, due: b.due_cards, fresh: b.fresh_today }));
 check("队列=到期+实际可学新卡（受新卡总数约束），预估分钟=ceil(队列*0.5)且≥1",
-  b.queue === b.due_cards + b.fresh_today && b.fresh_today === 5 && b.est_minutes === Math.max(1, Math.round(b.queue * 0.5)),
+  b.queue === b.due_cards + b.fresh_today && b.fresh_today === 6 && b.est_minutes === Math.max(1, Math.round(b.queue * 0.5)),
   JSON.stringify({ q: b.queue, est: b.est_minutes }));
 
 // 4. 删除断点文章后 resume 被级联清除（无卡场景由其他链覆盖，这里直接验行）

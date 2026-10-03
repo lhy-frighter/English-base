@@ -14,7 +14,8 @@ function check(name, cond, extra) {
 const throws = (fn, re) => { try { fn(); return false; } catch (e) { return re ? re.test(String(e.message)) : true; } };
 
 // —— 1. v10 迁移 ——
-check("user_version=15", core.user.prepare("PRAGMA user_version").get().user_version === 15);
+// 版本号随 MIGRATIONS 数组长度推进（v16 占位 + #208 题材分类后为 17）
+check("user_version=17", core.user.prepare("PRAGMA user_version").get().user_version === 17);
 const cols = core.user.prepare("PRAGMA table_info(text_translations)").all().map((c) => c.name);
 check("text_translations 列齐全", ["id", "text_id", "para_index", "source_sha256", "src_lang", "dst_lang",
   "engine", "model_revision", "translated_text", "pairs_json", "status", "updated_at"].every((c) => cols.includes(c)));
@@ -103,7 +104,7 @@ check("外部文章入库解码实体", got.includes("Tom & Jerry") && got.inclu
 core.user.close();
 let reopenErr = null, reopened;
 try { reopened = new Core(dir); } catch (e) { reopenErr = e; }
-check("重开 Core 迁移可重入", !reopenErr && reopened.user.prepare("PRAGMA user_version").get().user_version === 15, String(reopenErr));
+check("重开 Core 迁移可重入", !reopenErr && reopened.user.prepare("PRAGMA user_version").get().user_version === 17, String(reopenErr));
 reopened?.user.close();
 
 // —— 9. IPC 三处齐守卫（main handler / preload 桥接 / api.ts 类型）——

@@ -2,6 +2,7 @@
 // 1) v11 五张新表+attempts.active_ms 落地；2) CHECK/UNIQUE 约束拒绝脏数据；
 // 3) 迁移可重入/中断恢复（v7 事故回归）；4) 日界函数；5) 删除级联新表、会话保留墓碑
 // 运行：node test/s9-contract.cjs
+const { MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 const { Core } = require("../core.cjs");
 const path = require("node:path");
 const fs = require("node:fs"), os = require("node:os");
@@ -23,7 +24,7 @@ const now = Date.now();
 const tableExists = (t) => !!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t);
 
 // —— 1. 结构落地 ——
-check("user_version=15", db.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新", db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 for (const t of ["app_settings", "learning_sessions", "resume_state", "unknown_encounters", "coverage_assessments"]) {
   check(`表 ${t} 存在`, tableExists(t));
 }
@@ -101,12 +102,12 @@ rejects("app_settings 重复键被拒", () => db.prepare("INSERT INTO app_settin
 db.exec("PRAGMA user_version=10");
 let reentryOk = true;
 try { core.migrate(); } catch (e) { reentryOk = false; console.log("重入异常:", e.message); }
-check("v11/v12 表已存在时重跑迁移不报错（可重入）", reentryOk && db.prepare("PRAGMA user_version").get().user_version === 15);
+check("v11/v12 表已存在时重跑迁移不报错（可重入）", reentryOk && db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 // 4b. 模拟只建了一部分表就中断：删 coverage_assessments + active_ms 列无法回滚（SQLite 限制），拨回 10 重跑应补齐缺表
 db.exec("DROP TABLE coverage_assessments");
 db.exec("PRAGMA user_version=10");
 try { core.migrate(); } catch (e) { console.log("补齐异常:", e.message); }
-check("缺表后重跑迁移补齐 coverage_assessments", tableExists("coverage_assessments") && db.prepare("PRAGMA user_version").get().user_version === 15);
+check("缺表后重跑迁移补齐 coverage_assessments", tableExists("coverage_assessments") && db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 
 // —— 5. 日界函数（本地时区午夜，全应用唯一实现）——
 const late = new Date(2026, 8, 21, 23, 59).getTime();   // 本地 2026-09-21 23:59

@@ -2,6 +2,7 @@
 // 1) conversation_sessions/turns 落地、状态机与 CHECK/UNIQUE；2) learning_sessions.kind 扩展 conversation（表重建数据不丢）；
 // 3) v12→v13 真实升级路径；4) 迁移可重入。
 // 运行：node test/v13-conversation.cjs
+const { MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 const { Core, MIGRATIONS } = require("../core.cjs");
 const { DatabaseSync } = require("node:sqlite");
 const path = require("node:path");
@@ -24,7 +25,7 @@ const now = Date.now();
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "v13-fresh-"));
 const core = new Core(dir);
 const db = core.user;
-check("user_version=15", db.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新", db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 for (const t of ["conversation_sessions", "conversation_turns"]) {
   check(`表 ${t} 存在`, tableExists(db, t));
 }
@@ -116,7 +117,7 @@ old.prepare(`INSERT INTO learning_sessions
   VALUES ('read','old-1','{}','words',?,?)`).run(now, now);
 old.close();
 const up = new Core(dir2);
-check("升级后 user_version=15", up.user.prepare("PRAGMA user_version").get().user_version === 15);
+check("升级后 user_version 为最新", up.user.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 check("旧 learning_sessions 行在表重建后保留",
   up.user.prepare("SELECT 1 FROM learning_sessions WHERE session_key='old-1' AND kind='read'").get() !== undefined);
 check("升级后 conversation 表存在", tableExists(up.user, "conversation_turns"));
@@ -132,7 +133,7 @@ let reentryErr = null;
 let core3;
 try { core3 = new Core(dir2); } catch (e) { reentryErr = e; }
 check("重入迁移不报错且版本=15",
-  !reentryErr && core3.user.prepare("PRAGMA user_version").get().user_version === 15, String(reentryErr));
+  !reentryErr && core3.user.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER, String(reentryErr));
 check("重入后旧数据仍在",
   core3.user.prepare("SELECT 1 FROM learning_sessions WHERE session_key='old-1'").get() !== undefined);
 core3.user.close();

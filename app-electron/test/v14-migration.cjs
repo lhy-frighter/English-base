@@ -3,6 +3,7 @@
 // B) v13→v14 真实库副本升级：cards 全字段逐行一致、review_log 不变、integrity/FK、可重入；
 // C) 业务测试：同资产两位置两次 encounter；队列 ≥2 张 asset 卡均可取出（不被 note_id=NULL 互埋）。
 // 运行：node test/v14-migration.cjs
+const { MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 const { Core, MIGRATIONS } = require("../core.cjs");
 const { DatabaseSync } = require("node:sqlite");
 const path = require("node:path");
@@ -26,7 +27,7 @@ let counter = 0;
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "v14-fresh-"));
 const core = new Core(dir);
 const db = core.user;
-check("user_version=15（migrate 跑到最新）", db.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新（migrate 跑到最新）", db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 for (const t of ["learning_assets", "asset_encounters", "asset_relations", "asset_evidence"]) {
   check(`表 ${t} 存在`, tableExists(db, t));
 }

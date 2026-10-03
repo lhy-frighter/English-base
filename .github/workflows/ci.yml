@@ -1,0 +1,58 @@
+name: CI
+
+# 三道关：类型 → 构建 → 测试链。任一失败即拦住合并。
+# 不跑 APP_SHOT：像素回归需要真实桌面合成器，无头 Linux 上拍不出可信画面，
+# 那道防线留在本机 pre-commit 的人工流程里。
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: app-electron
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 24 是硬要求，不是随手挑的：
+      #   1) node:sqlite 需要 ≥22.5，本项目按 ADR-3 禁原生模块，全靠它；
+      #   2) 测试链大量用 node --experimental-strip-types 直跑 .ts 测试文件。
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: app-electron/package-lock.json
+
+      # 只需要跳过 Electron 的二进制下载（类型检查/构建/测试都不启动 Electron），
+      # 省掉一次百兆级拉取。
+      # 刻意不用 --ignore-scripts：esbuild 的 install.js 负责把平台二进制路径写进
+      # lib/main.js，全局禁掉脚本会让 vite 构建在运行时报 "cannot find binary"。
+      - name: 安装依赖
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+
+      - name: 类型检查
+        run: npx tsc --noEmit -p tsconfig.json
+
+      - name: 构建
+        run: npm run dist
+
+      - name: 测试链
+        run: npm test
+
+      # 孤儿类/层叠覆写是 report-only（动态类名天然误报），所以只提醒不失败；
+      # 但 CSS 语法层面的硬伤（花括号不配对、同作用域复制粘贴重复）必须拦住。
+      - name: CSS 静态审计
+        run: node test/css-audit.cjs

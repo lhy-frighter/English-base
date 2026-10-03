@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { persist } from "../persist";
 import { SessionTracker } from "../learning-session";
 import { asr } from "../asr/asr";
 import { inference } from "../inference/coordinator";
@@ -11,7 +12,7 @@ import { saveClip, CURRENT_MODEL } from "../regression";
 import type { ShadowDueItem, ShadowPracticeResult } from "../api";
 import { AssetCaptureSheet } from "../components/AssetCaptureSheet";
 import { Icon } from "../icons";
-import { ProcCover } from "../ProcCover";
+
 import { RingGauge } from "../components/ui";
 
 function shHash(str: string): string {
@@ -101,7 +102,7 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
 
   const persistDraft = (sent: string) => {
     const t = sent.trim();
-    if (t) void api.resumePut("shadow", "shadow", { sentence: t }).catch(() => {});
+    if (t) void persist("resumePut(shadow)", api.resumePut("shadow", "shadow", { sentence: t }));
   };
 
   // 撤销旧录音 URL 并换上新的（blob 为空表示仅清空）
@@ -145,7 +146,7 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
     api.resumeGet("shadow").then((r) => {
       const sent = r?.locator && typeof r.locator.sentence === "string" ? r.locator.sentence.trim() : "";
       if (sent && !send) { setTarget(sent); }
-    }).catch(() => {});
+    }).catch((e) => { console.error("[shadow] 草稿读取失败", e); });
   }, []);
 
   // 目标句草稿防抖落盘（卸载时再存一次）
@@ -247,7 +248,7 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
                   ? `续练已推进：${stepTxt[pr.stage] ?? "稍后"}再练一次`
                   : "已记录本次练习（未到续练时间，不提前推进）");
             onPracticed?.();
-          }).catch(() => {});
+          }).catch((e) => { console.error("[shadow] 练习记录写入失败", e); });
         } catch (e) { setErr("识别失败：" + (e as Error).message); setPhase("idle"); }
       };
       recRef.current = mr; mr.start(); setPhase("recording");
@@ -302,7 +303,7 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
     });
     api.findAssetByCanonical("pronunciation", op.ref).then((aid) => {
       setPick((p) => (p && p.idx === idx ? { ...p, assetExisted: aid != null } : p));
-    }).catch(() => {});
+    }).catch((e) => { console.error("[shadow] 资产查重失败", e); });
     if (span) playSpan(span);
   };
 
@@ -479,6 +480,9 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
         .sh-pick-sent{font-family:var(--serif);font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.7;background:#fff;border:1px dashed var(--line,#e6e9ef);border-radius:8px;padding:7px 10px}
       `}</style>
 
+      {/* v2.1 定案「内容居中」：页面内容不足一屏时（含常见的两步初始态），
+          整块（页头 + 卡片）垂直居中、上下均分留白，而不是内容顶到上面后下方空洞。 */}
+      <div className="v-center">
       <div className="page-head"><h2>跟读台</h2>
         <span className="muted">V6 · 看句朗读 → 离线识别 → 漏词/疑似替换/节奏提示（录音不上传）</span></div>
 
@@ -502,8 +506,9 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
       )}
       {reviewMsg && <div className="sh-card" style={{ background: "#fdf8f0" }}>{reviewMsg}</div>}
 
+      {/* v2.1：原先此处有一块 130px 高的程序化封面（.sh-cover），但它不承载任何信息——
+          紧跟其下就是「① 目标句」的输入框，等于把用户的视线往上推一屏。已移除。 */}
       <div className="sh-card">
-        <div className="sh-cover" aria-hidden="true"><ProcCover seed={target.trim() || "shadow-idle"} /></div>
         <strong>① 目标句</strong>
         <textarea className="sh-target form-input" style={{ marginTop: 8 }} value={target}
           onChange={(e) => setTarget(e.target.value)} placeholder="粘贴或输入要跟读的英文句子" />
@@ -516,9 +521,11 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
         </div>
       </div>
 
-      <div className="sh-card">
+      <div className="sh-card sh-rec-card">
         <strong>② 朗读并比对</strong>
-        <div className="sh-row">
+        {/* v2.1：原先按钮贴左、右侧约 700px 空白而卡片照常撑高。改为整组居中并收窄，
+            让「先听示范、再开口读」这两步在视觉上形成一个整体。 */}
+        <div className="sh-row sh-rec-row">
           {phase !== "recording"
             ? (
               <button className="gbtn gbtn-lg rec-key" disabled={phase === "working"} onClick={start}
@@ -686,10 +693,11 @@ export default function ShadowPage({ send, reviewNonce = 0, onPracticed }: {
         onWord={(w: string, sent: string) => api.createShadowNote({ word: w, sentence: sent })}
         onDone={(kind, r) => {
           if (kind === "pronunciation" && r?.asset_id) {
-            void api.addPronProductionCard(r.asset_id).catch(() => {});
+            void persist("addPronProductionCard", api.addPronProductionCard(r.asset_id));
           }
           setCapOpen(false); setCapPrefill(null);
         }} />
+      </div>
     </div>
   );
 }

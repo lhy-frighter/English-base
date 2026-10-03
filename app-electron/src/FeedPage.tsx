@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "./icons";
-import { api, type FeedItem, type FeedSource } from "./api";
+import { api, type FeedItem, type FeedSource, type FeedTopicOverview } from "./api";
+import { TOPICS } from "./topic-classify";
+import { classifyTopics, classifyErrorText } from "./topic-classify-cloud";
 import { confirmDialog } from "./components/ui";
 
 // 每日好文：RSS 源管理 + 按用户已学词覆盖率做 i+1 推荐 + 一键抓正文加入精读
@@ -46,14 +48,20 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
   const [showDismissed, setShowDismissed] = useState(false);
   const [newUrl, setNewUrl] = useState("");
   const [addBusy, setAddBusy] = useState(false);
+  // 题材分区（#208）：默认「全部」，切换后只看该题材的条目
+  const [topic, setTopic] = useState<string>("__all__");
+  const [ov, setOv] = useState<FeedTopicOverview | null>(null);
+  const [classifying, setClassifying] = useState(false);
 
   const load = useCallback(async () => {
-    const [fs, it] = await Promise.all([
+    const [fs, it, o] = await Promise.all([
       api.feedsList(),
       api.feedItems({ status: "all", limit: 100 }),
+      api.feedTopicsOverview().catch(() => null),
     ]);
     setFeeds(fs);
     setItems(it.items);
+    setOv(o);
   }, []);
 
   const initial = useCallback(async () => {
@@ -122,7 +130,12 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
 
   // 排序：i+1 推荐优先，其次发布时间；已导入/忽略沉底
   const visible = useMemo(() => {
-    const list = items.filter((i) => showDismissed ? true : i.status !== "dismissed");
+    // 题材分区（#208）与既有「隐藏已忽略」过滤串成一条链，避免两处各自遍历
+    const list = items.filter((i) => {
+      if (!showDismissed && i.status === "dismissed") return false;
+      if (topic !== "__all__" && i.topic !== topic) return false;
+      return true;
+    });
     const rank: Record<Fit, number> = { i1: 0, stretch: 1, hard: 2, easy: 3, none: 4 };
     return [...list].sort((a, b) => {
       if ((a.status === "imported") !== (b.status === "imported")) return a.status === "imported" ? 1 : -1;
@@ -146,6 +159,25 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
   const enabledN = feeds.filter((f) => f.enabled).length;
   const i1n = items.filter((i) => i.status !== "dismissed" && fitOf(i) === "i1").length;
 
+  const runClassify = async () => {
+    setClassifying(true); setErr(""); setMsg("");
+    try {
+      const need = await api.feedItemsNeedingTopic({ limit: 400 });
+      if (need.length === 0) { setMsg("没有待分类的条目"); return; }
+      const r = await classifyTopics(need.map((n) => ({
+        guid: n.guid, title: n.title, summary: n.summary, feed_id: n.feed_id,
+      })));
+      if (!r.ok && r.reason && !r.classified) { setErr(classifyErrorText(r.reason)); return; }
+      const saved = await api.feedApplyTopics({
+        rows: r.results.map((x) => ({ feed_id: need.find((n) => n.guid === x.guid)?.feed_id ?? "", ...x })),
+      });
+      setMsg(`已分类 ${saved.applied} 条` + (r.reason ? `（${r.reason}）` : ""));
+      await load();
+    } catch (e) {
+      setErr("分类失败：" + String((e as Error)?.message || e));
+    } finally { setClassifying(false); }
+  };
+
   return (
     <div className="page feed-page">
       <div className="page-head">
@@ -162,6 +194,40 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
       </div>
       {err && <div className="err">{err}</div>}
       {msg && <div className="ok-msg">{msg}</div>}
+
+      {/* 题材分区（#208）：手动触发分类，绝不在抓取链上自动跑 */}
+      {(ov?.unclassified ?? 0) > 0 && (
+        <div className="topic-bar">
+          <span className="muted">
+            {ov?.classified ? `已分类 ${ov.classified} / ${ov?.total ?? 0}` : `有 ${ov?.unclassified} 条未分类`}
+          </span>
+          <button className="ghost2 small" disabled={classifying} onClick={() => void runClassify()}>
+            <Icon name={classifying ? "Retry" : "Sparkles"} size={14} />
+            {classifying ? `分类中…` : "整理题材"}
+          </button>
+        </div>
+      )}
+      <div className="topic-tabs" role="tablist" aria-label="题材分区">
+        <button role="tab" aria-selected={topic === "__all__"}
+          className={"topic-tab" + (topic === "__all__" ? " on" : "")}
+          onClick={() => setTopic("__all__")}>
+          全部 <em>{ov?.total ?? 0}</em>
+        </button>
+        {TOPICS.map((t) => (
+          <button key={t.id} role="tab" title={t.desc} aria-selected={topic === t.id}
+            className={"topic-tab" + (topic === t.id ? " on" : "")}
+            onClick={() => setTopic(t.id)}>
+            {t.label} <em>{ov?.counts?.[t.id] ?? 0}</em>
+          </button>
+        ))}
+        {(ov?.counts?.other ?? 0) > 0 && (
+          <button role="tab" aria-selected={topic === "other"}
+            className={"topic-tab" + (topic === "other" ? " on" : "")}
+            onClick={() => setTopic("other")}>
+            其他 <em>{ov?.counts?.other ?? 0}</em>
+          </button>
+        )}
+      </div>
 
       {showSrc && (
         <div className="feed-sources">
@@ -198,7 +264,7 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
       {i1n > 0 && <div className="feed-i1line">今天有 <b>{i1n}</b> 篇落在你的最佳学习区间，优先读这些。</div>}
 
       {groups.map(([day, list]) => (
-        <div className="feed-day" key={day}>
+        <div key={day}>
           <div className="feed-day-head">{day}</div>
           {list.map((it) => {
             const fit = fitOf(it);
@@ -210,9 +276,11 @@ export default function FeedPage({ onImported }: { onImported: (textId: number) 
                   <span className="feed-date">{dayLabel(it.published_at || it.fetched_at)} · {hostOf(it.link)}</span>
                 </div>
                 <div className="feed-title">{it.title}</div>
+                {it.gist && <div className="feed-gist">{it.gist}</div>}
                 {it.summary && <div className="feed-summary">{it.summary}</div>}
                 <div className="feed-card-bottom">
                   <span className={"fit-badge fit-" + fit}>{FIT_LABEL[fit]}</span>
+                  {it.topic && <span className="feed-topic">{TOPICS.find((t) => t.id === it.topic)?.label ?? "其他"}</span>}
                   {it.rate != null && (
                     <span className="feed-metrics">
                       已知词覆盖率 <b>{it.rate.toFixed(1)}%</b>

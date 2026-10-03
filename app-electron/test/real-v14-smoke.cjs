@@ -5,6 +5,7 @@
 const path = require("path");
 const fs = require("fs");
 const cp = require("child_process");
+const { MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 const { DatabaseSync } = require("node:sqlite");
 
 const dataDir = path.join(__dirname, "..", "data");
@@ -40,7 +41,7 @@ const beforeBaks = listV14Baks();
 // 2) 实例化 Core（v13 时触发 migrate：备份 + v14；v14 时仅自愈/重入）
 const core = new Core(dataDir);
 const postV = Object.values(core.user.prepare("PRAGMA user_version").get())[0];
-ok(postV === 15, "当前 user_version=15（实际 " + postV + "）");
+ok(postV === EXPECTED_VER, "当前 user_version 应为最新（实际 " + postV + "）");
 
 // 2.1) 清理历史冒烟/调试残留（cards FK 已带 ON DELETE CASCADE）
 core.user.exec("PRAGMA foreign_keys=ON");
@@ -117,7 +118,7 @@ ok(core.user.prepare("SELECT COUNT(*) c FROM lexemes").get().c === base.lexemes,
 
 // 8) 模拟重启：二次实例化，迁移可重入、无数据变化
 const core2 = new Core(dataDir);
-ok(Object.values(core2.user.prepare("PRAGMA user_version").get())[0] === 15, "重启后版本仍 15");
+ok(Object.values(core2.user.prepare("PRAGMA user_version").get())[0] === EXPECTED_VER, "重启后版本仍为最新");
 ok(core2.user.prepare("SELECT COUNT(*) c FROM cards").get().c === base.cards, "重启后 cards 不变（" + base.cards + "）");
 ok(core2.user.prepare("SELECT COUNT(*) c FROM learning_assets").get().c === 0, "重启后无残留临时资产");
 ok(Object.values(core2.user.prepare("PRAGMA integrity_check").get())[0] === "ok", "integrity_check=ok");

@@ -14,7 +14,9 @@ import { speak, speakWord, warmTts, ttsAvailable, onTtsStatus, prewarmKokoro, ty
 import { AssetCaptureSheet } from "./components/AssetCaptureSheet";
 import { DebriefPanel, type DebriefContext } from "./components/DebriefPanel";
 import { GrammarDiagnosisPanel } from "./components/GrammarDiagnosisPanel";
-import { UIHost, confirmDialog, EmptyState, Seg, toast } from "./components/ui";
+import { UIHost, confirmDialog, EmptyState, ErrorState, Seg, toast, useAsync } from "./components/ui";
+import { TranslateJudge } from "./components/TranslateJudge";
+import { SettingsPanel } from "./components/SettingsPanel";
 import { analyzeGrammar } from "./conversation/grammar-engine";
 import type { GrammarAnalysis } from "./conversation/grammar-engine";
 import { inference } from "./inference/coordinator";
@@ -24,6 +26,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { ProcCover } from "./ProcCover";
 import { LexGraph } from "./LexGraph";
 import { HeroCanvas } from "./HeroCanvas";
+import { useGlassPref } from "./glassPref";
 import { Celebrate } from "./Celebrate";
 import { paragraphsFromAnn, sha256Hex, normalizePairs, chunk as chunkArr } from "./translate/articleMt";
 
@@ -67,15 +70,14 @@ function Progress({ rate, brass }: { rate: number; brass?: boolean }) {
 }
 
 function SyllabusPage({ onPickWord }: { onPickWord: (w: string) => void }) {
-  const [groups, setGroups] = useState<SyllabusGroup[] | null>(null);
+  const groupsQ = useAsync(() => api.syllabusList(), []);
+  const groups = groupsQ.data;
   const [tag, setTag] = useState<SyllabusGroup | null>(null);
   const [rows, setRows] = useState<SyllabusWord[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => { api.syllabusList().then(setGroups).catch(() => {}); }, []);
 
   const loadPage = useCallback(async (t: string, query: string, off: number, append: boolean) => {
     setLoading(true);
@@ -100,7 +102,13 @@ function SyllabusPage({ onPickWord }: { onPickWord: (w: string) => void }) {
           <h2>考纲牌组</h2>
           <span className="muted">考纲与学术词牌组 · 已学=阅读中已建卡的词元 · 按词频/子表排序，先攻高频未学</span>
         </div>
-        {!groups ? <p className="muted">加载中…</p> : (
+        {groupsQ.error ? (
+          <ErrorState
+            text="考纲牌组加载失败。词表都在本机词典里，重试一下通常就好。"
+            onRetry={groupsQ.reload}
+            retrying={groupsQ.loading}
+          />
+        ) : !groups ? <p className="muted">加载中…</p> : (
           <div className="syl-grid">
             {groups.map((g) => (
               <button key={g.tag} className="syl-card" onClick={() => openGroup(g)}>
@@ -148,7 +156,7 @@ function SyllabusPage({ onPickWord }: { onPickWord: (w: string) => void }) {
 }
 
 export default function App() {
-  const [tab, setTab] = useState<"today" | "read" | "feed" | "review" | "shadow" | "lex" | "syl" | "exam" | "dash" | "voice" | "recycle" | "chat" | "call">("today");
+  const [tab, setTab] = useState<"today" | "read" | "feed" | "review" | "shadow" | "lex" | "syl" | "exam" | "dash" | "voice" | "recycle" | "chat" | "call" | "settings">("today");
 
   // 阅读域
   const [texts, setTexts] = useState<TextCard[]>([]);
@@ -188,7 +196,9 @@ export default function App() {
   const mtRunRef = useRef(0);
   const [selTrans, setSelTrans] = useState<{ en: string; zh: string } | null>(null);
   const [selText, setSelText] = useState(""); // 阅读器中当前选中的英文（用于送跟读）
-  const [capSel, setCapSel] = useState<{ text: string } | null>(null); // 转为练习
+  // 「转为练习」时一并带上划词选中的配对译文（selTrans.zh），供资产存成
+  // payload.zh_reference —— 翻译卡没有它就只能自评（#205）
+  const [capSel, setCapSel] = useState<{ text: string; zh?: string } | null>(null);
   // S15-1 阅读划选云端语法深度分析
   const [readGrammar, setReadGrammar] = useState<GrammarAnalysis | null>(null);
   const [readGrammarBusy, setReadGrammarBusy] = useState(false);
@@ -242,6 +252,7 @@ export default function App() {
   // 复习域
   const [counts, setCounts] = useState<Counts | null>(null);
   const [streak, setStreak] = useState(0);
+  const [glassOn, toggleGlass] = useGlassPref();
   const TAB_SEQ = ["today", "read", "feed", "review", "shadow", "chat", "call", "lex", "syl", "exam", "dash", "voice"];
   const prevTabRef = useRef("today");
   const [pageDir, setPageDir] = useState<"fwd" | "back">("fwd");
@@ -302,12 +313,14 @@ export default function App() {
   const [showBack, setShowBack] = useState(false);
   const [lastResult, setLastResult] = useState("");
   const [guess, setGuess] = useState("");
+  const [chunkRef, setChunkRef] = useState<string | null>(null); // 词块自写的中文（#200）
   const [checked, setChecked] = useState<null | boolean>(null);
   const [chosen, setChosen] = useState<string | null>(null);
   const card = queue[0];
   const done = queueTotal - queue.length;
   const pendingInput = card
-    ? (card.card_type === "cloze" && !card.clozeMiss && checked === null) ||
+    ? (card.card_type === "chunk_recall" && chunkRef === null && checked === null) ||
+      (card.card_type === "cloze" && !card.clozeMiss && checked === null) ||
       card.card_type === "spelling" && checked === null ||
       ((card.card_type === "recall" || card.card_type === "l_recog") && !!card.choices?.length && checked === null)
     : false;
@@ -336,6 +349,14 @@ export default function App() {
   const [addQ, setAddQ] = useState("");
   const [addBusy, setAddBusy] = useState(false);
   const [addMsg, setAddMsg] = useState("");
+  // 星云图的两个入参按引用稳定化：LexGraph 的建图 effect 依赖它们，
+  // 每次渲染新建 Set/内联箭头会让整张图重算重绘（#193）。
+  const lexLearnedSet = useMemo(
+    () => new Set(lexemes.map((l) => String(l.lemma).toLowerCase())),
+    [lexemes]);
+  const pickGraphCenter = useCallback((word: string) => {
+    setGraphCenter((c) => (c?.word === word ? c : { word, lapses: 0, cards: 0, tag: "" }));
+  }, []);
   // 星云中心词候选：默认取最新词元
   useEffect(() => {
     if (tab !== "lex" || lexView !== "graph" || graphCenter || lexemes.length === 0) return;
@@ -549,7 +570,7 @@ export default function App() {
     let alive = true;
     api.textLearnedSummary(annTextId)
       .then((r) => { if (alive) setLearnedSummary(r); })
-      .catch(() => {});
+      .catch((e) => { console.error("[reader] 学过词统计加载失败", e); });
     return () => { alive = false; };
   }, [annTextId]);
   useEffect(() => {
@@ -581,13 +602,13 @@ export default function App() {
     if (tid != null) {
       api.textDebriefCandidates(tid).then((cs) => {
         if (cs.length) return api.debriefPut({ origin_kind: "reading", origin_ref: String(tid), candidates: cs });
-      }).catch(() => {});
+      }).catch((e) => { console.error("[reader] 复盘候选落库失败", e); });
     }
     setAnn(null); setText(""); setEntry(null); setEntryStart(0); setEntryKey(""); setCreateMsg(""); setComposing(false);
     setSelTrans(null); setSelText(""); setReadGrammar(null); setRawText(""); setMt(null); setMtBusy(null); setMtErr(""); mtRunRef.current++;
     inference.release("translation").catch(() => {});
     refreshTexts();
-    api.debriefList().then(setDrafts).catch(() => {});
+    api.debriefList().then(setDrafts).catch((e) => { console.error("[debrief] 草稿列表加载失败", e); });
   }, [ann, refreshTexts]);
 
   // v2.15.1 书库删除文章：  // S13-a-2 复盘：手动复盘本文
@@ -658,7 +679,7 @@ export default function App() {
         if (f) map[readerSentences[i].replace(/\s+/g, " ").trim()] = true;
       });
       setShadowPassMap(map);
-    }).catch(() => {});
+    }).catch((e) => { console.error("[reader] 跟读通过状态加载失败", e); });
     return () => { alive = false; };
   }, [readerSentences]);
 
@@ -676,6 +697,9 @@ export default function App() {
   const [resumeNotice, setResumeNotice] = useState("");
   const resumeTimerRef = useRef<number | null>(null);
   const anchorMapRef = useRef<Map<number, { pi: number; ch: number }>>(new Map());
+  // 跳词高亮的定时器句柄（见下方 effect 的 cleanup）
+  const flashTimers: number[] = useRef<number[]>([]).current;
+
   const resumeRestoredRef = useRef<{ id: number; pi: number; reanchored: boolean } | null>(null);
   const resumeSkipRef = useRef(false); // 词卡跳词定位优先于断点恢复
 
@@ -717,13 +741,21 @@ export default function App() {
       resumeSkipRef.current = true;
       const target: HTMLElement | null = hits[0] ?? para;
       if (target) scrollToPara(target);
+      // 命中 N 个词就建 N 个定时器；effect 重跑/组件卸载时必须一并撤掉，
+      // 否则 2400ms 后会对已卸载的 DOM 执行 classList.remove（#196）。
+      flashTimers.forEach((id) => window.clearTimeout(id));
+      flashTimers.length = 0;
       for (const el of hits) {
         el.classList.add("jump-flash");
-        window.setTimeout(() => el.classList.remove("jump-flash"), 2400);
+        flashTimers.push(window.setTimeout(() => el.classList.remove("jump-flash"), 2400));
       }
       setJumpCtx(null);
     }, 180);
-    return () => window.clearTimeout(h);
+    return () => {
+      window.clearTimeout(h);
+      flashTimers.forEach((id) => window.clearTimeout(id));
+      flashTimers.length = 0;
+    };
   }, [jumpCtx, tab, ann, scrollToPara]);
 
   const computeAnchor = useCallback(() => {
@@ -817,6 +849,13 @@ export default function App() {
   useEffect(() => {
     if (annTextId == null) return;
     let cancelled = false;
+    // 内部还嵌套了 3 个 setTimeout（提示消失 ×2 + 二次校准滚动），原来只清了外层 h。
+    // 组件卸载后它们仍会触发；虽然有 cancelled 挡住 setState，但定时器本身白白留着，
+    // 且 cancelled 只在 cleanup 里被置位、回调持有的是同一闭包——统一登记才能真撤干净（#196）。
+    const nested: number[] = [];
+    const later = (fn: () => void, ms: number) => {
+      nested.push(window.setTimeout(() => { if (!cancelled) fn(); }, ms));
+    };
     const h = window.setTimeout(async () => {
       if (resumeSkipRef.current) return;
       try {
@@ -830,18 +869,22 @@ export default function App() {
         const hash = await sha256Hex(para);
         if (r.contentHash && hash !== r.contentHash) {
           setResumeNotice("原文已变化，已从文章开头开始");
-          window.setTimeout(() => { if (!cancelled) setResumeNotice(""); }, 5000);
+          later(() => setResumeNotice(""), 5000);
           return;
         }
         scrollToPara(el);
         // 二次校准：等版面（译文/字体）稳定后再对齐一次
-        window.setTimeout(() => { if (!cancelled) scrollToPara(el); }, 600);
+        later(() => scrollToPara(el), 600);
         resumeRestoredRef.current = { id: annTextId, pi, reanchored: false };
         setResumeNotice(`已恢复到上次阅读位置（第 ${pi + 1} 段）`);
-        window.setTimeout(() => { if (!cancelled) setResumeNotice(""); }, 4000);
+        later(() => setResumeNotice(""), 4000);
       } catch { /* 恢复失败留在开头 */ }
     }, 220);
-    return () => { cancelled = true; window.clearTimeout(h); };
+    return () => {
+      cancelled = true;
+      window.clearTimeout(h);
+      nested.forEach((id) => window.clearTimeout(id));
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [annTextId]);
 
@@ -1009,7 +1052,7 @@ export default function App() {
     setEntryRelated(null);
     if (!entry) return;
     let alive = true;
-    api.relatedWords(entry.lemma || entry.word).then((r) => { if (alive) setEntryRelated(r); }).catch(() => {});
+    api.relatedWords(entry.lemma || entry.word).then((r) => { if (alive) setEntryRelated(r); }).catch((e) => { console.error("[reader] 近义词加载失败", e); });
     return () => { alive = false; };
   }, [entry]);
 
@@ -1060,6 +1103,16 @@ export default function App() {
     } catch (e) { setErr(String(e)); }
   }, [queue, queueTotal, refreshCounts]);
 
+  // 词块中文核验：只做「是否为空 + 模糊包含」提示，不做逐字判定（#200）
+  const checkChunk = useCallback(() => {
+    const card = queue[0];
+    const mine = guess.trim();
+    if (!card || card.card_type !== "chunk_recall" || !mine) return;
+    setChunkRef(mine);
+    setChecked(true);
+    setShowBack(true);
+  }, [guess, queue]);
+
   const checkCloze = useCallback(() => {
     if (!card) return;
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z' \-]/g, "").trim();
@@ -1081,7 +1134,8 @@ export default function App() {
       }
       if (pendingInput && e.key === "Enter") {
         e.preventDefault(); checkCloze();
-      } else if (showBack && ["1", "2", "3", "4"].includes(e.key)) {
+      } else if (showBack && ["1", "2", "3", "4"].includes(e.key)
+        && card?.card_type !== "note_translate") {
         rate(Number(e.key));
       }
     };
@@ -1095,17 +1149,20 @@ export default function App() {
   useEffect(() => {
     if (!showBack || !card) { setRelated(null); return; }
     let alive = true;
-    api.relatedWords(card.word).then((r) => { if (alive) setRelated(r); }).catch(() => {});
+    api.relatedWords(card.word).then((r) => { if (alive) setRelated(r); }).catch((e) => { console.error("[lex] 近义词加载失败", e); });
     return () => { alive = false; };
   }, [showBack, card]);
 
   // 换卡时重置作答状态
   useEffect(() => {
-    setGuess(""); setChecked(null); setChosen(null); setShowBack(false); setEnDefOpen(false);
+    // 换卡时全部作答态归零：guess 是输入框、chunkRef 是词块自写的中文，
+    // 不重置会把上一张的作答带到下一张（#200）
+    setGuess(""); setChunkRef(null); setChecked(null); setChosen(null);
+    setShowBack(false); setEnDefOpen(false);
     setUseCounts(null);
     if (card?.asset_id) {
       api.assetUseCounts(card.asset_id)
-        .then(setUseCounts).catch(() => {});
+        .then(setUseCounts).catch((e) => { console.error("[lex] 用例统计加载失败", e); });
     }
   }, [card?.card_id]);
 
@@ -1165,6 +1222,9 @@ export default function App() {
           <button className={tab === "voice" ? "nav-item active" : "nav-item"} onClick={() => setTab("voice")}>
             <span className="nav-ico"><Icon name="Voice" /></span><span>语音</span>
           </button>
+          <button className={tab === "settings" ? "nav-item active" : "nav-item"} onClick={() => setTab("settings")}>
+            <span className="nav-ico"><Icon name="Settings" /></span><span>设置</span>
+          </button>
         </nav>
         <div className="side-stats">
           <button className="stat stat-btn" onClick={() => { setTab("review"); startReview(); }}>
@@ -1192,6 +1252,20 @@ export default function App() {
           <div className="side-streak">
             <span className="flame"><Icon name="Streak" size={14} /></span>
             连胜 {streak} 天
+            {/* 玻璃开关与连胜同行而不是另起一行：侧栏在 APP_SHOT 的窗口高度下本就已经
+                接近溢出（连胜行只剩半截），再加一行只会把整块 footer 推出可视区 */}
+            <button
+              className={"side-glass" + (glassOn ? "" : " off")}
+              onClick={toggleGlass}
+              aria-pressed={!glassOn}
+              aria-label={glassOn ? "关闭液态玻璃效果" : "开启液态玻璃效果"}
+              title={glassOn
+                ? "液态玻璃已开启。若机器卡顿或发烫，点这里关掉毛玻璃效果"
+                : "液态玻璃已关闭。点这里恢复毛玻璃效果"}
+            >
+              <Icon name="Layers" size={13} />
+              {glassOn ? "开" : "关"}
+            </button>
           </div>
         </div>
       </aside>
@@ -1297,7 +1371,7 @@ export default function App() {
 
         {/* ============ S11-b 漏网词回收 ============ */}
         {tab === "recycle" && (
-          <div className="page recycle-page">
+          <div className="page">
             <div className="page-head">
               <button className="btn-mini recycle-back" onClick={() => setTab(recycleFrom)}>← 返回{recycleFrom === "lex" ? "词库" : "今日"}</button>
               <h2>漏网词回收</h2>
@@ -1545,7 +1619,7 @@ export default function App() {
             <div className="page-head reader-head">
               <button className="ghost2" onClick={backToLibrary}>← 书库</button>
               {learnedSummary && (
-                <span className="muted learned-map">
+                <span className="muted">
                   本文已学 <b>{learnedSummary.words}</b> 词
                   {((learnedSummary.assets.chunk || 0) + (learnedSummary.assets.grammar || 0) +
                     (learnedSummary.assets.pronunciation || 0) + (learnedSummary.assets.concept || 0)) > 0 ? (
@@ -1686,7 +1760,7 @@ export default function App() {
                   </>
                 )}
                 <button className="primary" onClick={() => sendToShadow(selText, { textId: ann?.text_id })}>送跟读 →</button>
-                <button className="ghost" onClick={() => setCapSel({ text: selText })}>转为练习</button>
+                <button className="ghost" onClick={() => setCapSel({ text: selText, zh: selTrans?.zh })}>转为练习</button>
                 <button className="ghost" onClick={() => { void openReadGrammar(); }}>
                   {readGrammarBusy ? "分析中…" : "深度语法分析"}
                 </button>
@@ -1727,8 +1801,10 @@ export default function App() {
         {celebrate && <Celebrate seed={celebrate} />}
         {tab === "shadow" && <ShadowPage send={shadowSend} reviewNonce={shadowReviewNonce} onPracticed={refreshToday} />}
         {tab === "voice" && <VoicePage />}
-        {tab === "call" && <VoiceCallPage />}
+        {tab === "call" && <VoiceCallPage onOpenSettings={() => setTab("settings")} />}
+        {tab === "settings" && <SettingsPanel />}
         {tab === "chat" && <ConversationPage
+          onOpenSettings={() => setTab("settings")}
   onSendShadow={(t, opts) => sendToShadow(t, opts)}
   usePrompt={usePrompt}
   onPromptConsumed={() => setUsePrompt(null)}
@@ -1783,11 +1859,8 @@ export default function App() {
               <div className="card" style={{ padding: 8 }}>
                 <LexGraph
                   center={graphCenter}
-                  learned={new Set(lexemes.map((l) => String(l.lemma).toLowerCase()))}
-                  onPick={(word) => {
-                    if (word === graphCenter?.word) return;
-                    setGraphCenter({ word, lapses: 0, cards: 0, tag: "" });
-                  }}
+                  learned={lexLearnedSet}
+                  onPick={pickGraphCenter}
                 />
                 <div className="muted" style={{ fontSize: 11.5, padding: "8px 10px 2px", textAlign: "center" }}>
                   点击星点切换中心词 · 实心=已在词库 · 红环=有遗忘记录 · 色相=考纲等级
@@ -1929,9 +2002,11 @@ export default function App() {
         {/* ============ 复习 ============ */}
         {tab === "review" && (
           <div className="page">
+            {/* v2.1：原先页头与空态里各有一个「开始复习」，两者指向同一件事，
+                用户会犹豫点哪个。改为只在真正有队列时于页头出现。 */}
             <div className="page-head">
               <h2>复习</h2>
-              {queue.length === 0 && <button className="primary" onClick={startReview}>开始复习</button>}
+              {queue.length > 0 && <button className="primary" onClick={startReview}>开始复习</button>}
             </div>
 
             {!card && (
@@ -1945,15 +2020,27 @@ export default function App() {
                   {lastResult && <p className="muted rc-next" style={{ textAlign: "center" }}>最近一张：{lastResult}</p>}
                 </div>
               ) : (
-                <EmptyState
-                  seed="review-empty"
-                  text={counts
-                    ? `今天没有到期的卡片。待复习 ${counts.due_review} · 今日还可学新卡 ${counts.new_remaining_today} · 词元 ${counts.total_lexemes}。在阅读页点生词建卡，卡片会按遗忘曲线回到这里。`
-                    : "今天没有到期的卡片。在阅读页点生词建卡，卡片会按遗忘曲线回到这里。"}
-                  action={counts && counts.due_review > 0
-                    ? <button className="btn-primary" onClick={() => void startReview()}>开始复习</button>
-                    : <button className="ghost2" onClick={() => setTab("read")}>去阅读建卡</button>}
-                />
+                <>
+                  {/* v2.1：原文案「今天没有到期的卡片。待复习 1 · 今日还可学新卡 12」自我否定——
+                      根因是把两个口径塞进一句：due_review 是「今日到期数」，queue 是「本轮队列」。
+                      改为先说结论，再分行给可核对的数字。 */}
+                  <EmptyState
+                    seed="review-empty"
+                    text={counts && counts.due_review > 0
+                      ? "本轮队列已清空。下面是接下来可练的量。"
+                      : "今天没有到期的卡片。"}
+                    action={counts && counts.due_review > 0
+                      ? <button className="btn-primary" onClick={() => void startReview()}>开始复习</button>
+                      : <button className="ghost2" onClick={() => setTab("read")}>去阅读建卡</button>}
+                  />
+                  {counts && (
+                    <div className="review-next">
+                      <div className="rn-cell"><b>{counts.due_review}</b><span>今日到期</span></div>
+                      <div className="rn-cell"><b>{counts.new_remaining_today}</b><span>今日新卡</span></div>
+                      <div className="rn-cell"><b>{counts.total_lexemes}</b><span>词元总数</span></div>
+                    </div>
+                  )}
+                </>
               )
             )}
 
@@ -1965,6 +2052,7 @@ export default function App() {
                       : card.card_type === "recall" ? "释义 → 词"
                       : card.card_type === "l_recog" ? "听音辨义"
                       : card.card_type === "spelling" ? "听音拼写"
+                      : card.card_type === "note_translate" ? "翻译"
                       : card.card_type === "chunk_recall" ? "词块"
                       : card.card_type === "chunk_cloze" ? "词块填空"
                       : card.card_type === "grammar_pattern" ? "语法"
@@ -1982,7 +2070,12 @@ export default function App() {
                   <i style={{ width: `${queueTotal ? (done / queueTotal) * 100 : 0}%` }} />
                 </div>
 
-                {(card.card_type === "l_recog" || card.card_type === "spelling"
+                {card.card_type === "note_translate" ? (
+                  <TranslateJudge
+                    sourceEn={card.full || card.sentence}
+                    referenceZh={card.reference || ""}
+                    onRate={(r) => void rate(r)} />
+                ) : (card.card_type === "l_recog" || card.card_type === "spelling"
                   || card.card_type === "pron_perception") ? (
                   <div className="listen-front">
                     <button className="gbtn gbtn-lg speaker" onClick={() => speak(card.word)} title="再听一遍（空格）" aria-label="播放发音"><Icon name="Speaker" size={30} /></button>
@@ -1995,14 +2088,34 @@ export default function App() {
                   </div>
                 ) : (
                   <p className="sentence">
+                    {/* r_recog（认读）也走这里：core 已把它改成「有语境句就挖空、
+                        无语境句就只显示单词」，不再经过 Highlight 把答案摊开（#200）。 */}
                     {(card.card_type === "concept" || card.card_type === "cloze"
                       || card.card_type === "recall" || card.card_type === "chunk_recall"
                       || card.card_type === "chunk_cloze" || card.card_type === "grammar_pattern"
-                      || card.card_type === "concept_recall")
+                      || card.card_type === "concept_recall" || card.card_type === "r_recog")
                       ? card.sentence
                       : <Highlight sentence={card.sentence} word={card.word} />}
                   </p>
                 )}
+                {/* 词块正面就能写：之前只在翻面后有输入，等于「无处可写」——
+                    而这个词块资产本来就是从对话沉淀的，zh_intent 常为空（#200）。 */}
+                {card.card_type === "chunk_recall" && chunkRef === null && checked === null && (
+                  <div className="cloze-input">
+                    <input autoFocus value={guess} onChange={(e) => setGuess(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") checkChunk(); }}
+                      placeholder="写出这句英文的中文意思…" />
+                    <button className="primary" onClick={checkChunk}>核验（回车）</button>
+                  </div>
+                )}
+
+                {/* 词块填空缺例句：正面就是完整答案，怎么答都是「对」。
+                    与其让人白答，不如说清缺什么（#200）。 */}
+                {card.card_type === "chunk_cloze" && card.noExample && (
+                  <p className="muted">这条词块还没配例句，挖不出空格。可以先跳过，
+                    在跟读台或复盘里重新沉淀一次（划词选句会带上例句与参考译文）。</p>
+                )}
+
                 {card.card_type === "cloze" && card.clozeMiss && (
                   <p className="muted">（原句中未找到该词形，直接看答案即可）</p>
                 )}
@@ -2016,7 +2129,8 @@ export default function App() {
                   </div>
                 )}
 
-                {(card.card_type === "recall" || card.card_type === "l_recog") && checked === null && card.choices && (
+                {(card.card_type === "recall" || card.card_type === "l_recog"
+                  || card.card_type === "r_recog") && checked === null && card.choices && (
                   <div className="choices">
                     {card.choices.map((c: string) => (
                       <button key={c} className="choice"
@@ -2027,13 +2141,16 @@ export default function App() {
                   </div>
                 )}
 
-                {!showBack && !pendingInput && (
+                {/* 翻译卡不走「翻面看答案」：它自己就是逐层揭示（提交对照→差异→云端），
+                    再给一个「显示答案」按钮会让人直接跳过批改看到参考译文。 */}
+                {!showBack && !pendingInput && card.card_type !== "note_translate"
+                  && !(card.card_type === "chunk_recall" && chunkRef === null) && (
                   <button className="primary big" onClick={() => setShowBack(true)}>
                     {card.card_type === "recall" ? "显示单词（空格）" : "显示答案（空格）"}
                   </button>
                 )}
 
-                {showBack && (
+                {showBack && card.card_type !== "note_translate" && (
                   <>
                     {checked !== null && (
                       <div className={checked ? "verdict ok" : "verdict bad"}>
@@ -2049,14 +2166,22 @@ export default function App() {
                           {card.full.split("\n").filter(Boolean).map((line, i) => <p key={i} className="concept-line">{line}</p>)}
                         </div>
                       ) : card.asset_id ? (
-                        <div className="asset-back">
+                        <div>
                           <div className="back-word">
                             <b className="hw">{card.word}</b>
                             {card.asset_kind === "pronunciation" && Boolean(card.payload?.ipa) &&
                               <span className="phon">/{String(card.payload?.ipa)}/</span>}
                           </div>
+                          {/* chunk_recall 背��：有中文意图就直接核验；没有就给输入框让用户自己写——
+                              词块资产多��从对话沉淀，zh_intent 本就常为空（#200）。
+                              「（无释义）」那种占位等于既没处写也没法自检。 */}
+                          {card.card_type === "chunk_recall" && chunkRef !== null && (
+                            <p className="orig"><span className="lbl">你写的</span>{chunkRef}</p>
+                          )}
                           {card.card_type === "chunk_recall" && (
-                            <p className="sense-p">{String(card.payload?.zh_intent || card.sense || "（无释义）")}</p>
+                            String(card.payload?.zh_intent || card.sense)
+                              ? <p className="sense-p">{String(card.payload?.zh_intent || card.sense)}</p>
+                              : <p className="muted">（这条词块没有中文意图，只有你自己的译文可对照——可以点「再来一次」把它加为资产并补上释义）</p>
                           )}
                           {card.card_type === "chunk_cloze" && (
                             <>
@@ -2281,6 +2406,7 @@ export default function App() {
             originRef: String(ann?.text_id ?? ""),
             title: "阅读文章",
             sentence: selText || capSel.text,
+            referenceZh: capSel?.zh,
           } : null}
           initialText={capSel?.text ?? ""}
           onClose={() => setCapSel(null)}
@@ -2294,7 +2420,7 @@ export default function App() {
             initial={debrief.initial}
             onClose={() => setDebrief(null)}
             onAfter={() => {
-              api.debriefList().then(setDrafts).catch(() => {});
+              api.debriefList().then(setDrafts).catch((e) => { console.error("[debrief] 草稿列表加载失败", e); });
               refreshCounts();
             }}
           />

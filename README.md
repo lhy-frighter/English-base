@@ -2,6 +2,8 @@
 
 > 本地优先的个人英语学习工具。读、练、说、测一体：精读挖矿建卡、FSRS 复习、离线跟读打分、GLM Realtime 全双工语音对话（可打断、中文兜底、结束复盘），全部数据留在本机。
 
+[![License: BUSL-1.1](https://img.shields.io/badge/License-BUSL--1.1-blue.svg)](LICENSE) ![Electron](https://img.shields.io/badge/Electron-38-47848F?logo=electron&logoColor=white) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+
 <p align="center">
   <img src="docs/screenshots/首页-今日.png" width="820" alt="今日页">
 </p>
@@ -20,6 +22,9 @@
 | **考试模式** | Markdown 导入试卷 → 答题 → 错题本 1/3/7 天重做 |
 | **词库星云** | 中心词 + 同根/近义星点图谱，按考纲等级与遗忘着色 |
 | **仪表盘** | 四类互斥学习分钟、热图、连续有效日、覆盖率快照 |
+| **句子翻译批改** | 手写译文 → 本地逐字对比 + 相似度 → 判错时才调云端 AI 做语法剖析（三层递进） |
+| **好文题材分区** | 云端按固定七类题材标注（科技/商业/科学/社科/文化/生活/观点），手动触发，结果本地缓存 |
+| **统一设置页** | 端点、模型、API Key、四项云端授权集中一处；内置连通性自检 |
 
 ## 界面
 
@@ -58,7 +63,7 @@
 ## 隐私
 
 - 学习记录、词典查询、跟读录音**只存本机**
-- 三类云端数据（学习画像 / 历史对话文本 / 录音原文）各自独立开关，默认全关，可随时关闭
+- 四类云端数据（学习画像 / 历史对话文本 / 录音原文 / 好文题材分类）各自独立开关，默认全关，可随时关闭
 - API Key 经 Windows 密钥链加密存储，永不明文落盘、不下发给渲染层
 
 ## 技术栈
@@ -72,11 +77,17 @@ cd app-electron
 pnpm install          # 或 npm install
 npm start             # 开发运行
 npm run dist          # 构建渲染层
-npm test              # 全量测试链（60 链）
+npm test              # 全量测试链（1407 项断言）
 npx electron-builder --win   # 打 Windows 安装包
 ```
 
-要求：Node ≥ 22（node:sqlite）、pnpm ≥ 12（nodeLinker: hoisted 已配置在 pnpm-workspace.yaml）。
+要求：Node ≥ 22（`node:sqlite` 需 ≥ 22.5；测试链用 `--experimental-strip-types` 直跑 TS）。npm 亦可。
+
+```bash
+# 视觉回归：建基线 / 对比
+APP_SHOT_BASELINE=1 APP_SHOT=1 npm start
+APP_SHOT=1 npm start          # 输出 DIFF <tab> x.xx%
+```
 
 ## 目录结构
 
@@ -96,7 +107,7 @@ npx electron-builder --win   # 打 Windows 安装包
 ├── research/            # 技术调研
 ├── browser-extension/   # 配套「一键收藏网页正文」浏览器扩展
 ├── V0验证工具包/        # 立项期标注预演与验证资产
-└── 论文库 试卷库-* 外网文章 test-files/   # 学习语料
+└── 论文库 试卷库-* 外网文章 test-files/   # 学习语料（仅本地使用，不随代码分发）
 ```
 
 ## 文档导航
@@ -105,6 +116,16 @@ npx electron-builder --win   # 打 Windows 安装包
 - [DESIGN.md](app-electron/DESIGN.md) — 视觉方向 v2「分区混合」+ [UI-BLUEPRINT.md](app-electron/UI-BLUEPRINT.md) 逐页规范
 - [ADR 目录](docs/adr/) — 运行时切换 Electron / 语音栈 Electron 化 / 离线翻译选型 / 本地 TTS 选型
 - [ui-design-flow](design-skills/ui-design-flow-SKILL.md) — 本项目 UI 设计流程沉淀的 skill
+
+## 协议
+
+**BUSL 1.1**（[Business Source License 1.1](LICENSE)）
+
+- ✓ 可复制、修改、Fork、非商业使用
+- ✗ **任何商业用途须事先取得书面授权**
+- 📅 2030-01-01（或首次公开分发满四年）后自动转为 Apache License 2.0
+
+Copyright © 2026 lhy-frighter。
 
 ## 已知边界
 

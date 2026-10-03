@@ -39,7 +39,7 @@ check("首篇文章产生 first_annotate 覆盖率快照", ins.coverage.length =
 core.createNote({ word: "investigate", label: "word", phrase: "", sense: "", textId: saved.text_id, offset: raw.indexOf("investigate") });
 core.createNote({ word: "evidence", label: "word", phrase: "", sense: "", textId: saved.text_id, offset: raw.indexOf("evidence") });
 const cardIds = core.user.prepare("SELECT id FROM cards ORDER BY id").all().map((r) => r.id);
-check("生成 10 张卡", cardIds.length === 10, String(cardIds.length));
+check("生成 12 张卡（2 篇 × 6）", cardIds.length === 12, String(cardIds.length));
 for (const id of cardIds) core.answer({ cardId: id, rating: 3, elapsedMs: 60000 });
 
 // 4. 今日 read 会话：400 词、4 分钟
@@ -65,14 +65,15 @@ core.user.prepare("INSERT INTO attempts(paper_id,answers_json,result_json,starte
 
 ins = core.insights(30);
 const t = ins.totals;
-check("今日复习 10 卡、10 分钟", t.reviews === 10 && t.minutes.review === 10, JSON.stringify({ r: t.reviews, m: t.minutes.review }));
+// 12 张卡（2 篇 × 6）→ 复习 12 次 12 分钟
+check("今日复习 12 卡、12 分钟", t.reviews === 12 && t.minutes.review === 12, JSON.stringify({ r: t.reviews, m: t.minutes.review }));
 check("阅读 400 词 4 分钟", t.readWords === 400 && t.minutes.read === 4, JSON.stringify({ w: t.readWords, m: t.minutes.read }));
 check("跟读 3 句 2 分钟", t.shadowSentences === 3 && t.minutes.shadow === 2);
 check("考试 1 套 10 分钟（active_ms 口径）", t.examPapers === 1 && t.minutes.exam === 10);
 check("查词/成卡/翻译只计次数：2 笔记 1 查词 1 翻译", t.counts.note === 2 && t.counts.lookup === 1 && t.counts.translation === 1,
   JSON.stringify(t.counts));
 check("总分钟=四主流之和，次数不折分钟",
-  t.minutes.read + t.minutes.shadow + t.minutes.review + t.minutes.exam === 4 + 2 + 10 + 10,
+  t.minutes.read + t.minutes.shadow + t.minutes.review + t.minutes.exam === 4 + 2 + 12 + 10,
   JSON.stringify(t.minutes));
 check("开放会话不计入（readWords 仍 400）", t.readWords === 400);
 const today = ins.days[ins.days.length - 1];
@@ -89,7 +90,8 @@ for (const off of [-1, -2, -5]) {
 ins = core.insights(30);
 check("当前连胜 3（今天+昨天+前天）", ins.streak.current === 3, JSON.stringify(ins.streak));
 check("最长连胜 3（5 天前孤点不连）", ins.streak.longest === 3, JSON.stringify(ins.streak));
-check("区间复习总分钟=40（4 个有效日各 10 分钟）", ins.totals.minutes.review === 40, String(ins.totals.minutes.review));
+// 今日 12 次 + 昨天/前天/5天前各 10 次 = 42
+check("区间复习总分钟=42（今日 12 + 三天各 10）", ins.totals.minutes.review === 42, String(ins.totals.minutes.review));
 const yKey = keyAt(-1);
 check("日下钻：昨天有效且含复习汇总条", (() => {
   const tl = core.dayTimeline(yKey);

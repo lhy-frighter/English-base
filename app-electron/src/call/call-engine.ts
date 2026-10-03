@@ -11,10 +11,13 @@ import {
 import { CallAudioPlayer } from "./audio-player";
 import { VadController } from "../conversation/vad-controller";
 import { api } from "../api";
+import { persist } from "../persist";
 // worklet 源码以 ?raw 内联进 bundle：new URL(import.meta.url) 方式在构建产物里没有对应资产，
 // addModule 会指向不存在的 app://app/assets/pcm-worklet.js（麦克风帧永远产不出 → AI 听不到）
 import pcmWorkletSrc from "./pcm-worklet.js?raw";
 
+// 落库统一走 ../persist 的 persist()：通话中的轮次写入失败不打断对话（用户正在说话），
+// 但必须可追溯——静默 .catch(() => {}) 的代价是转写丢了、日志里一个字都没有（#194）。
 export type CallPack = "free" | "cet6" | "ielts" | "review_today";
 export type CallPhase = "connecting" | "listening" | "thinking" | "speaking" | "reconnecting";
 
@@ -70,7 +73,9 @@ function instructionsFor(pack: CallPack, topic: string): string {
   return base.join("\n");
 }
 
-type Waiter = { resolve: () => void; reject: (e: Error) => void };
+// timer：用于「正常 resolve/reject 时立刻撤掉自己那个 20s 超时」。
+// 少了它，成功连上一次就留一个活定时器 20 秒；每次 barge-in 重连再叠一个（#196）。
+type Waiter = { resolve: () => void; reject: (e: Error) => void; timer?: ReturnType<typeof setTimeout> };
 
 // 模型偶尔会模仿提示词里示例对话的角色前缀（实测 "You: ..."），消费文本时统一剥掉
 function stripRolePrefix(t: string): string {
@@ -164,8 +169,8 @@ export class CallEngine {
         }
       };
       window.addEventListener("message", onWinMsg);
-      const electronAPI = (window as unknown as { electronAPI: { realtimeOpen: (o?: unknown) => void } }).electronAPI;
-      electronAPI.realtimeOpen({});
+      // 走 api 的正式声明，不再自己手写一份形状——两处定义必然漂（#197）
+      api.realtimeOpen({});
     });
   }
 
@@ -226,7 +231,7 @@ export class CallEngine {
       }).catch(() => { this.learnKey = ""; });
       this.heartbeatTimer = window.setInterval(() => {
         if (this.stopped || !this.learnKey) return;
-        api.sessionHeartbeat(this.learnKey, Date.now() - this.startedAt, this.userTurnCount(), {}).catch(() => {});
+        persist("sessionHeartbeat", api.sessionHeartbeat(this.learnKey, Date.now() - this.startedAt, this.userTurnCount(), {}));
       }, 20_000);
     } catch { /* 落库失败不影响通话 */ }
   }
@@ -239,7 +244,7 @@ export class CallEngine {
     return new Promise((resolve, reject) => {
       const w: Waiter = { resolve, reject };
       this.readyWaiters.push(w);
-      setTimeout(() => {
+      w.timer = setTimeout(() => {
         const i = this.readyWaiters.indexOf(w);
         if (i >= 0) {
           this.readyWaiters.splice(i, 1);
@@ -252,7 +257,7 @@ export class CallEngine {
     return new Promise((resolve, reject) => {
       const w: Waiter = { resolve, reject };
       this.replayedWaiters.push(w);
-      setTimeout(() => {
+      w.timer = setTimeout(() => {
         const i = this.replayedWaiters.indexOf(w);
         if (i >= 0) {
           this.replayedWaiters.splice(i, 1);
@@ -264,9 +269,9 @@ export class CallEngine {
   // 连接失败/中断：让等待方立刻脱困，通话回聆听态（尽力恢复，不假死）
   private failWaiters(message: string): void {
     if (!this.readyFired) {
-      for (const w of this.readyWaiters.splice(0)) w.reject(new Error(message));
+      for (const w of this.readyWaiters.splice(0)) { if (w.timer) clearTimeout(w.timer); w.reject(new Error(message)); }
     }
-    for (const w of this.replayedWaiters.splice(0)) w.reject(new Error(message));
+    for (const w of this.replayedWaiters.splice(0)) { if (w.timer) clearTimeout(w.timer); w.reject(new Error(message)); }
     if (this.reconnecting) {
       this.reconnecting = false;
       this.activeResponseId = null;
@@ -371,7 +376,7 @@ export class CallEngine {
         this.turns.pop();
         const doneKey = this.turnKeyByResponse[activeId];
         if (doneKey) {
-          api.convUpdateTurn({ turnKey: doneKey, text: "", committedText: "", status: "interrupted" }).catch(() => {});
+          persist("convUpdateTurn(rollback)", api.convUpdateTurn({ turnKey: doneKey, text: "", committedText: "", status: "interrupted" }));
           this.persistedInterrupted.add(activeId);
         }
       }
@@ -430,18 +435,18 @@ export class CallEngine {
     this.persistedInterrupted.add(responseId);
     const doneKey = this.turnKeyByResponse[responseId];
     if (doneKey) {
-      api.convUpdateTurn({
+      persist("convUpdateTurn(interrupted)", api.convUpdateTurn({
         turnKey: doneKey, text: prefix, committedText: prefix, status: "interrupted",
-      }).catch(() => {});
+      }));
       return;
     }
     if (!prefix.trim()) return;
     const turnKey = "callturn:" + crypto.randomUUID();
     this.turnKeyByResponse[responseId] = turnKey;
-    api.convAddTurn({
+    persist("convAddTurn(interrupted)", api.convAddTurn({
       sessionKey: this.callSessionKey, turnKey, role: "assistant",
       text: prefix, committedText: prefix, status: "interrupted", provider: "realtime",
-    }).catch(() => {});
+    }));
   }
 
   private baseInstructions = "";
@@ -456,10 +461,10 @@ export class CallEngine {
         break;
       case "ready":
         this.readyFired = true;
-        for (const w of this.readyWaiters.splice(0)) w.resolve();
+        for (const w of this.readyWaiters.splice(0)) { if (w.timer) clearTimeout(w.timer); w.resolve(); }
         break;
       case "replayed":
-        for (const w of this.replayedWaiters.splice(0)) w.resolve();
+        for (const w of this.replayedWaiters.splice(0)) { if (w.timer) clearTimeout(w.timer); w.resolve(); }
         break;
       case "audioDelta":
         this.onAudioDelta(m.responseId as string, m.buffer as ArrayBuffer);
@@ -547,13 +552,13 @@ export class CallEngine {
           // 落库 + 用出证据检测（S13-b 口径与文本对话一致；失败不阻塞通话）
           if (this.callSessionKey) {
             const turnKey = "callturn:" + crypto.randomUUID();
-            api.convAddTurn({
+            persist("convAddTurn(user)", api.convAddTurn({
               sessionKey: this.callSessionKey, turnKey, role: "user",
               text: transcript, status: "user_confirmed", asrEngine: "server",
-            }).catch(() => {});
-            api.detectUsedAssets({
+            }));
+            persist("detectUsedAssets", api.detectUsedAssets({
               sessionKey: this.callSessionKey, turnKey, text: transcript, prompted: [],
-            }).catch(() => {});
+            }));
           }
           // 中文兜底（确定性工程方案）：模型对"按输入语言切换"的指令遵循很差（实测整体倒向单一语言），
           // 由引擎按服务端转写判定——本轮为中文（汉字≥2 且明显多于字母，防 ASR 杂音汉字误触发）
@@ -591,10 +596,10 @@ export class CallEngine {
             if (this.callSessionKey) {
               const turnKey = "callturn:" + crypto.randomUUID();
               this.turnKeyByResponse[id] = turnKey; // 播放期打断时需改写该行为 interrupted
-              api.convAddTurn({
+              persist("convAddTurn(assistant)", api.convAddTurn({
                 sessionKey: this.callSessionKey, turnKey,
                 role: "assistant", text, status: "completed", provider: "realtime",
-              }).catch(() => {});
+              }));
             }
           }
         }
@@ -630,11 +635,13 @@ export class CallEngine {
     if (this.vad) { try { await this.vad.destroy(); } catch { /* noop */ } }
     if (this.player) { try { await this.player.close(); } catch { /* noop */ } }
     this.port = null;
-    // 收口学习会话与对话会话（闭环；失败静默）
+    // 收口学习会话与对话会话（闭环）。
+    // 落库失败不打断通话（已在挂断流程里，再抛错只会让 UI 卡住），但必须留痕：
+    // 以前是 .catch(() => {})，写失败时用户和日志都看不到，排查完全无线索（#194）。
     const activeMs = this.startedAt ? Date.now() - this.startedAt : 0;
-    if (this.learnKey) api.sessionClose(this.learnKey, activeMs, this.userTurnCount(), {}).catch(() => {});
+    if (this.learnKey) persist("sessionClose", api.sessionClose(this.learnKey, activeMs, this.userTurnCount(), {}));
     if (this.callSessionKey) {
-      api.convClose({ sessionKey: this.callSessionKey, activeMs, status: "closed" }).catch(() => {});
+      persist("convClose", api.convClose({ sessionKey: this.callSessionKey, activeMs, status: "closed" }));
     }
     return this.turns.slice();
   }

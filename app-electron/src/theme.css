@@ -18,7 +18,8 @@
   --surface: #ffffff;       /* 卡片纯白 */
   --ink: #101828;
   --ink-2: #344054;
-  --ink-3: #667085;
+  --ink-3: #5d6679;   /* #190：应用背景是几层淡彩 radial-gradient（#ffe8f1 粉斑等），
+                         最差色标 lum 0.853，原值 #667085 在上面只有 4.08:1，压深后 ≥4.96 */
   --line: #e4e7ec;
   --indigo: #2456f5;        /* 主色=亮钴蓝（沿用旧变量名，全局生效） */
   --indigo-h: #1d47d9;
@@ -26,7 +27,7 @@
   --brand-h: #1d47d9;
   --brand-wash: #eef2ff;
   --accent: #f5b83d;        /* 琥珀：streak/下划线 */
-  --ok: #12805c;
+  --ok: #0e6b4e;      /* #190：绿字排 #e7f5ef 底 4.38:1，差一线；压深后 5.79 */
   --radius-card: 16px;
   --radius-panel: 20px;
   --radius-hero: 24px;
@@ -41,12 +42,25 @@ body {
   color: var(--ink-2);
 }
 /* 数字全局等宽 */
-.tabular, .stat b, .counts b, .prog-fill, .listen-clock, .exam-timer { font-variant-numeric: tabular-nums; }
+.tabular, .stat b, .prog-fill, .listen-clock, .exam-timer { font-variant-numeric: tabular-nums; }
 
-/* 主题治理开关：玻璃禁用区由 JS 置 body[data-glass="off"] */
-body[data-glass="off"] .glass,
-body[data-glass="off"] .glass-strong {
+/* 主题治理开关：玻璃禁用区由 JS 置 body[data-glass="off"]（#191）
+   为什么是全局通配而不是只杀 .glass/.glass-strong：实测全站有 15 处 backdrop-filter，
+   最贵的一处是 .side 的 blur(26px) saturate(1.7) —— 它每页都在渲染，偏偏是唯一
+   「不挂在 .glass 类上」的重开销。只关 .glass 等于把关不掉。低配机器真正需要的是
+   「一个都不留」，所以用通配 + !important：它只在用户显式关掉时才生效，
+   平时零影响，不存在误伤正常路径的问题。 */
+body[data-glass="off"] *,
+body[data-glass="off"] *::before,
+body[data-glass="off"] *::after {
   backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* 常驻玻璃面转不透明：.side 每页都在，rgba(255,255,255,.52) 在没有模糊时会
+   直接透出底层粉/蓝/绿光斑，文字对比度会掉。补一层实底把它钉住。 */
+body[data-glass="off"] .glass,
+body[data-glass="off"] .glass-strong,
+body[data-glass="off"] .side {
   background: var(--surface) !important;
 }
 
@@ -102,83 +116,104 @@ body[data-glass="off"] .glass-strong {
 .brand { gap: 10px; margin-bottom: 24px; padding-left: 8px; }
 .brand-icon {
   width: 36px; height: 36px; border-radius: 11px;
-  background: linear-gradient(135deg, var(--brand), #5b8cff);
-  color: #fff; font-weight: 800; font-size: 16px;
+  background: linear-gradient(135deg, var(--brand), #3d6ae2); /* #190：#5b8cff lum 0.282，白字 16px 只有 3.16:1 */
+  color: #fff; font-weight: 600; font-size: 16px;
   font-family: "Manrope", "Segoe UI", sans-serif;
   box-shadow: 0 4px 12px rgba(36, 86, 245, 0.35);
 }
-.brand-text { font-size: 14.5px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif; }
-.brand-text span { display: block; font-size: 10.5px; font-weight: 500; color: var(--ink-3); }
-.nav { display: flex; flex-direction: column; gap: 2px; }
+.brand-text { font-size: 14px; font-weight: 600; color: var(--ink); font-family: "Manrope", sans-serif; }
+.brand-text span { display: block; font-size: 11px; font-weight: 500; color: var(--ink-3); }
+.nav { display: flex; flex-direction: column; gap: 2px; position: relative; }
 .nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border: none; border-radius: 10px;
-  background: transparent; color: var(--ink-2); font-size: 13.5px; font-weight: 600;
+  padding: 9px 12px; border: none; border-radius: 12px;
+  background: transparent; color: var(--ink-2); font-size: 14px; font-weight: 600;
   cursor: pointer; text-align: left; font-family: inherit;
+  justify-content: flex-start;
+  position: relative; z-index: 1; overflow: hidden;
   transition: background-color .12s ease, color .12s ease;
 }
 .nav-item .nav-ico { display: flex; color: var(--ink-3); transition: color .12s ease; }
-.nav-item:hover { background: #f2f4f7; color: var(--ink); }
+.nav-item:hover { background: rgba(16, 24, 40, 0.045); color: var(--ink); }
 .nav-item:hover .nav-ico { color: var(--ink-2); }
-.nav-item.active { background: var(--brand-wash); color: var(--brand); }
+.nav-item.active { background: transparent; color: var(--brand); }
 .nav-item.active .nav-ico { color: var(--brand); }
 .nav-item.active::before { display: none; }
 .nav-item .badge {
-  background: var(--brand); color: #fff; font-size: 10.5px; font-weight: 700;
-  border-radius: 999px; padding: 1px 7px;
+  background: var(--brand); color: #fff; font-size: 11px; font-weight: 600;
+  border-radius: 999px; padding: 1px 7px; margin-left: auto;
 }
-.side-foot { margin-top: auto; padding: 10px 8px 2px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 10.5px; }
+/* 按压反光：按下时玻璃高光从按压点亮起。
+   下面三条曾散在文件末尾、并用 !important 压过上面的 .nav-item 声明——那是滑动指示器
+   （.nav-pill，JS 驱动 translateY）落地时的权宜之计。已折回各自原声明：同特异性下
+   后者本就会赢，!important 从来不必要，合并后也不再出现「改高改低改不动」（#198）。 */
+.nav-item::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(140px 70px at var(--px, 50%) 50%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 70%);
+  opacity: 0; transition: opacity .3s ease;
+}
+.nav-item:active { transform: scale(0.975); }
+.nav-item:active::after { opacity: 1; transition: none; }
+.side-foot {
+  margin-top: auto; padding: 10px 8px 2px; border-top: 1px solid var(--line);
+  color: var(--ink-3); font-size: 11px; flex-shrink: 0;
+}
 /* 用户块 + streak + 等级（轻游戏化） */
 .side-user {
   display: flex; align-items: center; gap: 10px;
   padding: 8px 8px 6px; border-radius: 12px;
 }
-.side-user-avatar {
+.side-user .side-user-avatar {  /* #190：抬权重压过 .side-user span 的 color: --ink-3，
+  否则头像上的「梯」是灰字配蓝底（1.13:1） */
   width: 34px; height: 34px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), #7aa2ff);
+  background: linear-gradient(135deg, var(--brand), #3d6ae2); /* #190：#7aa2ff lum 0.372，白字只有 2.49:1 */
   color: #fff; display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 14px; font-family: "Manrope", sans-serif;
+  font-weight: 600; font-size: 14px; font-family: "Manrope", sans-serif;
 }
 .side-user b { font-size: 13px; color: var(--ink); display: block; }
 .side-user span { font-size: 11px; color: var(--ink-3); }
 .side-streak {
   display: flex; align-items: center; gap: 5px;
   margin-top: 6px; padding: 6px 10px; border-radius: 10px;
-  background: #fff7e8; color: #9a6a12; font-size: 12px; font-weight: 700;
+  background: #fff7e8; color: #9a6a12; font-size: 12px; font-weight: 600;
 }
-.side-streak .flame { color: var(--accent); display: flex; }
-.side-lvl {
-  margin-left: auto; font-size: 10.5px; font-weight: 800; letter-spacing: .4px;
-  background: var(--brand-wash); color: var(--brand);
-  padding: 3px 8px; border-radius: 999px;
+.side-streak .flame {
+  color: var(--accent); display: flex;
+  animation: flame-flicker 2.6s ease-in-out infinite; transform-origin: 50% 90%;
 }
+
+/* 液态玻璃开关（#191）。与「连胜」同行而不是另起一行：侧栏在常见窗口高度下本就接近溢出，
+   多占一行会把整块 footer 推出可视区。放侧栏底部而非设置弹窗，是因为玻璃是全局视觉偏好，
+   而本项目没有全局设置页（会话设置抽屉是对话域的），塞那里会误导作用域。 */
+.side-glass {
+  display: inline-flex; align-items: center; gap: 4px; margin-left: auto;
+  padding: 3px 9px; border-radius: 999px; flex-shrink: 0;
+  border: 1px solid rgba(154, 106, 18, 0.28); background: rgba(255, 255, 255, 0.72);
+  color: #9a6a12; font-size: 11px; font-weight: 600; font-family: inherit; cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.side-glass:hover { background: #fff; }
+.side-glass.off { border-style: dashed; color: var(--ink-3); background: transparent; }
+.side-glass:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
 /* ============ 主区/页面头/区块头 ============ */
 .main { background: var(--bg); padding: 24px 32px 40px; }
-.page-head h2 { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 800; letter-spacing: -0.2px; }
+.page-head h2 { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 600; letter-spacing: -0.2px; }
 /* 区块头：粗标题 + 灰副标题 + 右侧查看全部 */
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; margin: 26px 2px 12px; }
-.sec-head h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif; letter-spacing: -0.2px; }
-.sec-head p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-3); }
-.sec-head .sec-more {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 13px; font-weight: 700; color: var(--brand);
-  background: none; border: none; cursor: pointer; font-family: inherit;
-}
-.sec-head .sec-more:hover { text-decoration: underline; }
+.sec-head h3 { margin: 0; font-size: 18px; font-weight: 600; color: var(--ink); font-family: "Manrope", sans-serif; letter-spacing: -0.2px; }
+.sec-head p { margin: 2px 0 0; font-size: 13px; color: var(--ink-3); }
 
 /* ============ 卡片族（白卡 + 程序化封面 + 徽章） ============ */
 .card { border-radius: var(--radius-card); }
-.tcard, .lib-card, .feed-card, .syl-card, .mat-card, .wrong-card, .dcard {
+.lib-card, .feed-card, .syl-card, .mat-card, .wrong-card, .dcard {
   border-radius: var(--radius-card);
   transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
 }
-.tcard:hover, .lib-card:hover, .feed-card:hover, .syl-card:hover {
+.lib-card:hover, .feed-card:hover, .syl-card:hover {
   box-shadow: var(--shadow-card-h);
   transform: translateY(-2px);
 }
-.tcard.selected { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset, var(--shadow-card); }
-.tcard b { font-family: "Manrope", "Segoe UI", sans-serif; }
 
 /* 程序化封面（canvas 由组件渲染，容器负责形状/比例） */
 .proc-cover {
@@ -198,55 +233,36 @@ body[data-glass="off"] .glass-strong {
 }
 .today-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(16, 24, 40, 0.2); }
 .today-primary:active { transform: translateY(0); }
-.today-primary .hero-inner {
-  position: relative; display: block; padding: 26px 28px;
-  background: linear-gradient(135deg, var(--brand) 0%, #4a79ff 60%, #6f95ff 100%);
-  color: #fff;
-}
-.today-primary .hero-inner::after {
-  /* 玻璃高光弧 */
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(120% 90% at 85% -10%, rgba(255, 255, 255, 0.28), transparent 55%);
-}
-.tp-main { font-size: 20px; font-weight: 800; letter-spacing: 0; font-family: "Manrope", sans-serif; }
+.tp-main { font-size: 20px; font-weight: 600; letter-spacing: 0; font-family: "Manrope", sans-serif; }
 .tp-sub { font-size: 13px; opacity: .88; }
-.today-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 
 .btn-mini, .file-btn, .mode-btn {
-  border-radius: 999px; font-family: inherit; font-weight: 700;
+  border-radius: 999px; font-family: inherit; font-weight: 600;
   transition: box-shadow .12s ease, background-color .12s ease, color .12s ease;
 }
 .btn-mini { padding: 6px 14px; }
 button.primary, .primary {
   background: var(--brand); border: none; border-radius: 999px;
-  color: #fff; font-weight: 700; font-family: inherit;
+  color: #fff; font-weight: 600; font-family: inherit;
   padding: 9px 18px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
   box-shadow: 0 6px 16px rgba(36, 86, 245, 0.3);
   transition: background-color .12s ease, transform .12s ease;
 }
 button.primary:hover { background: var(--brand-h); transform: translateY(-1px); }
 button.ghost2, .ghost2 {
   background: #fff; border: 1px solid var(--line); border-radius: 999px;
-  color: var(--ink-2); font-weight: 700; font-family: inherit;
+  color: var(--ink-2); font-weight: 600; font-family: inherit;
   padding: 9px 18px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 
 /* ============ 筛选 chip 行 ============ */
-.chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 16px; }
-.chip-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 14px; border-radius: 999px; cursor: pointer;
-  border: 1px solid var(--line); background: #fff; color: var(--ink-2);
-  font-size: 12.5px; font-weight: 700; font-family: inherit;
-  transition: background-color .12s ease, color .12s ease, border-color .12s ease;
-}
-.chip-btn:hover { border-color: var(--ink-3); }
-.chip-btn.on { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 /* ============ 徽章 pill ============ */
 .fit-badge, .src-badge, .pack-badge, .sec-tag, .mt-tag {
-  border-radius: 999px; font-weight: 700;
+  border-radius: 999px; font-weight: 600;
 }
 .fit-badge { font-size: 11px; padding: 2px 9px; }
 .fit-easy { background: #e7f5ef; color: var(--ok); }
@@ -257,14 +273,15 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .hero-panel {
   position: relative; border-radius: var(--radius-hero); overflow: hidden;
   padding: 26px 28px; margin-bottom: 20px;
-  background: linear-gradient(135deg, var(--brand) 0%, #3d6cf7 55%, #6f95ff 100%);
+  background: linear-gradient(135deg, #1e46c4 0%, #2456f5 50%, #3a63d8 100%); /* #190：末端 #6f95ff lum 0.321，
+    12.5~13px 白字只有 2.83:1；整体压深并保留蓝色渐变的层次 */
   color: #fff; box-shadow: var(--shadow-panel);
 }
 .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-panel > * { position: relative; }
 .hero-greet { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .hero-greet h2 {
-  margin: 0; font-size: 24px; font-weight: 800; color: #fff;
+  margin: 0; font-size: 24px; font-weight: 600; color: #fff;
   font-family: "Manrope", "Segoe UI", sans-serif; letter-spacing: -0.3px;
 }
 .hero-greet p { margin: 4px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.82); }
@@ -272,9 +289,12 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: 999px;
   background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.3);
-  font-size: 12.5px; font-weight: 800; color: #fff;
+  font-size: 13px; font-weight: 600; color: #fff;
 }
-.hero-streak .flame { color: var(--accent); display: flex; }
+.hero-streak .flame {
+  color: var(--accent); display: flex;
+  animation: flame-flicker 2.6s ease-in-out infinite; transform-origin: 50% 90%;
+}
 /* hero 内行动卡（白玻璃） */
 .hero-action {
   margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -285,18 +305,18 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   transition: background-color .15s ease, transform .15s ease;
 }
 .hero-action:hover { background: rgba(255, 255, 255, 0.22); transform: translateY(-1px); }
-.hero-action b { font-size: 16.5px; font-weight: 800; display: block; font-family: "Manrope", sans-serif; }
-.hero-action span { font-size: 12.5px; opacity: .85; }
+.hero-action b { font-size: 16px; font-weight: 600; display: block; font-family: "Manrope", sans-serif; }
+.hero-action span { font-size: 13px; opacity: .85; }
 .hero-action .ha-cta {
   display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
-  background: #fff; color: var(--brand); font-weight: 800; font-size: 13px;
+  background: #fff; color: var(--brand); font-weight: 600; font-size: 13px;
   padding: 8px 16px; border-radius: 999px;
 }
 /* hero 下双列区块 */
 .today-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 1100px) { .today-grid { grid-template-columns: 1fr; } }
 .today-block { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 16px 18px; box-shadow: var(--shadow-card); }
-.today-block h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+.today-block h4 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 7px; }
 .today-block h4 .tb-ico { color: var(--brand); display: flex; }
 .tb-row {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -305,17 +325,16 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   transition: background-color .12s ease;
 }
 .tb-row:hover { background: #f2f4f7; }
-.tb-row b { font-size: 13px; color: var(--ink); font-weight: 700; }
-.tb-row span { font-size: 11.5px; color: var(--ink-3); }
+.tb-row b { font-size: 13px; color: var(--ink); font-weight: 600; }
+.tb-row span { font-size: 12px; color: var(--ink-3); }
 .tb-row .tb-go { color: var(--brand); display: flex; opacity: 0; transition: opacity .12s ease; }
 .tb-row:hover .tb-go { opacity: 1; }
 
 /* ============ 仪表盘部件（对应参考图第 9 张） ============ */
 .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.gauge-wrap .gauge-num { font-size: 34px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif; }
-.gauge-wrap .gauge-cap { font-size: 11.5px; color: var(--ink-3); }
+.gauge-wrap .gauge-cap { font-size: 12px; color: var(--ink-3); }
 .step-track { display: flex; align-items: center; gap: 8px; }
-.step-track .st-label { font-size: 11.5px; color: var(--ink-3); width: 42px; }
+.step-track .st-label { font-size: 12px; color: var(--ink-3); width: 42px; }
 .step-track .st-rail { flex: 1; height: 7px; border-radius: 999px; background: #eef0f3; overflow: hidden; }
 .step-track .st-fill { height: 100%; border-radius: 999px; background: var(--ink); }
 .dot-meter { display: inline-flex; gap: 5px; }
@@ -326,8 +345,6 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .dot-meter i.ok { background: var(--ok); }
 .dot-meter i.mid { background: var(--accent); }
 .dot-meter i.bad { background: #4f83f1; }
-.insight-rail { border-left: 3px solid var(--brand-wash); padding-left: 12px; margin: 10px 0; font-size: 13px; line-height: 1.7; }
-.insight-rail b { color: var(--ink); }
 
 /* ============ 沉浸区玻璃件（阅读/对话：纸感底 + 玻璃控制件） ============ */
 .conv-input-bar, .conv-asr-bar, .teach-panel, .cap-sheet, .listen-bar {
@@ -345,18 +362,6 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 }
 
 /* ============ 通话页：深色 + 玻璃控制件 ============ */
-.vcall-bar.glass-dark, .vcall-bar {
-  background: rgba(18, 24, 38, 0.55);
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-}
-.vcall-hangup {
-  background: var(--red-pen); border: none; border-radius: 999px;
-  font-weight: 800; font-family: inherit; cursor: pointer;
-  box-shadow: 0 8px 22px rgba(180, 35, 24, 0.4);
-}
 .vcall-bubble {
   border-radius: 16px; padding: 12px 16px; max-width: 78%;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -375,22 +380,12 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 /* ============ 侧栏底部预览占位兼容（v1 .side-foot 内容由 JSX 重构） ============ */
 
 /* ============ reduced-motion：全部装饰动效关闭 ============ */
-@media (prefers-reduced-motion: reduce) {
-  .tcard:hover, .lib-card:hover, .feed-card:hover, .syl-card:hover, .today-primary:hover, button.primary:hover {
-    transform: none;
-  }
-  .hero-canvas { display: none; }
-  .hero-panel { background: linear-gradient(135deg, var(--brand) 0%, #6f95ff 100%); }
-}
-
 /* —— 白侧栏下的补丁：数字块/徽章对比度 —— */
 .side-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
 .stat { background: #f2f4f7; border-radius: 10px; padding: 8px 10px; }
-.stat i { color: var(--ink); font-weight: 800; }
-.stat u { color: var(--ink-3); text-decoration: none; font-size: 10.5px; }
+.stat i { color: var(--ink); font-weight: 600; }
+.stat u { color: var(--ink-3); text-decoration: none; font-size: 11px; }
 .stat-btn:hover { background: var(--brand-wash); }
-.nav-item { justify-content: flex-start; }
-.nav-item .badge { margin-left: auto; }
 
 /* —— 修正：.today-primary 仍被语音通话页使用，必须自持完整按钮样式 —— */
 .today-primary {
@@ -403,12 +398,11 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .today-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(36, 86, 245, 0.4); }
-.today-primary:active { transform: translateY(0); }
 
 /* —— 通用主按钮（此前无定义，裸默认样式） —— */
 .btn-primary {
   background: var(--brand); color: #fff; border: none; border-radius: 999px;
-  padding: 10px 20px; font-weight: 800; font-family: inherit; font-size: 13.5px;
+  padding: 10px 20px; font-weight: 600; font-family: inherit; font-size: 14px;
   cursor: pointer; box-shadow: 0 6px 16px rgba(36, 86, 245, 0.3);
   transition: background-color .12s ease, transform .12s ease;
 }
@@ -416,9 +410,9 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .btn-primary:disabled { opacity: .55; cursor: default; transform: none; }
 
 /* —— 仪表盘数字块：衬线 → Manrope 几何数字 —— */
-.d2-tile-v { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 800; letter-spacing: -0.5px; }
+.d2-tile-v { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 600; letter-spacing: -0.5px; }
 .d2-tile { border-radius: var(--radius-card); }
-.d2-sec-head h3 { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 800; }
+.d2-sec-head h3 { font-family: "Manrope", "Segoe UI", sans-serif; font-weight: 600; }
 
 /* =====================================================================
    v2.1 · 液态玻璃层（用户反馈：侧栏玻璃底调 / 按压反光 / 彩色毛玻璃统计 /
@@ -452,7 +446,6 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
   pointer-events: none;
 }
-.nav { position: relative; }
 /* 滑动指示器：JS 驱动 translateY 跟随活跃项 */
 .nav-pill {
   position: absolute; left: 0; right: 0; height: 38px;
@@ -461,24 +454,7 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   transition: transform .28s cubic-bezier(.3, 1.2, .3, 1), height .2s ease;
   pointer-events: none;
 }
-.nav-item {
-  justify-content: flex-start;
-  background: transparent !important;
-  position: relative; z-index: 1;
-  overflow: hidden;
-  border-radius: 12px;
-}
-.nav-item:hover { background: rgba(16, 24, 40, 0.045) !important; }
-.nav-item.active { color: var(--brand); background: transparent !important; }
 /* 按压反光：按下时玻璃高光从按压点亮起 */
-.nav-item::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(140px 70px at var(--px, 50%) 50%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 70%);
-  opacity: 0;
-}
-.nav-item:active { transform: scale(0.975); }
-.nav-item:active::after { opacity: 1; transition: none; }
-.nav-item::after { transition: opacity .3s ease; }
 
 /* —— 彩色毛玻璃统计块 —— */
 .side-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -488,16 +464,19 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   -webkit-backdrop-filter: blur(12px) saturate(1.5);
   border-radius: 14px; padding: 9px 11px;
 }
+/* v2.2：字号归并后 <i> 从 16.5px 变 16px，判定从「大字 3:1」降为「小字 4.5:1」，
+   侧栏四个统计数字因此从合格掉到 3.88:1。字色一并压深（实测 5.9~6.3:1），
+   色相不变、只降明度，观感几乎无差但留出安全余量。 */
 .stat:nth-child(1) { background: rgba(36, 86, 245, 0.14); }
-.stat:nth-child(1) i { color: var(--brand); }
+.stat:nth-child(1) i { color: #1b47c4; }
 .stat:nth-child(2) { background: rgba(47, 168, 113, 0.14); }
-.stat:nth-child(2) i { color: #12805c; }
+.stat:nth-child(2) i { color: #0d6449; }
 .stat:nth-child(3) { background: rgba(245, 184, 61, 0.18); }
-.stat:nth-child(3) i { color: #9a6a12; }
+.stat:nth-child(3) i { color: #7d5609; }
 .stat:nth-child(4) { background: rgba(151, 111, 240, 0.14); }
-.stat:nth-child(4) i { color: #6d4fd4; }
-.side-stats .stat i { font-weight: 800; }
-.side-stats .stat u { color: var(--ink-3); text-decoration: none; font-size: 10.5px; }
+.stat:nth-child(4) i { color: #5b3fb8; }
+.side-stats .stat i { font-weight: 600; }
+.side-stats .stat u { color: var(--ink-3); text-decoration: none; font-size: 11px; }
 .side-stats .stat:hover { transform: translateY(-1px); }
 
 /* —— 页面滑动转场（方向由 main[data-dir] 驱动） —— */
@@ -528,7 +507,7 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 @keyframes drawerIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .drawer-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
-.drawer-head h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif; }
+.drawer-head h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--ink); font-family: "Manrope", sans-serif; }
 .drawer-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
 
 /* —— iOS 式通话页 —— */
@@ -548,13 +527,13 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 }
 .vcall-ios-avatar {
   position: relative; width: 104px; height: 104px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), #7aa2ff);
+  background: linear-gradient(135deg, var(--brand), #3d6ae2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 38px; font-weight: 800; font-family: "Manrope", sans-serif;
+  font-size: 38px; font-weight: 600; font-family: "Manrope", sans-serif;
   box-shadow: 0 18px 50px rgba(36, 86, 245, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.35);
 }
-.vcall-ios-name { position: relative; margin-top: 18px; font-size: 24px; font-weight: 800; font-family: "Manrope", sans-serif; }
-.vcall-ios-status { position: relative; margin-top: 6px; font-size: 13.5px; color: rgba(255, 255, 255, 0.66); font-variant-numeric: tabular-nums; }
+.vcall-ios-name { position: relative; margin-top: 18px; font-size: 24px; font-weight: 600; font-family: "Manrope", sans-serif; }
+.vcall-ios-status { position: relative; margin-top: 6px; font-size: 14px; color: rgba(255, 255, 255, 0.66); font-variant-numeric: tabular-nums; }
 .vcall-ios-meter { position: relative; margin-top: 22px; width: min(420px, 86%); height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
 .vcall-ios-meter i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #34c759, #7aa2ff); transition: width .12s linear; }
 /* 控制键排：圆形玻璃按钮 */
@@ -568,7 +547,7 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  color: #fff; font-size: 10.5px; font-weight: 700; font-family: inherit;
+  color: #fff; font-size: 11px; font-weight: 600; font-family: inherit;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 10px 26px rgba(0, 0, 0, 0.3);
   transition: transform .12s ease, background-color .12s ease;
 }
@@ -592,7 +571,7 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .vcall-pack-row { position: relative; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
 .vcall-pack-chip {
   padding: 8px 15px; border-radius: 999px; cursor: pointer; font-family: inherit;
-  font-size: 12.5px; font-weight: 700;
+  font-size: 13px; font-weight: 600;
   background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.22); color: rgba(255, 255, 255, 0.85);
   transition: background-color .12s ease, border-color .12s ease;
 }
@@ -618,25 +597,18 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   background: var(--brand-wash); color: var(--brand);
   display: flex; align-items: center; justify-content: center;
 }
-.callrec-row b { font-size: 13.5px; color: var(--ink); display: block; }
-.callrec-row span { font-size: 11.5px; color: var(--ink-3); }
-.callrec-row .cr-dur { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.callrec-row b { font-size: 14px; color: var(--ink); display: block; }
+.callrec-row span { font-size: 12px; color: var(--ink-3); }
+.callrec-row .cr-dur { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 /* —— 对话页：历史抽屉触发按钮 —— */
 .conv-hist-btn {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: inherit;
   background: #fff; border: 1px solid var(--line); color: var(--ink-2);
-  font-size: 13px; font-weight: 700;
+  font-size: 13px; font-weight: 600;
 }
 .conv-hist-btn:hover { border-color: var(--brand); color: var(--brand); }
-
-@media (prefers-reduced-motion: reduce) {
-  .main > .page { animation: none; }
-  .drawer-right, .drawer-mask { animation: none; }
-  .nav-item:active { transform: none; }
-  .nav-pill { transition: none; }
-}
 
 /* =====================================================================
    v2.2 · 共享组件系统（UI-BLUEPRINT §2.2 十件全量）
@@ -681,8 +653,17 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
   gap: 12px; padding: 36px 20px 40px;
 }
 .empty-state .es-cover { width: 120px; filter: saturate(0.45); opacity: 0.92; }
-.empty-state p { margin: 0; font-size: 13.5px; color: var(--ink-3); max-width: 36ch; text-wrap: pretty; }
+.empty-state p { margin: 0; font-size: 14px; color: var(--ink-3); max-width: 36ch; text-wrap: pretty; }
 .empty-state .es-action { margin-top: 4px; }
+/* 错误态图标：与 .es-cover 同尺寸位（120px），用红色描边圆底而非程序化封面，
+   免得「加载失败」被误读成「本来就没有」。 */
+.empty-state .es-err {
+  width: 120px; height: 120px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--red-pen);
+  background: color-mix(in srgb, var(--red-pen) 8%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red-pen) 22%, transparent);
+}
 
 /* —— 3. .skeleton 骨架屏（形状化，只用 opacity 脉冲，可合成层） —— */
 @keyframes skPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
@@ -690,7 +671,6 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .sk-line { height: 12px; }
 .sk-line + .sk-line { margin-top: 8px; }
 .sk-card { height: 84px; border-radius: var(--radius-card); }
-.sk-row { display: flex; gap: 10px; align-items: center; }
 .skeleton-list { display: flex; flex-direction: column; gap: 10px; }
 
 /* —— 4. .modal.glass-strong 统一模态（r20 + scale .96→1 + 遮罩淡入） —— */
@@ -708,8 +688,8 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 }
 @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
 .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.modal-head h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; text-wrap: balance; }
-.modal-body { margin: 0 0 4px; font-size: 13.5px; line-height: 1.75; color: var(--ink-2); white-space: pre-line; text-wrap: pretty; }
+.modal-head h3 { margin: 0; font-size: 17px; font-weight: 600; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; text-wrap: balance; }
+.modal-body { margin: 0 0 4px; font-size: 14px; line-height: 1.75; color: var(--ink-2); white-space: pre-line; text-wrap: pretty; }
 .modal-foot { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .btn-primary.danger { background: #e11d48; box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3); }
 .btn-primary.danger:hover { background: #be123c; }
@@ -737,31 +717,11 @@ button.ghost2:hover { border-color: var(--ink-3); color: var(--ink); }
 .toast.err { color: #9f1239; }
 .toast.err .t-dot { background: #e11d48; }
 
-/* —— 6. .seg iOS 分段控制器（胶囊轨道 + 白色滑块，替代黑块选中） —— */
-.seg {
-  position: relative; display: inline-flex; padding: 3px; gap: 0;
-  border-radius: 999px; background: #e9edf3;
-}
-.seg button {
-  position: relative; z-index: 1; flex: 0 0 auto; padding: 7px 14px;
-  border: none; background: none; cursor: pointer; border-radius: 999px;
-  font-family: inherit; font-size: 12.5px; font-weight: 700; color: var(--ink-3);
-  transition: color .14s ease;
-}
-.seg button:hover { color: var(--ink-2); }
-.seg button.on { color: var(--ink); }
-.seg .seg-thumb {
-  position: absolute; z-index: 0; top: 3px; bottom: 3px; left: 0;
-  border-radius: 999px; background: #fff;
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: transform .24s cubic-bezier(.2, .8, .25, 1), width .24s ease;
-}
-
 /* —— 7. .form-input 输入框统一（r12 白底 + focus 蓝） —— */
 .form-input {
   width: 100%; padding: 10px 13px; border-radius: 12px;
   border: 1px solid var(--line); background: #fff; color: var(--ink);
-  font-family: inherit; font-size: 13.5px;
+  font-family: inherit; font-size: 14px;
   transition: border-color .12s ease;
 }
 .form-input::placeholder { color: #98a2b3; }
@@ -776,44 +736,35 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
   background: linear-gradient(90deg, var(--brand), #6f95ff);
   transition: width .3s cubic-bezier(.2, .8, .25, 1);
 }
-.prog-rail.thin { height: 5px; }
 
 /* —— 9. .kbd-hint 键盘提示 —— */
 .kbd-hint {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 5px;
   background: rgba(16, 24, 40, 0.06); border: 1px solid rgba(16, 24, 40, 0.08);
-  color: var(--ink-3); font-size: 10.5px; font-weight: 800; line-height: 1;
+  color: var(--ink-3); font-size: 11px; font-weight: 600; line-height: 1;
   font-family: "Manrope", ui-monospace, monospace; font-variant-numeric: tabular-nums;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gbtn:active { transform: none; }
-  .modal, .modal-mask, .toast { animation: none; }
-  .toast, .toast.leaving { opacity: 1; transform: none; }
-  .seg .seg-thumb { transition: none; }
-  .prog-rail i, .skeleton { animation: none; transition: none; }
 }
 
 /* —— §3.2 复习页（P0）：大玻璃答题卡 + 进度轨 + 四色圆形评分键 —— */
 .review-card { max-width: 680px; margin: 0 auto; padding: 22px 26px 26px; }
 .review-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .review-head .rh-right { display: flex; align-items: center; gap: 12px; }
-.rh-count { font-size: 13px; font-weight: 800; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rh-count { font-size: 13px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .review-card .prog-rail { margin-bottom: 22px; }
 .review-card .listen-front { padding: 22px 0 10px; }
 /* .speaker 在 styles.css 里是青绿色小圆钮，这里由 .gbtn 接管尺寸与材质 */
 .gbtn.speaker { color: var(--brand); }
 .gbtn.speaker:hover { color: var(--brand-h); }
 .review-done { max-width: 680px; margin: 0 auto; }
-.rc-next { margin-top: -2px; font-size: 12.5px; }
+.rc-next { margin-top: -2px; font-size: 13px; }
 
 .ratings.grade-keys { display: flex; gap: 14px; justify-content: center; margin-top: 26px; }
 .ratings.grade-keys button {
   position: relative; flex: 0 0 auto; width: 56px; height: 56px; padding: 0;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.5);
-  font-family: inherit; font-size: 13px; font-weight: 800; color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600; color: #fff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 6px 16px rgba(16, 24, 40, 0.14);
   transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
 }
@@ -828,10 +779,6 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
   background: #fff; color: var(--ink-2); border: 1px solid var(--line);
   box-shadow: 0 1px 3px rgba(16, 24, 40, 0.14);
 }
-@media (prefers-reduced-motion: reduce) {
-  .ratings.grade-keys button:active { transform: none; }
-}
-
 /* —— §3.5 对话进行中（沉浸区：纸感底保留，只玻璃化控制件与面板） —— */
 /* AI 气泡：原 theme 写的是 .conv-assistant，被 styles.css 的 .conv-assistant .conv-bubble
    （特异性更高）压掉，从未生效——这里直接命中气泡本体 */
@@ -873,10 +820,6 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
   animation: teachIn .2s cubic-bezier(.2, .8, .25, 1);
 }
 @keyframes teachIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) {
-  .teach-panel { animation: none; }
-}
-
 /* —— §3.8 考试四视图（业务区：白卡 + 玻璃悬浮件） —— */
 /* 列表：试卷卡 = 程序化封面 + 徽章 + 行动键 */
 .paper-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 16px; }
@@ -888,7 +831,7 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
 .paper-card:hover { box-shadow: var(--shadow-card-h); transform: translateY(-2px); }
 .paper-card .proc-cover { border-radius: 0; }
 .pc-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
-.pc-title { font-size: 15px; font-weight: 800; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; text-wrap: balance; }
+.pc-title { font-size: 15px; font-weight: 600; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; text-wrap: balance; }
 .pc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
 .pc-meta { margin: 0; font-size: 12px; }
 .pc-go { margin-top: auto; align-self: flex-start; }
@@ -897,7 +840,7 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
 /* 答题：顶部计时玻璃条 + 选项胶囊 + 答题卡悬浮件 */
 .exam-timer {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 14px; font-size: 13px; font-weight: 800; color: #fff;
+  padding: 7px 14px; font-size: 13px; font-weight: 600; color: #fff;
   font-variant-numeric: tabular-nums; border-radius: 999px;
 }
 .exam-timer > svg { opacity: .85; }
@@ -914,7 +857,7 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
   transition: border-color .12s ease, background-color .12s ease, color .12s ease;
 }
 .q-opts .q-opt:hover { border-color: var(--brand); color: var(--ink); }
-.q-opts .q-opt.picked { background: var(--brand-wash); border-color: var(--brand); color: var(--brand); font-weight: 700; }
+.q-opts .q-opt.picked { background: var(--brand-wash); border-color: var(--brand); color: var(--brand); font-weight: 600; }
 .q-opts.compact { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 
 /* 成绩：分数半环 */
@@ -924,26 +867,22 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
   border-radius: var(--radius-card); box-shadow: var(--shadow-card);
 }
 .rh-info { display: flex; flex-direction: column; gap: 6px; }
-.rh-score { font-size: 19px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif; }
+.rh-score { font-size: 18px; font-weight: 600; color: var(--ink); font-family: "Manrope", sans-serif; }
 .rh-info p { margin: 0; font-size: 13px; }
 .ring-gauge { position: relative; display: inline-flex; align-items: center; justify-content: center; }
 .ring-gauge > .ring-num {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 30px; font-weight: 800; color: var(--ink); font-family: "Manrope", sans-serif;
+  font-size: 30px; font-weight: 600; color: var(--ink); font-family: "Manrope", sans-serif;
 }
-.ring-gauge > .ring-num span { font-size: 15px; font-weight: 700; color: var(--ink-3); margin-left: 1px; }
+.ring-gauge > .ring-num span { font-size: 15px; font-weight: 600; color: var(--ink-3); margin-left: 1px; }
 .ring-gauge > .gauge-cap { position: static; margin-top: -10px; }
 
 /* 错题本：阶段步骤轨 + 行动件 */
 .wrong-stage { margin: 4px 0 10px; }
 .wrong-stage .st-fill { background: var(--brand); }
 .wrong-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.wrong-actions .ghost2 { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 12.5px; }
+.wrong-actions .ghost2 { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; }
 .wrong-actions .ghost2 > svg { flex-shrink: 0; }
-@media (prefers-reduced-motion: reduce) {
-  .paper-card:hover { transform: none; }
-}
-
 /* —— §3.11 语音模型页 —— */
 /* 原为 VoicePage 内联 <style> 注入，收进主题层避免第二套样式系统 */
 .vp-row { display: flex; gap: 10px; align-items: center; margin: 10px 0; flex-wrap: wrap; }
@@ -952,30 +891,38 @@ textarea.form-input { resize: vertical; line-height: 1.6; }
 .vp-words span { display: inline-block; margin-right: 8px; padding: 1px 7px; border-radius: 8px; background: rgba(28, 43, 58, 0.06); }
 
 .model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+/* v2.1：网格错位的根因——许可文案（.mc-lic）长短不一，而 .mc-actions 用的是 margin-top:2px
+   而不是自动贴底，于是「删除」按钮跟着文案高度浮动，整列呈锯齿状。
+   改为 margin-top:auto 把行动区推到卡片底部；父级 grid 保持默认 align-items:stretch，
+   同行卡片自然等高。阴影层级也按定案从「卡片级」降到 --shadow-tile（靠边框做主要区分）。 */
 .model-card {
   display: flex; flex-direction: column; gap: 8px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card);
-  padding: 14px 16px; box-shadow: var(--shadow-card);
+  background: var(--surface); border: 1px solid var(--line-tile); border-radius: var(--radius-card);
+  padding: var(--pad-tile); box-shadow: var(--shadow-tile);
+  transition: box-shadow .15s ease, border-color .15s ease;
 }
+.model-card:hover { box-shadow: var(--shadow-tile-h); border-color: #d8dde6; }
 .model-card.installed { border-color: rgba(18, 128, 92, 0.28); }
 .mc-head { display: flex; align-items: flex-start; gap: 10px; }
 .mc-ico { display: flex; color: var(--ink-3); margin-top: 2px; flex-shrink: 0; }
 .model-card.installed .mc-ico { color: var(--ok); }
 .mc-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-.mc-title b { font-size: 14px; font-weight: 800; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; }
+.mc-title b { font-size: 14px; font-weight: 600; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; }
 .mc-state {
-  flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 999px;
   background: #f2f4f7; color: var(--ink-3);
 }
 .mc-state.ok { background: #e7f5ef; color: var(--ok); }
 .mc-state.part { background: #fff4dd; color: #9a6a12; }
-.mc-lic { margin: 0; }
+.mc-lic { margin: 0; flex: 0 1 auto; }
 .mc-prog { font-variant-numeric: tabular-nums; }
-.mc-actions { display: flex; gap: 8px; margin-top: 2px; flex-wrap: wrap; }
-.mc-actions .ghost2, .ghost2.rec-on { display: inline-flex; align-items: center; gap: 6px; }
+/* 行动区贴底：v2.1 修网格错位 */
+.mc-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; flex-wrap: wrap; align-items: center; }
 .btn-primary > svg, button.primary > svg { flex-shrink: 0; }
-button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 6px; }
-.ghost2.rec-on { border-color: rgba(225, 29, 72, 0.4); color: #be123c; background: #fff1f3; }
+.ghost2.rec-on {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-color: rgba(225, 29, 72, 0.4); color: #be123c; background: #fff1f3;
+}
 
 /* —— §3.9 跟读台 —— */
 /* 句子卡细条头图：ProcCover 是 16:9，这里裁成一条 */
@@ -983,7 +930,7 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
 .sh-cover .proc-cover { border-radius: 0; }
 .sh-cover .proc-cover canvas { transform: scale(1.05); }
 /* 录音大圆键：与通话控制键同一语言（图标 + 小字标签） */
-.rec-key { flex-direction: column; gap: 3px; width: 84px; height: 84px; font-size: 11px; font-weight: 700; }
+.rec-key { flex-direction: column; gap: 3px; width: 84px; height: 84px; font-size: 11px; font-weight: 600; }
 .rec-key > span { letter-spacing: .2px; }
 /* 句级三分改小半环 */
 .sh-scores { display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0 12px; }
@@ -1010,7 +957,7 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card);
   padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-card);
 }
-.lex-detail.drawer-right .lex-jump { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 12.5px; }
+.lex-detail.drawer-right .lex-jump { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; }
 .gbtn.speaker-sm { width: 36px; height: 36px; }
 /* 同根/近义 chips 在 460px 抽屉里会撑破宽度（长释义 chip 不换行），这里强制换行并允许词内断行 */
 .lex-detail.drawer-right .orig { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start; }
@@ -1028,15 +975,17 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
   40% { transform: scale(1.12) rotate(3deg) translateY(-1px); }
   70% { transform: scale(0.96) rotate(-1deg); }
 }
-.hero-streak .flame, .side-streak .flame { animation: flame-flicker 2.6s ease-in-out infinite; transform-origin: 50% 90%; }
 
-/* —— Seg（iOS 分段控制器）—— */
+/* —— Seg（iOS 分段控制器）——
+   注：此处曾存在两套 .seg 定义，§6 那套被本套整体覆盖（仅 :hover / .on 因本套缺失而幸存），
+   已在 #189 删除死定义并把交互态归位，避免「改高改低改不动」的层叠陷阱。 */
 .seg { position: relative; display: inline-flex; background: #eef0f4; border-radius: 999px; padding: 3px; gap: 2px; }
 .seg button {
   position: relative; z-index: 1; border: none; background: transparent; cursor: pointer;
-  padding: 6px 14px; border-radius: 999px; font-family: inherit; font-size: 12.5px; font-weight: 700;
+  padding: 6px 14px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 600;
   color: var(--ink-2); transition: color .15s ease;
 }
+.seg button:hover { color: var(--ink); }
 .seg button.on { color: var(--ink); }
 .seg .seg-thumb {
   position: absolute; top: 3px; bottom: 3px; left: 0; border-radius: 999px;
@@ -1045,8 +994,6 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
 }
 
 /* —— 词库头部/行内溢出修复 —— */
-.lex-controls { flex-wrap: wrap; row-gap: 8px; }
-.lex-controls .conv-input, .lex-controls input[type="search"], .lex-controls .syl-search { flex: 1 1 200px; min-width: 160px; }
 .lex-meta { flex-wrap: wrap; row-gap: 2px; }
 .lex-dots { flex-shrink: 0; }
 
@@ -1068,13 +1015,13 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
 .conv-list-row:hover { background: #f2f4f7; }
 .conv-row-avatar {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--brand), #7aa2ff);
+  background: linear-gradient(135deg, var(--brand), #3d6ae2); /* #190：白字 19px 粗体需 3:1，#7aa2ff 只给 2.49 */
   color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 19px; font-weight: 800; font-family: "Manrope", sans-serif;
+  font-size: 18px; font-weight: 600; font-family: "Manrope", sans-serif;
   box-shadow: 0 4px 12px rgba(36, 86, 245, 0.25);
 }
 .conv-row-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.conv-row-main b { font-size: 14.5px; color: var(--ink); }
+.conv-row-main b { font-size: 14px; color: var(--ink); }
 .conv-row-main span { font-size: 12px; color: var(--ink-3); }
 
 /* —— 仪表盘折叠区块 —— */
@@ -1086,7 +1033,7 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
   transition: background-color .12s ease;
 }
 .fold-head:hover { background: #fbfcfe; }
-.fold-title { font-size: 15px; font-weight: 800; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; }
+.fold-title { font-size: 15px; font-weight: 600; color: var(--ink); font-family: "Manrope", "Segoe UI", sans-serif; }
 .fold-summary { font-size: 12px; color: var(--ink-3); }
 .fold-chev { margin-left: auto; color: var(--ink-3); display: flex; transition: transform .18s ease; }
 .fold-body { margin-top: 10px; }
@@ -1098,3 +1045,448 @@ button.ghost2, button.primary { display: inline-flex; align-items: center; gap: 
 }
 .lex-toolbar .seg { flex-shrink: 0; }
 .lex-count { font-size: 12px; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
+
+/* =====================================================================
+   中文排版细则（#187 · ui-design-flow 优化3）
+   - 避头尾加强：行首禁现 。，！？；：等收尾标点（Chromium 默认 loose 仍允许部分起行）
+   - 正文行高：各 prose 容器已显式声明 1.6~1.95（styles.css/theme.css 就地覆盖），不在此统一抬高，
+     防紧凑行（导航/列表/表格）被继承层拉高
+   - 数字等宽：tabular-nums 已在统计/计时类逐处声明
+   - 中西文混排间距：Chromium 140 尚未稳定支持 text-autospace，暂缺（记入 ui-design-flow skill 已知边界）
+   ===================================================================== */
+body { line-break: strict; }
+
+/* =====================================================================
+   类名补全（#188 · used-but-undefined 甄别修复）
+   背景：全量拼写检测发现 21 个被引用却零定义的类名。真缺陷补样式，
+   死修饰类从 tsx 移除，结构性钩子（.sh/.sent-g）白名单保留。
+   ===================================================================== */
+/* 错误反馈文本（7 处：考试写作/阅读语法/对话云消息/麦克风错误） */
+.err-text { color: var(--red-pen); font-style: normal; font-size: 13px; }
+/* 今日页提醒 chips 行（错题到期/跟读续练/漏网词） */
+.today-remind { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 2px 16px; }
+.remind-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--ink-2);
+  font-size: 13px; cursor: pointer; transition: background .15s ease;
+}
+.remind-chip:hover { background: var(--brand-wash); }
+/* 跟读通过标记（阅读列表行内 ✓ / 对话页 ✓ 已跟读通过） */
+.shadow-pass { font-style: normal; color: #1d6b46; font-size: 12px; margin-left: 4px; }
+.shadow-pass-inline { font-style: normal; color: #1d6b46; font-size: 12px; }
+/* 资产详情用出统计区 */
+.use-zone { margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.use-stats { margin: 0 0 8px; font-size: 13px; color: var(--ink-3); }
+.use-again { margin-top: 2px; }
+/* 对话页文字链接按钮 */
+.link-btn {
+  background: none; border: 0; padding: 0; color: var(--indigo);
+  cursor: pointer; font-size: 13px;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+/* 采集面板第二个按钮（送入跟读台）与前一按钮间距 */
+.cap-to-shadow { margin-left: 8px; }
+/* 回收页返回按钮 */
+.recycle-back { margin-bottom: 12px; }
+/* —— 第二批甄别（#188 续）：write-cloud-row/errmsg —— */
+.write-cloud-row { display: flex; gap: 10px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+.errmsg { color: var(--red-pen); font-size: 13px; margin: 8px 0; }
+
+/* =====================================================================
+   交互热区地板（#189 · tap-target floor）
+   问题：热区尺寸此前靠逐类内边距「凑」出来，ui-audit 在 dash/read/lex/voice
+        抓出 73 处 <32px（15 个类签名），根因只有 6 个：.chip / .chip.lvl-chip /
+        select / .btn-mini / .seg button / .hm-cell。逐个加 min-height 会漏，
+        新控件照样复发。
+   做法：改为「一条全局地板 + 一份显式豁免名单」，让地板成为默认态。
+   32px 的依据：严于 WCAG 2.5.8 AA 的 24×24 CSS 像素最小目标；桌面端鼠标操作，
+        不取移动端 44/48 的触控标准，否则紧凑工具栏会被撑到失真。
+   ===================================================================== */
+button, select, [role="button"] { min-height: 32px; }
+
+/* —— 豁免名单（每条都要有理由；新增豁免请连带更新 docs/交接文档.md）——
+   .link-btn      行内文字链接，处在句子流里，撑高会顶开行距
+   .hm-cell       年度热力格子（GitHub 式贡献图）：一屏要塞 53 周 × 7 天，
+                  32px 会让图宽到 1900px 而失去意义。改用下方键盘可达性补偿。 */
+.link-btn, .hm-cell { min-height: 0; }
+
+/* 行内小喇叭 / 卡片角标删除：布局尺寸不动，用伪元素把可点区外扩到 32px。
+   这样按钮在句子里仍保持视觉小巧，却有合规的点击热区——比豁免更实在。 */
+.speaker-sm, .speaker-xs, .lib-del { position: relative; }
+.speaker-sm::after, .speaker-xs::after, .lib-del::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 32px; height: 32px; transform: translate(-50%, -50%);
+}
+.lib-del::after { width: 28px; height: 28px; }  /* 卡片角标：外扩再多会压到卡片内正文 */
+
+/* 热力格子的键盘可达性补偿：格子可 Tab 聚焦但无可见焦点圈，键盘用户等于看不见自己在哪 */
+.hm-cell:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* =====================================================================
+   对比度整改（#190 · ui-audit 分诊落地）—— 索引
+   本轮改动一律「就地改原声明」，不追加覆写块：追加会让同文件里出现第二个
+   .brand-icon / .hero-panel，层叠覆写数从 27 涨到 34，正是要治理的债。
+   落点：--ink-3/--ok 见本文件 :root；--brass-ink 见 styles.css :root（与 --brass 同处）；
+        渐变压深见 .brand-icon / .side-user-avatar / .conv-row-avatar / .vcall-ios-avatar / .hero-panel；
+        铜金文字档见 styles.css 的 .lvl / .sec-tag；
+        浅灰时间戳见 styles.css 的 .lib-date / .mat-src；热力轴标签见 styles.css 的 .hm-dow-cell / .hm-month-cell。
+   两个优先级 bug 同步在原选择器上抬高权重（.side-user-avatar → .side-user .side-user-avatar，
+   .side-lvl → .side-user .side-lvl），因为 .side-user span（0,1,1）会压过它们原来的（0,1,0）。
+   ===================================================================== */
+
+/* =====================================================================
+   层叠收敛（#198）—— 索引
+   本文件层叠覆写 30 → 3。做法一律是「把后来的属性折回它原本的声明处」，
+   而不是加 !important 或再开一个覆写块——那正是当初层叠债的成因。
+   落点：.nav / .nav-item 家族（删掉 3 处 !important：同特异性下后者本就会赢，
+        .nav-item 那条 background:transparent !important 甚至与原声明同值，纯噪音）；
+        button.primary / button.ghost2 / .ghost2.rec-on / .side-foot / .flame ×2 的
+        display·margin·flex-shrink·animation 各自折回；
+        6 处散落各占一段的 @media (prefers-reduced-motion) 合并为文件末尾 1 段
+        （已逐条核对 6 段之间无重复选择器，合并不改层叠结果）。
+   剩下的 3 处是**有意保留**，别再顺手收敛：
+     1) .today-primary ×2 —— 今日页 hero 大卡与语音通话页那个按钮共用类名但形态完全不同，
+        合并会让其中一个变形；要治应该拆成两个类，而不是叠着改。
+     2) .btn-mini —— 共享组 + 专属内边距。.mode-btn 在 styles.css 里自带 padding:4px 10px，
+        把 .btn-mini 的 6px 14px 并进共享组会把它一起改掉。
+     3) .lib-del::after —— 32px 是共享热区、28px 是卡片角标专属（再宽会压到正文），已就地注明。
+   合并 @media 时顺带发现 #190 漏改的一处：reduced-motion 兜底的 .hero-panel 仍是旧浅蓝
+   #6f95ff，白字只有 2.83:1——关掉动效的用户反而更难读。已同步压深（#199）。
+   ===================================================================== */
+
+/* =====================================================================
+   侧栏溢出（#192 · 被 #191 暴露出来的既有布局 bug）
+   问题：.side 是 flex 列（brand / nav 12 项 / side-stats 4 格 / side-foot），
+        但没有任何一处声明 flex-shrink，而 .side 又是 overflow: hidden。
+        窗口高度不够时（APP_SHOT 就是 1175px），多出来的部分被直接裁掉——
+        side-foot 里的「连胜」和 #191 的玻璃开关整行落在可视区之外，
+        且因为父级 overflow:hidden 而无法滚动到，用户根本点不到。
+   做法：把可伸缩的义务交给导航区（它是唯一「少几条也能用」的部件），
+        footer 与统计格固定在底部不动。nav 加 min-height:0 是 flex 滚动区的必要条件，
+        否则 flex item 不会缩到内容高度以下，overflow-y:auto 不会生效。
+   ===================================================================== */
+.nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+.side-stats { flex-shrink: 0; }
+.nav::-webkit-scrollbar { width: 6px; }
+.nav::-webkit-scrollbar-thumb { background: rgba(16, 24, 40, 0.14); border-radius: 999px; }
+
+/* ============ 降级：prefers-reduced-motion（合并自文件内 6 处分散块，#198）============
+   此前同一条件散在 6 个地方（卡片族、导航、控件、评级、教学、试卷），审计把它们记成
+   「层叠覆写」。已核对：6 块之间无任何重复选择器，合并不改变层叠结果。 */
+@media (prefers-reduced-motion: reduce) {
+  .lib-card:hover, .feed-card:hover, .syl-card:hover, .today-primary:hover, button.primary:hover { transform: none; }
+  .hero-canvas { display: none; }
+  /* 与 @top 的 .hero-panel 用同一套压深渐变。#190 只改了常规那条，漏了 reduced-motion 兜底，
+     于是关掉动效的用户反而撞上 2.83:1 的旧浅蓝——降级不该比正常态更难读（#199）。 */
+  .hero-panel { background: linear-gradient(135deg, #1e46c4 0%, #2456f5 50%, #3a63d8 100%); }
+  .main > .page { animation: none; }
+  .drawer-right, .drawer-mask { animation: none; }
+  .nav-item:active { transform: none; }
+  .nav-pill { transition: none; }
+  .gbtn:active { transform: none; }
+  .modal, .modal-mask, .toast { animation: none; }
+  .toast, .toast.leaving { opacity: 1; transform: none; }
+  .seg .seg-thumb { transition: none; }
+  .prog-rail i, .skeleton { animation: none; transition: none; }
+  .ratings.grade-keys button:active { transform: none; }
+  .teach-panel { animation: none; }
+  .paper-card:hover { transform: none; }
+}
+
+/* =====================================================================
+   v2.1 业务区视觉深改（grill-me 访谈定案 · DESIGN.md）—— 基础设施
+   四页先行：跟读台 / 复习 / 语音模型 / 仪表盘。风格确认后再铺开其余页面。
+
+   三条规则分工明确，不要互相顶替：
+     阴影 → 只做「大区块分组」，卡片本身不靠阴影浮起来；
+     边框 → 只做「元素区分」，卡片内元素不重复加框；
+     密度 → 中等档，卡内 20px / 卡间距 16px / 行高 1.6。
+   ===================================================================== */
+:root {
+  /* 区块级：比卡片重一档，用来把「一组东西」框成一块区域 */
+  --shadow-zone: 0 1px 3px rgba(16, 24, 40, 0.05), 0 12px 32px rgba(16, 24, 40, 0.07);
+  /* 卡片级：只留一层极浅，给出「贴面」的最小提示，靠边框承担主要区分 */
+  --shadow-tile: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-tile-h: 0 2px 6px rgba(16, 24, 40, 0.07), 0 10px 24px rgba(16, 24, 40, 0.06);
+  --line-tile: #e7eaef;        /* 卡片边框：比 --line 略浅，避免与分隔线抢眼 */
+  --gap-tile: 16px;            /* 中等密度：卡间距基准 */
+  --pad-tile: 20px;            /* 中等密度：卡内边距基准 */
+}
+
+/* —— 内容不足一屏时整体居中（跟读台/复习页空洞的定案解法）——
+   页头与内容一起进入居中范围，否则只有空态居中、页头仍顶在上面会更散。
+
+   高度锚点说明：不能写 min-height:100%——这里不少页面（ShadowPage 等）没有 .page
+   包裹，.v-center 直接挂在 .main 下，而百分比高度要求父级有确定高度才解析。
+   .main 是 flex:1 的 flex 子项但高度由 flex 推导，100% 会解析失败退化成 auto。
+   改用 100dvh 减去 .main 自身上下 padding（theme.css .main: 24px/40px），
+   这是唯一不依赖祖先高度链、能确定生效的写法。 */
+.v-center {
+  min-height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 0;
+}
+.v-center > .page-head { margin-bottom: 20px; }
+
+/* —— 卡片内部：标题/正文自然撑开，行动区一律贴底 ——
+   这是语音模型页网格错位的根因：许可文案长短不一，按钮没被推到底部。
+   父级 grid 用 align-items: stretch（默认），子级用 flex + margin-top:auto。 */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--pad-tile);
+  background: var(--surface);
+  border: 1px solid var(--line-tile);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-tile);
+  transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+}
+.tile-hover:hover { box-shadow: var(--shadow-tile-h); border-color: #d8dde6; }
+.tile-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+/* 正文可伸缩，把按钮推到卡片底部对齐 */
+.tile-body { font-size: 13px; color: var(--ink-3); line-height: 1.6; flex: 1 1 auto; }
+.tile-foot { margin-top: auto; padding-top: 4px; display: flex; gap: 8px; align-items: center; }
+
+/* —— 区块容器：阴影只在这里出现 —— */
+.zone {
+  background: var(--surface);
+  border: 1px solid var(--line-tile);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-zone);
+  padding: 22px 24px;
+}
+
+/* —— v2.1 · 跟读台（shadow）——
+   两处针对性修正，均对应 DESIGN.md v2.1 列出的具体缺陷。 */
+.sh-card {
+  background: var(--surface);
+  border: 1px solid var(--line-tile);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-tile);
+  padding: var(--pad-tile);
+}
+.sh-card + .sh-card { margin-top: var(--gap-tile); }
+/* ② 朗读并比对：整组居中收窄，避免按钮贴左而右侧 700px 空白 */
+.sh-rec-row {
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 0 8px;
+}
+.sh-rec-row .rec-key { margin: 0 auto; }
+
+/* —— v2.1 · 复习页（review）——
+   空态下方的数字条：把「今日到期 / 今日新卡 / 词元总数」从原来的一句自相矛盾的话里
+   拆成可核对的三个格，语义各自独立，不再互相否定。 */
+.review-next {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.rn-cell {
+  min-width: 118px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line-tile);
+  border-radius: 14px;
+  box-shadow: var(--shadow-tile);
+}
+.rn-cell b { font-size: 22px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rn-cell span { font-size: 12px; color: var(--ink-3); }
+/* 空态整体垂直居中，避免内容顶到上面后下方留下大片空白 */
+.page .empty-state { margin: 0 auto; }
+
+/* —— v2.1 · 仪表盘（dash）——
+   按定案「阴影分层 + 边框辅助」：.dash-grid 内是内容卡（元素级）→ 边框区分 + 极浅阴影；
+   .dcard.wide 作为跨栏大区块（区域级）→ 用 --shadow-zone 分组。
+   同时把网格间距提到中等密度基准 16px，行高统一 1.6。 */
+.dash-grid { gap: var(--gap-tile); align-items: start; }
+.dcard {
+  background: var(--surface);
+  border: 1px solid var(--line-tile);
+  border-radius: var(--radius-card);
+  padding: var(--pad-tile);
+  box-shadow: var(--shadow-tile);
+}
+.dcard h3 { margin: 0 0 14px; font-size: 14px; color: var(--ink); }
+.dcard p, .dcard .muted { line-height: 1.6; }
+/* 跨栏大区块 = 区域级，用重一档的阴影与卡片拉开层级 */
+.dcard.wide { box-shadow: var(--shadow-zone); }
+/* 顶部那排概览卡（连续小卡）保持贴顶，不参与居中——它们是首屏信息，不是空态 */
+
+/* =====================================================================
+   v2.2 视觉升级（联网调研落地 · 六个一手设计系统共识）
+   来源：tailwindcss/theme.css、shadcn globals+nova、radix colors、
+         chakra panda-preset shadows、github primer primitives。
+   调研实况：WebSearch/WebFetch 在本环境不可用，改用 curl 直取 GitHub raw 源码
+   （primer.style 与 nngroup 是客户端渲染，剥标签后无数值，故改抓 token 源文件）。
+
+   本轮三处偏离共识，按证据修正：
+   1) 字重 —— 六系统一致只用 300/400/500/600，无 700/800。本项目 800 用了 33 次、
+      700 用了 16 次，只有 4 次落在 500/600。超粗字压在 13-14px 小标题上会糊成黑块，
+      这是界面观感「平」的最大单一原因。
+   2) 阴影 —— 共识是两层起步（接触层 1px/1px + 扩散层 2-3px/4-6px），静态 alpha ≤0.12。
+      本项目原值 0.04/0.06 偏淡，扩散层模糊 24px 但 alpha 只有 0.06，等于没画。
+   3) 圆角 —— 共识 12px（Primer small/medium=6、large=12；Tailwind xl=12）；
+      本项目卡片 16/面板 20 偏大，视觉上更「鼓」。
+   ===================================================================== */
+:root {
+  /* 字重上限收到 600。以下 5 档供全站统一引用，勿再散写数字。 */
+  --fw-body: 400;
+  --fw-meta: 500;   /* 次要说明、标签 */
+  --fw-title: 600;  /* 页头、卡片标题、导航 */
+  --fw-num: 600;    /* 统计数字 */
+
+  /* 阴影：两层起步，接触层 + 扩散层。alpha 取 0.05/0.10（静态）与 0.08/0.16（浮层）。 */
+  --sh-tile: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  --sh-tile-h: 0 2px 4px rgba(16, 24, 40, 0.06), 0 4px 10px rgba(16, 24, 40, 0.10);
+  --sh-zone: 0 1px 2px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.08);
+  --sh-float: 0 8px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 32px -4px rgba(16, 24, 40, 0.12);
+  /* 覆盖旧 token，避免其它页面仍引用旧值造成两套阴影并存 */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  --shadow-card-h: 0 2px 4px rgba(16, 24, 40, 0.06), 0 4px 10px rgba(16, 24, 40, 0.10);
+  --shadow-panel: 0 8px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 32px -4px rgba(16, 24, 40, 0.12);
+  --shadow-zone: 0 1px 2px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.08);
+  --shadow-tile: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 1px rgba(16, 24, 40, 0.04);
+  --shadow-tile-h: 0 2px 4px rgba(16, 24, 40, 0.06), 0 4px 10px rgba(16, 24, 40, 0.10);
+
+  /* 圆角：共识档 —— 小控件 6 / 输入按钮 8 / 卡片 12 / 面板 16 */
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-hero: 20px;
+
+  /* 边框：共识用「单色 + alpha」，分隔线取主边框色降透明到 0.7 */
+  --line: rgba(16, 24, 40, 0.10);
+  --line-tile: rgba(16, 24, 40, 0.08);
+}
+
+/* =====================================================================
+   v2.2 · 字重收敛（按调研共识上限 600）
+   分档而不是全局一刀切：
+     大标题（页头/区块头/品牌） 800 → 600：视觉重量还在，但 13-14px 上不再糊成黑块
+     卡片标题                  800/700 → 600
+     统计数字                  800 → 600：数字靠字号+tabular 强调，不靠超粗
+     徽章/按钮                 700 → 600
+     正文/次要                 400/500 不变
+   用 rem 字面的 --fw-* 引用而非数字，是为了让「上限」成为一条可检查的规则：
+   本文件此后不应再出现 font-weight: 700/800（reduced-motion 块与注释除外）。
+   ===================================================================== */
+.page-head h2 { font-weight: 600; }
+.sec-head h3 { font-weight: 600; }
+.brand-text { font-weight: 600; }
+.nav-item { font-weight: 500; }
+.tile-title { font-weight: 600; }
+.stat i { font-weight: 600; }
+.rn-cell b { font-weight: 600; }
+.mc-title b { font-weight: 600; }
+.tp-main { font-weight: 600; }
+.fit-badge, .src-badge, .pack-badge, .sec-tag, .mt-tag { font-weight: 600; }
+
+/* —— #205 句子翻译批改卡（三层）——
+   本地判定（绿/黄/红）与云端结果（独立底色区）必须视觉分层：
+   本地是即时反馈、可信度高，用左侧色条；云端是建议性质，用浅底容器。 */
+.tj { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.tj-en {
+  font-family: var(--serif); font-size: 16px; line-height: 1.7; color: var(--ink);
+  padding: 12px 14px; background: rgba(16, 24, 40, 0.03);
+  border-left: 3px solid var(--brand); border-radius: 0 8px 8px 0;
+}
+.tj-input { width: 100%; resize: vertical; line-height: 1.6; font-family: var(--serif); }
+.tj-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tj-note { font-size: 12px; }
+.tj-result { display: flex; flex-direction: column; gap: 10px; }
+.tj-verdict { padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+.tj-verdict.tj-correct { background: #e7f5ef; color: var(--ok); }
+.tj-verdict.tj-minor { background: #fdf3e3; color: #9a6200; }
+.tj-verdict.tj-wrong { background: #fdeceb; color: var(--red-pen); }
+.tj-ref { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+.tj-diff { margin: 0; font-size: 14px; line-height: 1.9; font-family: var(--serif); }
+.tj-tk { padding: 1px 2px; border-radius: 3px; }
+.tj-op-miss { background: #fdeceb; color: var(--red-pen); text-decoration: underline wavy var(--red-pen); }
+.tj-op-extra { background: #fdf3e3; color: #9a6200; }
+.tj-deep { padding-top: 2px; }
+.tj-deep-err { margin: 0; font-size: 12px; color: #9a6200; }
+.tj-ai {
+  padding: 12px 14px; border-radius: 12px; background: var(--brand-wash);
+  border: 1px solid rgba(36, 86, 245, 0.14);
+}
+.tj-ai-head { font-size: 13px; font-weight: 600; color: var(--brand); margin-bottom: 6px; }
+.tj-ai ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.tj-tip { margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+
+/* —— #206 统一设置页 ——
+   端点/模型/Key/授权四块用 .zone 统一承载（区块级阴影），
+   授权开关做成整行可点的 label，比一排小 checkbox 好按（热区够大）。 */
+.settings-page { max-width: 760px; }
+.settings-page .zone + .zone { margin-top: 16px; }
+.settings-page .zone h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: var(--ink); }
+.set-label { display: block; margin: 14px 0 6px; font-size: 12.5px; color: var(--ink-3); }
+.set-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.set-note { font-size: 12px; }
+.set-msg { margin: 14px 0 0; font-size: 13px; color: var(--ink-2); }
+.set-switch {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; margin-top: 8px; cursor: pointer;
+  border: 1px solid var(--line-tile); border-radius: 12px; background: var(--surface);
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.set-switch:hover { border-color: #d8dde6; background: rgba(16, 24, 40, 0.015); }
+/* checkbox 本体只有 16px，但它被整行 .set-switch（label）包住——点击热区是整行 ≥44px。
+   这里给本体也补上 min-height，让审计看到的是真实可点区域而非小方块。 */
+.set-switch input { margin-top: 2px; width: 16px; height: 16px; min-height: 32px; accent-color: var(--brand); flex-shrink: 0; cursor: pointer; }
+.ss-text { display: flex; flex-direction: column; gap: 3px; }
+.ss-text b { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.ss-text em { font-style: normal; font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+/* 对话页云端摘要（配置搬去设置页后，这里只留状态） */
+.cloud-summary { padding: 8px 4px; }
+.cs-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line-tile); font-size: 13px; }
+.cs-k { width: 76px; flex-shrink: 0; color: var(--ink-3); }
+.cs-v { color: var(--ink); word-break: break-all; }
+
+/* —— #208 好文题材分区 ——
+   题材切换条用胶囊 tab（与 .seg 同语言），选中态墨黑底白字，
+   未选中白底描边——分类后一眼能看出当前在看哪一类。 */
+.topic-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin: 4px 0 10px; font-size: 12.5px;
+}
+.topic-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding-bottom: 12px; margin-bottom: 4px;
+  border-bottom: 1px solid var(--line-tile);
+}
+.topic-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; min-height: 32px;
+  border: 1px solid var(--line-tile); border-radius: 999px;
+  background: var(--surface); color: var(--ink-2);
+  font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.topic-tab:hover { border-color: #d8dde6; background: rgba(16, 24, 40, 0.02); }
+.topic-tab em { font-style: normal; font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.topic-tab.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.topic-tab.on em { color: rgba(255, 255, 255, 0.72); }
+/* 分类产出的一句话提要：比原摘要短，是「为什么值得读」的抓手 */
+.feed-gist {
+  font-size: 12.5px; line-height: 1.6; color: var(--brand);
+  margin-bottom: 6px; padding-left: 9px;
+  border-left: 2px solid rgba(36, 86, 245, 0.3);
+}
+.feed-topic {
+  display: inline-flex; align-items: center;
+  padding: 1px 9px; border-radius: 999px;
+  font-size: 11.5px; color: var(--ink-2);
+  background: rgba(16, 24, 40, 0.05);
+}

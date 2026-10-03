@@ -1,6 +1,6 @@
-// 蓝图 §2.2 共享件：Toast / 确认模态 / Modal / EmptyState / Skeleton / Seg
+// 蓝图 §2.2 共享件：Toast / 确认模态 / Modal / EmptyState / ErrorState / useAsync / Skeleton / Seg
 // 约定：反馈与确认走这一套（替代 window.confirm 的 OS 对话框），样式全部在 theme.css v2.2。
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type DependencyList, type ReactNode } from "react";
 import { Icon } from "../icons";
 import { ProcCover } from "../ProcCover";
 
@@ -152,6 +152,53 @@ export function EmptyState({ seed, text, action }: {
       {action && <div className="es-action">{action}</div>}
     </div>
   );
+}
+
+// ————————————————————————————— ErrorState —————————————————————————————
+// 与 EmptyState 同构但语义相反：EmptyState 说「确实没有」，ErrorState 说「本来该有但没拿到」。
+// 这两者混为一谈正是过去 .catch(() => {}) 的代价——加载失败时页面长得和「暂无数据」一模一样。
+// 蓝图 §5 验收要求「空态/加载/错误三态齐备」，这个组件补的就是第三态。
+export function ErrorState({ text, onRetry, retrying }: {
+  text?: string; onRetry?: () => void; retrying?: boolean;
+}) {
+  return (
+    <div className="empty-state" role="alert">
+      <div className="es-err"><Icon name="Alert" size={30} /></div>
+      <p>{text || "加载失败。数据都在本机，重试一下通常就好。"}</p>
+      {onRetry && (
+        <div className="es-action">
+          <button className="btn-mini" onClick={onRetry} disabled={retrying}>
+            <Icon name="Retry" size={13} />{retrying ? "重试中…" : "重试"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ————————————————————————————— useAsync —————————————————————————————
+/** 加载三态（loading / error / data）统一收口，替掉散落的 .then().catch(() => {})。
+ *  err 保留原始 error：日志与提示文案要用，吞掉就永远查不出「为什么空」。 */
+export function useAsync<T>(fn: () => Promise<T>, deps: DependencyList) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<unknown>(null);
+  const [nonce, setNonce] = useState(0);
+  const reload = useCallback(() => setNonce((n) => n + 1), []);
+  useEffect(() => {
+    let alive = true;
+    setLoading(true); setErr(null);
+    fn().then(
+      (d) => { if (alive) { setData(d); setLoading(false); } },
+      (e) => {
+        console.error("[useAsync]", e);
+        if (alive) { setErr(e ?? new Error("unknown")); setLoading(false); }
+      },
+    );
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, nonce]);
+  return { data, loading, error: err != null, err, reload };
 }
 
 // ————————————————————————————— Skeleton —————————————————————————————

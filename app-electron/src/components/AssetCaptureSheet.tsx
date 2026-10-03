@@ -11,6 +11,9 @@ export interface CaptureSheetSource {
   originRef: string;
   title: string;
   sentence: string;
+  // 划词时 reader 侧已按句配对好的译文（selTrans.zh）。带过来才能让下游存成
+  // payload.zh_reference，翻译卡才有批改基准——否则只能自评（#205）。
+  referenceZh?: string;
 }
 export interface CapturePrefill {
   kind?: AssetKind;
@@ -92,7 +95,9 @@ export function AssetCaptureSheet({ open, source, initialText, prefill, analyzin
     setTestPoint("");
     setGrammarAnswer("");
     setIpa("");
-    setExampleZh(prefill?.exampleZh ?? "");
+    // 划词选句时 reader 侧已有配对译文，直接预填——省一次手输，
+    // 也让 chunk 资产的 example_zh 真的有内容（#205）
+    setExampleZh(prefill?.exampleZh ?? source?.referenceZh ?? "");
     setResult("");
     setErr("");
     setKind(prefill?.kind ?? suggestKind(text));
@@ -154,7 +159,14 @@ export function AssetCaptureSheet({ open, source, initialText, prefill, analyzin
       } else {
         let payload: Record<string, unknown> = {};
         if (kind === "chunk") {
-          payload = { register, example_en: sentence, example_zh: exampleZh || undefined, zh_intent: gloss };
+          payload = {
+            register,
+            example_en: sentence,
+            example_zh: exampleZh || undefined,
+            // 翻译卡的批改基准：优先用划词配对译文，其次用户手填的例句译文
+            zh_reference: exampleZh || src.referenceZh || undefined,
+            zh_intent: gloss,
+          };
         } else if (kind === "grammar") {
           payload = { exercise_form: exerciseForm, prompt: canon, answer: grammarAnswer, explanation: gloss };
         } else if (kind === "pronunciation") {
@@ -165,7 +177,10 @@ export function AssetCaptureSheet({ open, source, initialText, prefill, analyzin
         const r = await api.captureAsset({
           asset_kind: kind,
           canonical: canon,
-          gloss,
+          // 词块的中文意图常留空（用户可以不填），于是复习卡背��只能显示「（无释义）」，
+          // 既没法自检也没法比对。留空时退回划词时 reader 给的参考译文——同源数据，
+          // 至少让「词块→中文」这一问有个可核对的基准（#200）。
+          gloss: (kind === "chunk" && !gloss.trim()) ? String(src.referenceZh || "") : gloss,
           payload,
           test_point: testPoint || gloss,
           idempotency_key: idempotencyKey,

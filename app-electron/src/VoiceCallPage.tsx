@@ -86,7 +86,7 @@ function HistoryDrawer({ recs, onClose }: { recs: CallRec[] | null; onClose: () 
   );
 }
 
-export default function VoiceCallPage() {
+export default function VoiceCallPage({ onOpenSettings }: { onOpenSettings?: () => void } = {}) {
   const [consent, setConsent] = useState<CloudConsent | null>(null);
   const [keySet, setKeySet] = useState(false);
   const [pack, setPack] = useState<CallPack>("free");
@@ -146,8 +146,8 @@ export default function VoiceCallPage() {
     setSummary(null);
     setDebriefOpen(false);
     const missing: string[] = [];
-    if (!keySet) missing.push("未保存 API Key（在「对话」页云端设置中保存）");
-    if (!consent?.audio) missing.push("未开启「录音原文上云」同意开关（通话音频必须实时发送）");
+    if (!keySet) missing.push("未保存 API Key（设置 → API Key）");
+    if (!consent?.audio) missing.push("未开启「录音原文上云」授权（设置 → 云端授权；通话必须实时发送）");
     if (missing.length) { setErr("开始通话前还需要：" + missing.join("；") + "。"); return; }
 
     const engine = new CallEngine({
@@ -271,7 +271,18 @@ export default function VoiceCallPage() {
           <button className="ghost2" onClick={() => setSummary(null)}>返回配置</button>
         </div>
 
-        {err && <div className="err" style={{ marginTop: 12 }}>{err}</div>}
+        {/* 配置缺失时给出直达入口：文案只说「设置 → API Key」而不给按钮，
+            等于让用户自己去找——这里把按钮摆出来（#206）。 */}
+        {(err && (!keySet || !consent?.audio)) ? (
+          <div className="err" style={{ marginTop: 12 }}>
+            <div>{err}</div>
+            {onOpenSettings && (
+              <button className="ghost2" style={{ marginTop: 8 }} onClick={onOpenSettings}>
+                去设置
+              </button>
+            )}
+          </div>
+        ) : err ? <div className="err" style={{ marginTop: 12 }}>{err}</div> : null}
 
         {debriefOpen && (
           <DebriefPanel
@@ -286,7 +297,7 @@ export default function VoiceCallPage() {
 
   /* ============ pre-call：iOS 式深色沉浸 ============ */
   const missing: string[] = [];
-  if (!keySet) missing.push("未保存 API Key（对话页云端设置）");
+  if (!keySet) missing.push("未保存 API Key（设置 → API Key）");
   if (!consent?.audio) missing.push("录音原文上云未同意");
   const ready = missing.length === 0;
 

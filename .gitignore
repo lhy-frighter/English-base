@@ -42,3 +42,21 @@ Thumbs.db
 
 # ===== 旧 Tauri 版本（ADR-2 已弃用）：自带独立 git 仓库，不嵌入新仓库 =====
 app/
+
+# AOCI agent host integration (machine-bound; do not commit)
+.mcp.json
+.mcp.json.backup.*
+
+# ===== 个人学习数据（绝不进 git）=====
+# 空壳库曾被误追踪过一次；即便内容为空也不该跟着仓库走。
+app-electron/user.sqlite
+app-electron/user.sqlite-wal
+app-electron/user.sqlite-shm
+app-electron/data/user.sqlite*
+
+# ===== 工具产物（不属于源码）=====
+.aoci/
+.zcode/
+aoci.code.txt
+aoci.meta.txt
+app-electron/_u_check.sqlite*

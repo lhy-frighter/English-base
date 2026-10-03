@@ -3,7 +3,7 @@
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const { Core } = require("../core.cjs");
+const { Core, MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 
 let pass = 0, fail = 0;
 function check(name, cond, extra) { console.log((cond ? "PASS" : "FAIL"), name, extra ?? ""); cond ? pass++ : fail++; }
@@ -13,7 +13,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), "shadow-note-"));
 const core = new Core(dir);
 const W = "abandon";
 const SENT = "Never abandon a good plan under pressure.";
-check("前置：user_version=15（迁移到最新）", core.user.prepare("PRAGMA user_version").get().user_version === 15);
+check("前置：user_version 为最新（迁移已完成）", core.user.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 
 // 1) 跟读问题词成卡：5 卡、source=shadow、带真实语境句、新建词元用词典默认释义（非空 sense，避免 recall 退化）
 const made = core.createShadowNote({ word: W, sentence: SENT });
@@ -24,7 +24,7 @@ check("跟读笔记 source=shadow", noteRow.source === "shadow", noteRow.source)
 check("跟读笔记 text_id 为空（自由文本）", noteRow.text_id == null);
 check("跟读笔记带真实语境句", noteRow.context_sentence === SENT);
 check("新建词元 sense 非空（词典默认释义）", !!lexRow.sense.trim(), JSON.stringify(lexRow.sense));
-check("跟读问题词生成全套 5 卡", made.cards_created === 5 && types.length === 5 && ["r_recog", "cloze", "recall", "l_recog", "spelling"].every((t) => types.includes(t)), JSON.stringify(types));
+check("跟读问题词生成全套 6 卡（含翻译卡）", made.cards_created === 6 && types.length === 6 && ["r_recog", "cloze", "recall", "l_recog", "spelling", "note_translate"].every((t) => types.includes(t)), JSON.stringify(types));
 
 // 2) 同词+同语境句去重
 const again = core.createShadowNote({ word: W, sentence: SENT });
@@ -59,7 +59,7 @@ const lexBefore = core.user.prepare("SELECT COUNT(*) n FROM lexemes WHERE lemma=
 const merged = core.createShadowNote({ word: W2, sentence: "Good sleep will benefit your memory." });
 const lexAfter = core.user.prepare("SELECT COUNT(*) n FROM lexemes WHERE lemma=?").get(W2).n;
 check("跟读复用考纲词元（不新建分身）", merged.lexeme_id === stand.lexeme_id && lexBefore === 1 && lexAfter === 1, `before=${lexBefore} after=${lexAfter}`);
-check("复用合并 merged=true 且 5 卡", merged.merged === true && merged.cards_created === 5, JSON.stringify(merged));
+check("复用合并 merged=true 且 6 卡", merged.merged === true && merged.cards_created === 6, JSON.stringify(merged));
 
 // 6) P0-3：事务保护——在第 3 张卡插入时注入失败，断言词元/笔记/卡与 learned 全部回滚零残留
 const W3 = "improve";
@@ -84,14 +84,21 @@ check("事务回滚：词元/笔记/卡零增长",
 check("事务回滚：learned 不含该词", !core.learned.has(W3));
 // 回滚后同一请求可正常重试成功
 const retry = core.createShadowNote({ word: W3, sentence: "You can improve a little every single day." });
-check("回滚后重试成功成 5 卡", !retry.already && retry.cards_created === 5, JSON.stringify(retry));
+check("回滚后重试成功成 6 卡", !retry.already && retry.cards_created === 6, JSON.stringify(retry));
 
 // 7) 跟读卡能进复习队列且带跟读语境句
 const allCards = core.user.prepare("SELECT id, card_type FROM cards WHERE note_id=? ORDER BY id").all(made.note_id);
 const rrecog = allCards.find((c) => c.card_type === "r_recog");
 for (const c of allCards) if (c.id !== rrecog.id) core.answer({ cardId: c.id, rating: 3, elapsedMs: 800 });
 const got = core.getDue(10).find((c) => c.note_id === made.note_id);
-check("跟读卡进入复习队列且带语境句", !!got && got.sentence === SENT, JSON.stringify(got && { t: got.card_type, s: got.sentence }));
+// r_recog（认读）已改为「有语境句就挖空该词」，不再直接摊开整句+高亮（#200）：
+// 原来的行为等于把答案摆在眼前。这里断言挖空生效即可（answer 是原形，句子里是屈折形，
+// buildCloze 已负责按原句词形挖）。
+check("跟读卡进队列且语境句已挖空（不再直显答案）",
+  !!got && /＿/.test(got.sentence) && got.sentence !== SENT,
+  JSON.stringify(got && { t: got.card_type, s: got.sentence, a: got.answer }));
+check("认读卡配释义四选一", !!got && Array.isArray(got.choices) && got.choices.length === 4,
+  JSON.stringify(got && (got.choices || []).length));
 
 // 8) 阅读挖矿 source=reading 不受影响
 const now = Date.now();
@@ -118,7 +125,7 @@ let reentryErr = null;
 let recovered;
 try { recovered = new Core(dir); } catch (e) { reentryErr = e; }
 check("半迁移重入不抛 duplicate column", !reentryErr && recovered, String(reentryErr));
-check("重入后版本正确回到最新（15）", recovered && recovered.user.prepare("PRAGMA user_version").get().user_version === 15);
+check("重入后版本正确回到最新", recovered && recovered.user.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 check("重入数据无损", recovered && count(recovered, "SELECT COUNT(*) n FROM notes") === notesBeforeReentry);
 recovered.user.close();
 

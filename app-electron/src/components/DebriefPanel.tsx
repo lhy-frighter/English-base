@@ -27,7 +27,7 @@ export function DebriefPanel({ ctx, initial, onClose, onAfter }: {
 
   useEffect(() => {
     if (ctx.sessionKey) {
-      api.conversationSummary(ctx.sessionKey).then(setSummary).catch(() => {});
+      api.conversationSummary(ctx.sessionKey).then(setSummary).catch((e) => { console.error("[debrief] 会话摘要加载失败", e); });
     }
   }, [ctx.sessionKey]);
 
@@ -35,7 +35,7 @@ export function DebriefPanel({ ctx, initial, onClose, onAfter }: {
   useEffect(() => {
     api.debriefPut({
       origin_kind: ctx.originKind, origin_ref: ctx.originRef, candidates: cands,
-    }).catch(() => {});
+    }).catch((e) => { console.error("[debrief] 草稿持久化失败", e); });
   }, [cands, ctx.originKind, ctx.originRef]);
 
   const toggle = (i: number) =>

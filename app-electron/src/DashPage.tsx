@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, type Insights, type DayTimeline, type Dashboard } from "./api";
-import { RingGauge } from "./components/ui";
+import { api, type Insights, type DayTimeline } from "./api";
+import { RingGauge, ErrorState, useAsync } from "./components/ui";
 import { Icon } from "./icons";
 import { Heatmap } from "./Heatmap";
 
@@ -96,7 +96,7 @@ function AbilitySection({ ins }: { ins: Insights }) {
   });
   const line = pts.map((p, i) => { const { x, y } = xy(p, i); return `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`; }).join(" ");
   return (
-    <div className="dcard wide d2-ability">
+    <div className="dcard wide">
       <h3>能力趋势 · 首读已知词覆盖率（不可变快照）</h3>
       {n === 0 ? <p className="muted">导入并精读文章后出现</p> : (
         <>
@@ -148,15 +148,16 @@ function FoldSection({ title, summary, children, defaultOpen = false }: {
 
 export function DashPage(props: { onAssess?: () => void }) {
   const [range, setRange] = useState<number>(30);
-  const [assessHist, setAssessHist] = useState<import("./api").AssessmentHistoryItem[]>([]);
-  const [ins, setIns] = useState<Insights | null>(null);
-  const [dash, setDash] = useState<Dashboard | null>(null);
   const [selDay, setSelDay] = useState<string | null>(null);
 
-  useEffect(() => { api.insights(range).then(setIns).catch(() => {}); }, [range]);
-  useEffect(() => { api.dashboard().then(setDash).catch(() => {}); }, []);
-  const loadAssess = () => api.assessmentHistory(10).then(setAssessHist).catch(() => {});
-  useEffect(() => { void loadAssess(); }, []);
+  // 三态收口：任一 IPC 失败都不再静默空白，而是给出可重试的错误态（#194）。
+  // 测评历史是次要区块，单独失败降级为一行提示，不拖累整个仪表盘。
+  const insQ = useAsync(() => api.insights(range), [range]);
+  const dashQ = useAsync(() => api.dashboard(), []);
+  const assessQ = useAsync(() => api.assessmentHistory(10), []);
+  const ins = insQ.data;
+  const dash = dashQ.data;
+  const assessHist = assessQ.data ?? [];
 
   const days = ins?.days ?? [];
   const t = ins?.totals;
@@ -168,7 +169,15 @@ export function DashPage(props: { onAssess?: () => void }) {
         <h2>仪表盘</h2>
         <span className="muted">全部来自本地学习记录 · 学习分钟只统计精读/跟读/复习/考试四类互斥活动</span>
       </div>
-      {!ins || !dash ? <p className="muted">加载中…</p> : (
+      {insQ.error || dashQ.error ? (
+        <ErrorState
+          text={insQ.error && dashQ.error
+            ? "仪表盘数据加载失败。学习记录都在本机数据库里，重试一下通常就好。"
+            : insQ.error ? "学习统计加载失败。" : "仪表盘概览加载失败。"}
+          onRetry={() => { insQ.reload(); dashQ.reload(); assessQ.reload(); }}
+          retrying={insQ.loading || dashQ.loading}
+        />
+      ) : !ins || !dash ? <p className="muted">加载中…</p> : (
         <>
         {dash.backup.recovery && <div className="recovery-banner">{dash.backup.recovery}</div>}
 
@@ -181,19 +190,19 @@ export function DashPage(props: { onAssess?: () => void }) {
           })()}
           <div style={{ display: "flex", gap: 28, flexWrap: "wrap" }}>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
                 🔥 {ins?.streak.current ?? 0}
               </div>
               <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>当前连胜 · 最长 {ins?.streak.longest ?? 0} 天</div>
             </div>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
                 {ins?.totals?.readWords ?? 0}
               </div>
               <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>精读词数（近 {range} 天）</div>
             </div>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: "var(--ink)", fontFamily: "Manrope, sans-serif" }}>
                 {ins?.totals?.reviews ?? 0}
               </div>
               <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>复习卡片</div>
@@ -244,13 +253,23 @@ export function DashPage(props: { onAssess?: () => void }) {
               <h3 style={{ margin: 0 }}>陌生同级材料独立理解得分</h3>
               <button className="btn primary" onClick={() => props.onAssess?.()}>开始能力测评</button>
             </div>
-            {assessHist.length ? (
+            {assessQ.error ? (
+              <p className="muted">
+                测评历史加载失败。
+                <button className="link-btn" onClick={assessQ.reload} disabled={assessQ.loading}>
+                  {assessQ.loading ? "重试中…" : "重试"}
+                </button>
+              </p>
+            ) : assessHist.length ? (
               <div className="assess-dash-list">
                 {assessHist.map((h, i) => (
-                  <div key={i} className="assess-dash-row" title={`理解 ${h.comp} · 覆盖 ${h.coverage} · 速度 ${h.speed} · 少依赖 ${h.dependence}`}>
+                  <div key={i} className="assess-dash-row"
+                    title={h.corrupt ? "这条测评的快照数据损坏，仅总分可用" : `理解 ${h.comp} · 覆盖 ${h.coverage} · 速度 ${h.speed} · 少依赖 ${h.dependence}`}>
                     <span className="badge">{h.cefr}</span>
                     <b>{h.score} 分</b>
-                    <span className="muted small">{new Date(h.created_at).toLocaleDateString()} · {h.wpm} 词/分 · 对 {h.correct}/{h.questions}</span>
+                    {h.corrupt
+                      ? <span className="muted small">快照损坏 · 详情不可用</span>
+                      : <span className="muted small">{new Date(h.created_at).toLocaleDateString()} · {h.wpm} 词/分 · 对 {h.correct}/{h.questions}</span>}
                   </div>
                 ))}
               </div>

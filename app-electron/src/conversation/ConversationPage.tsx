@@ -15,7 +15,8 @@ import { startStreamingSpeaker, type StreamingSpeaker } from "../tts";
 import { ttsSafeText } from "../tts-chunks";
 import { VadController } from "./vad-controller";
 import { Icon } from "../icons";
-import { Seg, toast, Modal, EmptyState } from "../components/ui";
+import { Seg, Modal, EmptyState } from "../components/ui";
+import { persist } from "../persist";
 import { TurnAssembler, type AssemblerState } from "./turn-assembler";
 import { smartTurn } from "./smartturn";
 import { AssetCaptureSheet } from "../components/AssetCaptureSheet";
@@ -58,13 +59,15 @@ function grammarReason(reason: string): string {
 export interface UsePrompt { assetId: number; canonical: string; kind: string; }
 export default function ConversationPage({
   onSendShadow, usePrompt, onPromptConsumed,
-  examDrill, onExamDrillConsumed,
+  examDrill, onExamDrillConsumed, onOpenSettings,
 }: {
   onSendShadow?: (text: string, opts?: {
     originKind?: string; originRef?: string;
     textId?: number; title?: string;
   }) => void;
   usePrompt?: UsePrompt | null;
+  /** 打开统一设置页（云端配置已收进那里，#206） */
+  onOpenSettings?: () => void;
   onPromptConsumed?: () => void;
   examDrill?: import("../api").ExamWeakItem | null;
   onExamDrillConsumed?: () => void;
@@ -93,7 +96,6 @@ export default function ConversationPage({
   // V8-2d 云端同意（默认全关，纯本地）
   const [cloud, setCloud] = useState<CloudConsent | null>(null);
   const [keySet, setKeySet] = useState(false);
-  const [keyInput, setKeyInput] = useState("");
   const [cloudMsg, setCloudMsg] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -174,7 +176,7 @@ export default function ConversationPage({
   };
 
   const refreshHistory = useCallback(() => {
-    api.convList(12).then(setHistory).catch(() => {});
+    api.convList(12).then(setHistory).catch((e) => { console.error("[conv] 历史列表加载失败", e); });
   }, []);
   useEffect(() => { refreshHistory(); }, [refreshHistory]);
 
@@ -182,37 +184,11 @@ export default function ConversationPage({
   useEffect(() => {
     api.cloudGetConsent()
       .then((r) => { setCloud(r.consent); setKeySet(r.keySet); })
-      .catch(() => {});
+      .catch((e) => { console.error("[conv] 云端授权读取失败", e); });
   }, []);
 
-  const toggleCloud = async (key: keyof CloudConsent) => {
-    if (!cloud) return;
-    const next = { ...cloud, [key]: !cloud[key], updatedAt: Date.now() };
-    setCloud(next);
-    try {
-      const saved = await api.cloudSaveConsent(next);
-      setCloud(saved);
-    } catch {
-      setCloudMsg("保存失败");
-    }
-  };
 
-  const saveKey = async () => {
-    const k = keyInput.trim();
-    if (!k) return;
-    try {
-      await api.cloudSetKey(k);
-      setKeySet(true); setKeyInput(""); setCloudMsg("");
-      toast("API Key 已加密保存在本机");
-    } catch (e) {
-      setCloudMsg((e as Error).message || "保存失败");
-    }
-  };
 
-  const clearKey = async () => {
-    await api.cloudClearKey();
-    setKeySet(false); setCloudMsg("");
-  };
 
   // S15-1：对用户某一轮做云端语法深度分析（再点一次收起面板）
   const openGrammar = async (t: ConvTurn) => {
@@ -251,9 +227,9 @@ export default function ConversationPage({
       kind: "conversation", sessionKey: learnKeyRef.current,
       refType: "conversation", refId: session.sessionKey,
       titleSnapshot: session.title, unit: "turns", amount: 0,
-    }).catch(() => {});
+    }).catch((e) => { console.error("[conv] 学习会话开始写入失败", e); });
     const hb = setInterval(() => {
-      api.sessionHeartbeat(learnKeyRef.current!, activeMsRef.current, userTurnCount(), {}).catch(() => {});
+      void persist("sessionHeartbeat", api.sessionHeartbeat(learnKeyRef.current!, activeMsRef.current, userTurnCount(), {}));
     }, 20000);
     return () => clearInterval(hb);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,7 +269,7 @@ export default function ConversationPage({
       .then((rs) => {
         if (!alive) return;
         setPassedTurns(new Set(rs.filter(([, f]) => f).map(([k]) => k)));
-      }).catch(() => {});
+      }).catch((e) => { console.error("[conv] 跟读通过状态加载失败", e); });
     return () => { alive = false; };
   }, [turns]);
 
@@ -398,8 +374,8 @@ export default function ConversationPage({
 
   const backToSetup = useCallback(async (abandon: boolean) => {
     if (session && learnKeyRef.current) {
-      api.sessionClose(learnKeyRef.current, activeMsRef.current, userTurnCount(), {}).catch(() => {});
-      if (abandon) api.convClose({ sessionKey: session.sessionKey, activeMs: activeMsRef.current, status: "abandoned" }).catch(() => {});
+      void persist("sessionClose", api.sessionClose(learnKeyRef.current, activeMsRef.current, userTurnCount(), {}));
+      if (abandon) void persist("convClose(abandoned)", api.convClose({ sessionKey: session.sessionKey, activeMs: activeMsRef.current, status: "abandoned" }));
     }
     learnKeyRef.current = null;
     summaryRef.current = "";
@@ -629,9 +605,9 @@ export default function ConversationPage({
     // S13-b 用出证据：引导用出/自然用出/纠正后用出（中文轮内部跳过，失败不阻塞）
     {
       const prompted = promptedRef.current.splice(0);
-      api.detectUsedAssets({
+      void persist("detectUsedAssets", api.detectUsedAssets({
         sessionKey: session.sessionKey, turnKey: userKey, text, prompted,
-      }).catch(() => {});
+      }));
     }
     const asstTurn = await api.convAddTurn({
       sessionKey: session.sessionKey, turnKey: asstKey, role: "assistant", text: "",
@@ -825,7 +801,7 @@ export default function ConversationPage({
       });
       setTurns((prev) => prev.map((t) => (t.turnKey === sumKey ? sumTurn : t)));
       if (learnKeyRef.current) {
-        api.sessionClose(learnKeyRef.current, activeMsRef.current, userTurnCount(), {}).catch(() => {});
+        void persist("sessionClose", api.sessionClose(learnKeyRef.current, activeMsRef.current, userTurnCount(), {}));
       }
       await api.convClose({ sessionKey: session.sessionKey, activeMs: activeMsRef.current, status: "closed" });
       learnKeyRef.current = null;
@@ -923,68 +899,34 @@ export default function ConversationPage({
 
         {settingsOpen && (
           <>
-            <div className="drawer-mask" onClick={() => setSettingsOpen(false)} />
+          <div className="drawer-mask" onClick={() => setSettingsOpen(false)} />
             <div className="drawer-right">
               <div className="drawer-head">
                 <h3>云端设置</h3>
                 <button className="ghost2" style={{ marginLeft: "auto", padding: "5px 14px" }} onClick={() => setSettingsOpen(false)}>关闭</button>
               </div>
               <div className="drawer-body">
-                {!cloud ? <p className="muted" style={{ padding: "8px 10px" }}>加载中…</p> : (
-                  <div className="conv-cloud">
-                    <p className="muted conv-cloud-note">
-                      云端为默认引擎；失败不会自动联网兜底。只有你逐项授权后，对应数据才会发送；授权可随时在此关闭。
-                    </p>
-                    <label className="cloud-toggle">
-                      <input type="checkbox" checked={cloud.profile} onChange={() => { void toggleCloud("profile"); }} />
-                      <span>上传学习画像（词汇掌握与能力数据，用于云端分析）</span>
-                    </label>
-                    <label className="cloud-toggle">
-                      <input type="checkbox" checked={cloud.historyText} onChange={() => { void toggleCloud("historyText"); }} />
-                      <span>上传历史对话文本（用于更强的云端大脑与纠错）</span>
-                    </label>
-                    <label className="cloud-toggle">
-                      <input type="checkbox" checked={cloud.audio} onChange={() => { void toggleCloud("audio"); }} />
-                      <span>上传录音原文（用于云端发音分析）</span>
-                    </label>
-                    <label className="cloud-toggle">
-                      <input type="checkbox" checked={cloud.grammarCloud} onChange={() => { void toggleCloud("grammarCloud"); }} />
-                      <span>文本送云端做语法深度分析（逐句批改并生成语法练习）</span>
-                    </label>
-                    <label className="conv-label">云端端点（OpenAI 兼容，可留空）</label>
-                    <input className="conv-input" value={cloud.baseUrl}
-                      placeholder="https://api.example.com/v1"
-                      onChange={(e) => {
-                        const next = { ...cloud, baseUrl: e.target.value, updatedAt: Date.now() };
-                        setCloud(next);
-                        api.cloudSaveConsent(next).catch(() => {});
-                      }} />
-                    <label className="conv-label">模型名</label>
-                    <input className="conv-input" value={cloud.model}
-                      placeholder="glm-4.7-flash"
-                      onChange={(e) => {
-                        const next = { ...cloud, model: e.target.value, updatedAt: Date.now() };
-                        setCloud(next);
-                        api.cloudSaveConsent(next).catch(() => {});
-                      }} />
-                    <label className="conv-label">API Key{keySet ? "（已加密保存）" : ""}</label>
-                    {keySet ? (
-                      <div className="cloud-key-row">
-                        <span className="muted">已保存，随系统密钥链加密</span>
-                        <button className="ghost2" onClick={() => { void clearKey(); }}>清除</button>
-                      </div>
-                    ) : (
-                      <div className="cloud-key-row">
-                        <input className="conv-input" type="password" value={keyInput}
-                          placeholder="粘贴 key，本地加密存储"
-                          onChange={(e) => setKeyInput(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === "Enter") void saveKey(); }} />
-                        <button className="btn-primary" disabled={!keyInput.trim()} onClick={() => { void saveKey(); }}>保存</button>
-                      </div>
-                    )}
-                    {cloudMsg && <em className="err-text">{cloudMsg}</em>}
+                {/* 云端配置已收进「设置」页（端点/模型/Key/授权开关统一一处，#206）。
+                    这里只留状态摘要 + 直达入口，避免两处配置各改一半、互相不知道。 */}
+                <div className="cloud-summary">
+                  <div className="cs-row">
+                    <span className="cs-k">API Key</span>
+                    <span className="cs-v">{keySet ? "已加密保存" : "未设置"}</span>
                   </div>
-                )}
+                  <div className="cs-row">
+                    <span className="cs-k">端点</span>
+                    <span className="cs-v">{cloud?.baseUrl || "未配置"}</span>
+                  </div>
+                  <div className="cs-row">
+                    <span className="cs-k">模型</span>
+                    <span className="cs-v">{cloud?.model || "未配置"}</span>
+                  </div>
+                  {onOpenSettings && (
+                    <button className="btn-primary" style={{ marginTop: 14 }} onClick={onOpenSettings}>
+                      前往设置
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </>
@@ -1007,7 +949,7 @@ export default function ConversationPage({
           <button className={engine === "local" ? "seg-on" : ""} disabled={busy} onClick={() => setEngine("local")}>本地</button>
         </div>
         <button
-          className="ghost2 conv-voice-toggle"
+          className="ghost2"
           onClick={() => setVoiceOn((v) => !v)}
         >
           出声：{voiceOn ? "开" : "关"}{speakPhase === "speaking" ? " · 播放中" : ""}

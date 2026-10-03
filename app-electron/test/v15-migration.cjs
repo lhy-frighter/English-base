@@ -3,6 +3,7 @@
 // B) v14→v15 升级：evidence 全量逐行拷贝、计数无漂移、integrity/FK、可重入；
 // C) debrief_drafts 业务约束：唯一(origin_kind,origin_ref)、candidates json、status 白名单。
 // 运行：node test/v15-migration.cjs
+const { MIGRATIONS_VERSION_HINT: EXPECTED_VER } = require("../core.cjs");
 const { Core, MIGRATIONS } = require("../core.cjs");
 const { DatabaseSync } = require("node:sqlite");
 const path = require("node:path");
@@ -27,7 +28,7 @@ let counter = 0;
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "v15-fresh-"));
 const core = new Core(dir);
 const db = core.user;
-check("user_version=15", db.prepare("PRAGMA user_version").get().user_version === 15);
+check("user_version 为最新", db.prepare("PRAGMA user_version").get().user_version === EXPECTED_VER);
 check("debrief_drafts 存在", tableExists(db, "debrief_drafts"));
 const shCols = colNames(db, "shadow_sentences");
 check("shadow_sentences 有 origin_kind", shCols.includes("origin_kind"));
@@ -98,6 +99,7 @@ try {
 const afterEv = udb.prepare("SELECT * FROM asset_evidence ORDER BY id").all().map((r) => JSON.stringify(r));
 check("evidence 逐行拷贝无漂移", JSON.stringify(beforeEv) === JSON.stringify(afterEv),
   `(${beforeEv.length} rows)`);
+// 本测试只手动执行 MIGRATIONS[14]（v15 那一步），版本理应停在 15——不随数组总长变化
 check("升级后 user_version=15", udb.prepare("PRAGMA user_version").get().user_version === 15);
 check("integrity_check=ok", udb.prepare("PRAGMA integrity_check").get().integrity_check === "ok");
 check("foreign_key_check=0", udb.prepare("PRAGMA foreign_key_check").all().length === 0);

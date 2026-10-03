@@ -43,7 +43,7 @@ const textId = Number(core.user.prepare("SELECT last_insert_rowid() AS id").get(
 const raw = core.user.prepare("SELECT raw_text FROM texts WHERE id=?").get(textId).raw_text;
 const note2 = core.createNote({ word: W, sense: "", textId, offset: raw.indexOf("abandon") });
 const types = core.user.prepare("SELECT card_type FROM cards WHERE note_id=? ORDER BY card_type").all(note2.note_id).map((r) => r.card_type);
-check("阅读笔记 5 卡含 spelling", types.length === 5 && types.includes("spelling"), JSON.stringify(types));
+check("阅读笔记 6 卡含 spelling（含翻译卡）", types.length === 6 && types.includes("spelling"), JSON.stringify(types));
 
 // 6) backfill 幂等
 core.backfillCards();

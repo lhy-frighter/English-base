@@ -61,7 +61,7 @@ const raw = core.user.prepare("SELECT raw_text FROM texts WHERE id=?").get(textI
 const off = raw.indexOf("abandon");
 const note2 = core.createNote({ word: W, sense: "", textId, offset: off });
 const t2 = core.user.prepare("SELECT card_type FROM cards WHERE note_id=? ORDER BY card_type").all(note2.note_id).map((r) => r.card_type);
-check("阅读笔记生成 5 卡含 l_recog/spelling", t2.length === 5 && t2.includes("l_recog") && t2.includes("spelling"), JSON.stringify(t2));
+check("阅读笔记生成 6 卡含 l_recog/spelling/翻译卡", t2.length === 6 && t2.includes("l_recog") && t2.includes("spelling"), JSON.stringify(t2));
 
 core.user.close();
 fs.rmSync(dir, { recursive: true, force: true });
