@@ -1,7 +1,7 @@
 {
   "name": "english-base-electron",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
@@ -79,5 +79,18 @@
     },
     "compression": "normal"
   },
-  "productName": "English Base"
+  "productName": "English Base",
+  "license": "BUSL-1.1",
+  "author": {
+    "name": "lhy-frighter",
+    "url": "https://github.com/lhy-frighter"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lhy-frighter/english-base.git"
+  },
+  "homepage": "https://github.com/lhy-frighter/english-base#readme",
+  "bugs": {
+    "url": "https://github.com/lhy-frighter/english-base/issues"
+  }
 }

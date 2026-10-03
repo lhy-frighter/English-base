@@ -49,12 +49,12 @@
 
 ## 下载安装
 
-到 [**Releases**](https://github.com/lhy-frighter/english-base/releases/tag/v1.0.0) 下载（Windows 10/11 x64）：
+到 [**Releases**](https://github.com/lhy-frighter/english-base/releases/latest) 下载（Windows 10/11 x64）：
 
 | 文件 | 说明 |
 |---|---|
-| `EnglishBase-Setup-1.0.0.exe` (225MB) | 安装版：双击安装，可选目录，免管理员 |
-| `个人英语能力底座-1.0.0-win.zip` (400MB) | 便携版：解压即用，数据跟文件夹走 |
+| `EnglishBase-Setup-1.1.0.exe` (225MB) | 安装版：双击安装，可选目录，免管理员 |
+| `个人英语能力底座-1.1.0-win.zip` (400MB) | 便携版：解压即用，数据跟文件夹走 |
 
 首跑内置 81MB 离线词典（ECDICT）与每日好文源；语音模型（Whisper / Kokoro TTS / Bergamot 机翻 / Qwen2.5 本地大脑）在「语音」页按需下载，下载后完全离线。
 
