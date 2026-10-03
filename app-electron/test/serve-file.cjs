@@ -17,7 +17,13 @@ check("双重编码 %252e 不展开即安全", safeJoin(ROOT, "%252e%252e/x") !=
 check("兄弟前缀目录不可借 startsWith 逃逸", safeJoin(ROOT, "../sentinel-root-sibling/x") === null);
 check("绝对 *nix 路径拒绝", safeJoin(ROOT, "/etc/passwd") === null);
 check("Windows 盘符绝对路径拒绝", safeJoin(ROOT, "C:/Windows/system32") === null);
-check("反斜杠穿越拒绝", safeJoin(ROOT, "a\\..\\..\\b") === null);
+// 反斜杠在 Windows 上是分隔符（可穿越），在 *nix 上是合法文件名字符（不穿越）——
+// 预期随平台变化，CI 在 ubuntu 上跑，不能断言同一结果。
+if (process.platform === "win32") {
+  check("反斜杠穿越拒绝（win32）", safeJoin(ROOT, "a\\..\\..\\b") === null);
+} else {
+  check("反斜杠在 *nix 是普通文件名（不越界）", safeJoin(ROOT, "a\\..\\..\\b") !== null);
+}
 check("空段回到 root", safeJoin(ROOT, "") === ROOT);
 check("非法百分号编码拒绝", safeJoin(ROOT, "%zz") === null);
 check("空字节拒绝", safeJoin(ROOT, "a\0b") === null);
