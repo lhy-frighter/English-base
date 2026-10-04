@@ -175,7 +175,7 @@ description: 为已有桌面/本地应用（Electron 等）或 Web 应用做 UI 
    - **程序化审计**：写 `shots/ui-audit.json`，三项 report-only——横向溢出（scrollWidth>clientWidth+1）、点击热区 <32px 计数（含 tag/类名/尺寸）、文本对比度 WCAG 采样（纯文本叶节点限 500；≥24px 或 ≥18.66px 粗体按 3:1，其余 4.5:1；半透明玻璃底穿透到最近不透明实底近似；结果含 cls/ratio/px/txt）。审计数据人审后决定修什么，不自动改。
 2. **注入脚本两条铁律**：① 模板字面量引用外层变量必须 `${JSON.stringify(x)}` 插值（裸 `name` 会落 `window.name`，静默失效）；② **注入脚本内正则禁用 `\d` 类反斜杠转义**——模板字面量会把 `\d` 烤制成字面量 `d`，`[\d.]` 静默变 `[d.]`；颜色解析用逗号切分等无反斜杠写法。
 3. 逐图评审 + 审计数据 → CSS/JSX 迭代 → 重截（diff 归零或仅含有意变更）→ 用户定向反馈（截图+一句话）→ 再迭代。
-4. **验收口径**：双宽度无溢出；空/载/错三态齐备；键盘可达且 focus 圈可见；reduced-motion 降级；玻璃白名单合规；每页最多一个动效焦点；css-audit 0 FAIL。
+4. **验收口径**：双宽度无溢出；空/载/错三态齐备；键盘可达且 focus 圈可见；reduced-motion 降级；玻璃白名单合规；每页最多一个动效焦点；css-audit 0 FAIL；**grill-me 方案拷问已执行且结论已落盘**（阶段 0.6：DESIGN.md 有「访谈定案」条目、`AskUserQuestion` 有用户真实选择记录，不是 agent 自问自答）。
 5. 每轮回归：tsc + vite build + 全量测试链（css-audit 已挂链尾）；文档按 #序号追加（改动+验证数据+待真机复验清单）。
 
 ### 5.5 像素取证（agent 读不了截图时的兜底）
@@ -230,6 +230,7 @@ pnpm `nodeLinker: hoisted` + 幽灵依赖清算 → electron-builder：`asar: fa
 - **"看板很乱"** → 先按用户决策顺序重排信息，再用 ui-ux-pro-max 查密度/表格/筛选/图表模式；不用营销页巨型标题和大面积留白
 - **"细节还是粗糙"** → make-interfaces-feel-better：换行/对齐/边框/阴影/图标/焦点/热区/状态切换；列出每处修改前后差别
 - **"参考图没学到位"** → 重新比较参考与当前截图，只修明确要求继承的 3 个维度；不连带复制品牌色和文案
+- **"有方案但没问我"** → 触发 `grill-me`（阶段 0.6）：把已做方向当作"待拷问方案"，从 8 个分叉逐问；agent 不得自答，必须给出用户真实选择后才继续
 
 ## 附录 B · 模板 A：从零开始构造（新页面/新功能用）
 
@@ -336,5 +337,6 @@ Mobbin · Landdding · Dribbble/Behance · Lapa.ninja/Landingfolio · Muzli · s
 - [Web Design Guidelines — Vercel Labs](https://github.com/vercel-labs/agent-skills/blob/main/skills/web-design-guidelines/SKILL.md)
 - [Vercel React Best Practices](https://github.com/vercel-labs/agent-skills/blob/main/skills/react-best-practices/SKILL.md)
 - [Browser Testing with DevTools — Addy Osmani](https://github.com/addyosmani/agent-skills/blob/main/skills/browser-testing-with-devtools/SKILL.md)
+- [**grill-me** — 方案选择拷问（本流程阶段 0.6 的必用 skill）]（社区手动安装，无独立仓库；README 约定：把 `SKILL.md` 或整个文件夹放入 `~/.claude/skills/grill-me/`，触发词 "grill me" / "stress-test a plan"。本仓库副本见 `design-skills/grill-me/`，用于离线复现）
 
 **最省心的使用法**：日常直接填附录 B/C 模板；结果出来后针对一个具体问题追加附录 A 的一句。不要把所有 skill 的全文和所有命令粘成一条超长指令。
