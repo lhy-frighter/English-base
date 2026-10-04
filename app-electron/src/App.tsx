@@ -2318,7 +2318,7 @@ export default function App() {
 
         {/* 查词面板：词典条目 */}
         {entry && (
-          <aside className="panel">
+          <aside className="panel" key={entryKey}>
             <div className="headword-line">
               <span className="headword">{entry.word}</span>
               {entry.phonetic && <span className="phonetic">/{entry.phonetic}/</span>}

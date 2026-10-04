@@ -235,8 +235,11 @@ button.big { width: 100%; padding: 12px; font-size: 15px; margin-top: 22px; }
 .tk.cap { color: #4b5768; }
 
 /* ===== 查词面板：词典条目 ===== */
+/* 查词面板顶部锚定：阅读页冻结头 .reader-head（sticky, z-index:30）为两行高，
+   实测在 125% 缩放下底部约 160 CSS px。面板 z-index 低于冻结头，top 必须让开
+   冻结头，否则原词/音标行会被盖住（见 #209 与 2026-10-04 遮挡修复）。 */
 .panel {
-  position: fixed; right: 26px; top: 70px; width: 360px; max-height: calc(100vh - 100px);
+  position: fixed; right: 26px; top: max(168px, 15vh); width: 360px; max-height: calc(100vh - 180px);
   overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
   padding: 18px 18px 14px;
   box-shadow: var(--shadow-panel); z-index: 10;

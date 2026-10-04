@@ -1490,3 +1490,9 @@ button, select, [role="button"] { min-height: 32px; }
   font-size: 11.5px; color: var(--ink-2);
   background: rgba(16, 24, 40, 0.05);
 }
+
+/* #209：查词面板在窄窗口/高标题栏下顶部不被遮住的补充保险：
+   面板离视口顶至少 7vh（≈标题栏+间距），内容超高时内部滚动。 */
+@media (max-height: 700px) {
+  .panel { top: max(150px, 20vh); max-height: calc(100vh - 162px); }
+}
